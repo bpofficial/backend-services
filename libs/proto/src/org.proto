@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package org;
+
+service OrgService {
+  rpc FindOne (OrgById) returns (Org) {}
+}
+
+message OrgById {
+  int32 oid = 1;
+  int32 uid = 2;
+}
+
+message Org {
+  int32 id = 1;
+  string name = 2;
+}
