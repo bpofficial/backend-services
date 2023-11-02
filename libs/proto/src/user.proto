@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+import "errors.proto";
+
+package proto;
+
+service UserService {
+  rpc GetUser (GetUserRequest) returns (UserResponse);
+  rpc Create (CreateUserRequest) returns (User);
+  rpc Update (UpdateUserRequest) returns (UserResponse);
+  rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message GetUserRequest {
+  string uid = 1;
+}
+
+message UpdateUserRequest {
+    string uid = 1;
+    optional string name = 2;
+    optional string email = 3;
+    optional bool verified = 4;
+}
+
+message DeleteUserRequest {
+  string uid = 1;
+}
+
+message DeleteUserResponse {
+  bool success = 1;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  bool verified = 4;
+}
+
+message UserResponse {
+    oneof result {
+        User user = 1;
+        Err error = 2;
+    }
+}

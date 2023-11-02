@@ -19,7 +19,7 @@ for PROTO_FILE in $PROTO_FILES; do
 
   # Run the protoc command on the current .proto file,
   # specifying the output directory as the current directory (.)
-  protoc --plugin=$TS_PROTO_PLUGIN \
+  protoc --plugin=$TS_PROTO_PLUGIN -I $(pwd) \
     --ts_proto_opt=outputEncodeMethods=true,useEnumNames=false,asClass=false,outputJsonMethods=true,context=false,outputNestJs=true,outputClientImpl=false \
     --ts_proto_out=. $(basename $PROTO_FILE)
 

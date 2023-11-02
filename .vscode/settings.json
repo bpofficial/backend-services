@@ -1,0 +1,10 @@
+{
+    "protoc": {
+        "path": "/opt/homebrew/bin/protoc",
+        "options": [
+            "--plugin=${workspaceRoot}/node_modules/ts-proto/protoc-gen-ts_proto",
+            "--ts_proto_opt=outputEncodeMethods=true,useEnumNames=false,asClass=false,outputJsonMethods=true,context=false,outputNestJs=true,outputClientImpl=false",
+            "--proto_path=${workspaceRoot}/libs/proto/src"
+        ]
+    }
+}

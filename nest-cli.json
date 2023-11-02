@@ -88,6 +88,33 @@
       "compilerOptions": {
         "tsConfigPath": "libs/db/tsconfig.lib.json"
       }
+    },
+    "member": {
+      "type": "application",
+      "root": "apps/member",
+      "entryFile": "main",
+      "sourceRoot": "apps/member/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/member/tsconfig.app.json"
+      }
+    },
+    "role": {
+      "type": "application",
+      "root": "apps/role",
+      "entryFile": "main",
+      "sourceRoot": "apps/role/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/role/tsconfig.app.json"
+      }
+    },
+    "user": {
+      "type": "application",
+      "root": "apps/user",
+      "entryFile": "main",
+      "sourceRoot": "apps/user/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/user/tsconfig.app.json"
+      }
     }
   }
 }

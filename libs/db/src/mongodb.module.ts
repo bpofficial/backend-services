@@ -45,4 +45,20 @@ export class MongoDbModule {
             exports: [MongooseModule, modelProvider],
         };
     }
+
+    static forFeature(name: string, schema: any): DynamicModule {
+        const modelProvider = {
+            provide: `Model/${name}`,
+            useFactory: (connection: Connection) =>
+                connection.model(name, schema),
+            inject: ['DATABASE_CONNECTION'],
+        };
+
+        return {
+            module: MongoDbModule,
+            imports: [MongooseModule.forFeature([{ name, schema }])],
+            providers: [modelProvider],
+            exports: [modelProvider],
+        };
+    }
 }

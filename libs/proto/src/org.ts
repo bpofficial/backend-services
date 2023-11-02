@@ -1,8 +1,8 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
-import { Empty } from "./google/protobuf/empty";
+import { Err } from "./errors";
 
-export const protobufPackage = "org";
+export const protobufPackage = "proto";
 
 export interface OrgById {
   oid: string;
@@ -14,27 +14,36 @@ export interface OrgByDomain {
   domain: string;
 }
 
-export interface CreateOrg {
+export interface CreateOrgRequest {
   name: string;
   domain: string;
-  owner: number;
+  owner: string;
+}
+
+export interface CreateOrgResponse {
+  org?: Org | undefined;
+  error?: Err | undefined;
+}
+
+export interface DeleteOrgRequest {
+  oid: string;
+  uid: string;
+}
+
+export interface DeleteOrgResponse {
+  success: boolean;
 }
 
 export interface Org {
   id: string;
   name: string;
   domain: string;
-  owner: number;
+  owner: string;
 }
 
 export interface OrgResponse {
   org?: Org | undefined;
-  notFound?: NotFound | undefined;
-}
-
-export interface NotFound {
-  /** Optionally, provide additional information about why the Org wasn't found */
-  reason?: string | undefined;
+  error?: Err | undefined;
 }
 
 function createBaseOrgById(): OrgById {
@@ -185,28 +194,28 @@ export const OrgByDomain = {
   },
 };
 
-function createBaseCreateOrg(): CreateOrg {
-  return { name: "", domain: "", owner: 0 };
+function createBaseCreateOrgRequest(): CreateOrgRequest {
+  return { name: "", domain: "", owner: "" };
 }
 
-export const CreateOrg = {
-  encode(message: CreateOrg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CreateOrgRequest = {
+  encode(message: CreateOrgRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
     if (message.domain !== "") {
       writer.uint32(18).string(message.domain);
     }
-    if (message.owner !== 0) {
-      writer.uint32(24).int32(message.owner);
+    if (message.owner !== "") {
+      writer.uint32(26).string(message.owner);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOrg {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOrgRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateOrg();
+    const message = createBaseCreateOrgRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -225,11 +234,11 @@ export const CreateOrg = {
           message.domain = reader.string();
           continue;
         case 3:
-          if (tag !== 24) {
+          if (tag !== 26) {
             break;
           }
 
-          message.owner = reader.int32();
+          message.owner = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -240,15 +249,15 @@ export const CreateOrg = {
     return message;
   },
 
-  fromJSON(object: any): CreateOrg {
+  fromJSON(object: any): CreateOrgRequest {
     return {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       domain: isSet(object.domain) ? globalThis.String(object.domain) : "",
-      owner: isSet(object.owner) ? globalThis.Number(object.owner) : 0,
+      owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
     };
   },
 
-  toJSON(message: CreateOrg): unknown {
+  toJSON(message: CreateOrgRequest): unknown {
     const obj: any = {};
     if (message.name !== "") {
       obj.name = message.name;
@@ -256,26 +265,231 @@ export const CreateOrg = {
     if (message.domain !== "") {
       obj.domain = message.domain;
     }
-    if (message.owner !== 0) {
-      obj.owner = Math.round(message.owner);
+    if (message.owner !== "") {
+      obj.owner = message.owner;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateOrg>, I>>(base?: I): CreateOrg {
-    return CreateOrg.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<CreateOrgRequest>, I>>(base?: I): CreateOrgRequest {
+    return CreateOrgRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateOrg>, I>>(object: I): CreateOrg {
-    const message = createBaseCreateOrg();
+  fromPartial<I extends Exact<DeepPartial<CreateOrgRequest>, I>>(object: I): CreateOrgRequest {
+    const message = createBaseCreateOrgRequest();
     message.name = object.name ?? "";
     message.domain = object.domain ?? "";
-    message.owner = object.owner ?? 0;
+    message.owner = object.owner ?? "";
+    return message;
+  },
+};
+
+function createBaseCreateOrgResponse(): CreateOrgResponse {
+  return { org: undefined, error: undefined };
+}
+
+export const CreateOrgResponse = {
+  encode(message: CreateOrgResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.org !== undefined) {
+      Org.encode(message.org, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOrgResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateOrgResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.org = Org.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.error = Err.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateOrgResponse {
+    return {
+      org: isSet(object.org) ? Org.fromJSON(object.org) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+    };
+  },
+
+  toJSON(message: CreateOrgResponse): unknown {
+    const obj: any = {};
+    if (message.org !== undefined) {
+      obj.org = Org.toJSON(message.org);
+    }
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateOrgResponse>, I>>(base?: I): CreateOrgResponse {
+    return CreateOrgResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateOrgResponse>, I>>(object: I): CreateOrgResponse {
+    const message = createBaseCreateOrgResponse();
+    message.org = (object.org !== undefined && object.org !== null) ? Org.fromPartial(object.org) : undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteOrgRequest(): DeleteOrgRequest {
+  return { oid: "", uid: "" };
+}
+
+export const DeleteOrgRequest = {
+  encode(message: DeleteOrgRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.oid !== "") {
+      writer.uint32(10).string(message.oid);
+    }
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeleteOrgRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteOrgRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.oid = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteOrgRequest {
+    return {
+      oid: isSet(object.oid) ? globalThis.String(object.oid) : "",
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+    };
+  },
+
+  toJSON(message: DeleteOrgRequest): unknown {
+    const obj: any = {};
+    if (message.oid !== "") {
+      obj.oid = message.oid;
+    }
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteOrgRequest>, I>>(base?: I): DeleteOrgRequest {
+    return DeleteOrgRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteOrgRequest>, I>>(object: I): DeleteOrgRequest {
+    const message = createBaseDeleteOrgRequest();
+    message.oid = object.oid ?? "";
+    message.uid = object.uid ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteOrgResponse(): DeleteOrgResponse {
+  return { success: false };
+}
+
+export const DeleteOrgResponse = {
+  encode(message: DeleteOrgResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.success === true) {
+      writer.uint32(8).bool(message.success);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeleteOrgResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteOrgResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteOrgResponse {
+    return { success: isSet(object.success) ? globalThis.Boolean(object.success) : false };
+  },
+
+  toJSON(message: DeleteOrgResponse): unknown {
+    const obj: any = {};
+    if (message.success === true) {
+      obj.success = message.success;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteOrgResponse>, I>>(base?: I): DeleteOrgResponse {
+    return DeleteOrgResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteOrgResponse>, I>>(object: I): DeleteOrgResponse {
+    const message = createBaseDeleteOrgResponse();
+    message.success = object.success ?? false;
     return message;
   },
 };
 
 function createBaseOrg(): Org {
-  return { id: "", name: "", domain: "", owner: 0 };
+  return { id: "", name: "", domain: "", owner: "" };
 }
 
 export const Org = {
@@ -289,8 +503,8 @@ export const Org = {
     if (message.domain !== "") {
       writer.uint32(26).string(message.domain);
     }
-    if (message.owner !== 0) {
-      writer.uint32(32).int32(message.owner);
+    if (message.owner !== "") {
+      writer.uint32(34).string(message.owner);
     }
     return writer;
   },
@@ -324,11 +538,11 @@ export const Org = {
           message.domain = reader.string();
           continue;
         case 4:
-          if (tag !== 32) {
+          if (tag !== 34) {
             break;
           }
 
-          message.owner = reader.int32();
+          message.owner = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -344,7 +558,7 @@ export const Org = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       domain: isSet(object.domain) ? globalThis.String(object.domain) : "",
-      owner: isSet(object.owner) ? globalThis.Number(object.owner) : 0,
+      owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
     };
   },
 
@@ -359,8 +573,8 @@ export const Org = {
     if (message.domain !== "") {
       obj.domain = message.domain;
     }
-    if (message.owner !== 0) {
-      obj.owner = Math.round(message.owner);
+    if (message.owner !== "") {
+      obj.owner = message.owner;
     }
     return obj;
   },
@@ -373,13 +587,13 @@ export const Org = {
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.domain = object.domain ?? "";
-    message.owner = object.owner ?? 0;
+    message.owner = object.owner ?? "";
     return message;
   },
 };
 
 function createBaseOrgResponse(): OrgResponse {
-  return { org: undefined, notFound: undefined };
+  return { org: undefined, error: undefined };
 }
 
 export const OrgResponse = {
@@ -387,8 +601,8 @@ export const OrgResponse = {
     if (message.org !== undefined) {
       Org.encode(message.org, writer.uint32(10).fork()).ldelim();
     }
-    if (message.notFound !== undefined) {
-      NotFound.encode(message.notFound, writer.uint32(18).fork()).ldelim();
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -412,7 +626,7 @@ export const OrgResponse = {
             break;
           }
 
-          message.notFound = NotFound.decode(reader, reader.uint32());
+          message.error = Err.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -426,7 +640,7 @@ export const OrgResponse = {
   fromJSON(object: any): OrgResponse {
     return {
       org: isSet(object.org) ? Org.fromJSON(object.org) : undefined,
-      notFound: isSet(object.notFound) ? NotFound.fromJSON(object.notFound) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
     };
   },
 
@@ -435,8 +649,8 @@ export const OrgResponse = {
     if (message.org !== undefined) {
       obj.org = Org.toJSON(message.org);
     }
-    if (message.notFound !== undefined) {
-      obj.notFound = NotFound.toJSON(message.notFound);
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
     }
     return obj;
   },
@@ -447,66 +661,7 @@ export const OrgResponse = {
   fromPartial<I extends Exact<DeepPartial<OrgResponse>, I>>(object: I): OrgResponse {
     const message = createBaseOrgResponse();
     message.org = (object.org !== undefined && object.org !== null) ? Org.fromPartial(object.org) : undefined;
-    message.notFound = (object.notFound !== undefined && object.notFound !== null)
-      ? NotFound.fromPartial(object.notFound)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseNotFound(): NotFound {
-  return { reason: undefined };
-}
-
-export const NotFound = {
-  encode(message: NotFound, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.reason !== undefined) {
-      writer.uint32(10).string(message.reason);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): NotFound {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNotFound();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.reason = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): NotFound {
-    return { reason: isSet(object.reason) ? globalThis.String(object.reason) : undefined };
-  },
-
-  toJSON(message: NotFound): unknown {
-    const obj: any = {};
-    if (message.reason !== undefined) {
-      obj.reason = message.reason;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<NotFound>, I>>(base?: I): NotFound {
-    return NotFound.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NotFound>, I>>(object: I): NotFound {
-    const message = createBaseNotFound();
-    message.reason = object.reason ?? undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
     return message;
   },
 };
@@ -514,8 +669,8 @@ export const NotFound = {
 export interface OrgService {
   FindOneById(request: OrgById): Promise<OrgResponse>;
   FindOneByDomain(request: OrgByDomain): Promise<OrgResponse>;
-  Create(request: CreateOrg): Promise<Org>;
-  Delete(request: OrgById): Promise<Empty>;
+  Create(request: CreateOrgRequest): Promise<CreateOrgResponse>;
+  Delete(request: OrgById): Promise<DeleteOrgResponse>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

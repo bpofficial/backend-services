@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+import "errors.proto";
+import "user.proto";
+
+package proto;
+
+service MemberService {
+  rpc GetMember (GetMemberRequest) returns (MemberResponse);
+  rpc AcceptInvite (AcceptInviteRequest) returns (AcceptInviteResponse);
+  rpc CreateInvite (CreateInviteRequest) returns (CreateInviteResponse);
+  rpc Create (CreateMemberRequest) returns (Member);
+  rpc Delete (DeleteMemberRequest) returns (DeleteMemberResponse);
+  rpc DeleteAll (DeleteAllMembersRequest) returns (DeleteAllMembersResponse);
+}
+
+message CreateMemberRequest {
+  string oid = 1;
+  optional string uid = 2;
+  optional string email = 3;
+  string role = 4;
+}
+
+message ExistingUser {
+  string uid = 1;
+}
+
+message AcceptInviteRequest {
+  string oid = 1;
+  string uid = 2;
+  string invitation = 3;
+}
+
+message AcceptInviteResponse {
+  bool success = 1;
+}
+
+message CreateInviteRequest {
+  string oid = 1;
+  string email = 2;
+  string role = 3;
+}
+
+message CreateInviteResponse {
+  string invitation = 1;
+}
+
+message GetMemberRequest {
+  string oid = 1;
+  string mid = 2;
+}
+
+message DeleteMemberRequest {
+  string oid = 1;
+  string mid = 2;
+}
+
+message DeleteMemberResponse {
+  bool success = 1;
+}
+
+message DeleteAllMembersRequest {
+  string oid = 1;
+}
+
+message DeleteAllMembersResponse {
+  bool success = 1;
+}
+
+message Member {
+  string id = 1;
+  string oid = 2;
+  optional string uid = 3;
+  optional string email = 4;
+  string role = 5;
+  bool accepted = 6;
+  string invitation = 7;
+}
+
+message MemberResponse {
+    oneof result {
+        Member member = 1;
+        Err error = 2;
+    }
+}
