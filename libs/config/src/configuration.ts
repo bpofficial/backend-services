@@ -1,12 +1,16 @@
+const env = process.env;
 export const configuration = () => ({
     opa: {
-        url: process.env.OPA_URL || 'http://localhost:8181',
+        url: env.OPA_URL,
     },
     service: {
         org: {
-            package: 'org',
-            proto: 'libs/proto/src/org.proto',
-            url: 'localhost:5000',
+            package: env.ORG_PACKAGE,
+            proto: env.ORG_PROTO,
+            url: env.ORG_URL,
+            mongodb: {
+                uri: env.ORG_MONGO_URI,
+            },
         },
     },
 });

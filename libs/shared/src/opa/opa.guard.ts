@@ -23,7 +23,7 @@ export class OpaGuard implements CanActivate {
         const handler = context.getHandler();
         const orgService = this.orgServiceProvider.getService();
 
-        let method: string, user: string, orgId: number;
+        let method: string, user: string, orgId: string;
 
         if (context.getType() === 'http') {
             const request = context.switchToHttp().getRequest();
@@ -50,7 +50,7 @@ export class OpaGuard implements CanActivate {
         );
 
         // Assuming the OrgService has a method getOrgById for fetching an organization
-        const org = await orgService.FindOne({
+        const org = await orgService.FindOneById({
             oid: orgId,
             uid: Number(user),
         });

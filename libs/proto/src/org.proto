@@ -1,17 +1,45 @@
 syntax = "proto3";
-
+import "google/protobuf/empty.proto";
 package org;
 
 service OrgService {
-  rpc FindOne (OrgById) returns (Org) {}
+  rpc FindOneById (OrgById) returns (OrgResponse) {}
+  rpc FindOneByDomain (OrgByDomain) returns (OrgResponse) {}
+  rpc Create (CreateOrg) returns (Org) {}
+  rpc Delete (OrgById) returns (google.protobuf.Empty) {}
 }
 
 message OrgById {
-  int32 oid = 1;
+  string oid = 1;
   int32 uid = 2;
 }
 
+message OrgByDomain {
+  int32 uid = 1;
+  string domain = 2;
+}
+
+message CreateOrg {
+  string name = 1;
+  string domain = 2;
+  int32 owner = 3;
+}
+
 message Org {
-  int32 id = 1;
+  string id = 1;
   string name = 2;
+  string domain = 3;
+  int32 owner = 4;
+}
+
+message OrgResponse {
+  oneof result {
+    Org org = 1;
+    NotFound not_found = 2;
+  }
+}
+
+message NotFound {
+  // Optionally, provide additional information about why the Org wasn't found
+  optional string reason = 1;
 }

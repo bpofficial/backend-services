@@ -1,0 +1,11 @@
+proto < ./libs/proto/src/org.proto
+@host=localhost:5000
+
+###
+
+GRPC /OrgService/FindOneById
+{
+  "uid": 1,
+  "oid": 1
+}
+
