@@ -4,12 +4,26 @@ import { Document } from 'mongoose';
 
 @Schema({ toJSON: { virtuals: true } })
 export class UserModel extends Document implements Omit<User, 'id'> {
-    verified: boolean;
     @Prop({ required: true })
     name: string;
 
     @Prop({ required: true })
     email: string;
+
+    @Prop({ required: true, default: false })
+    verified: boolean;
+
+    /**
+     * Randomly generated data to uniquely identify the user
+     */
+    @Prop({ required: false })
+    verificationToken: string;
+
+    /**
+     * Verification expiry timestamp in milliseconds
+     */
+    @Prop({ required: false })
+    verificationExpires: number;
 }
 
 const UserSchema = SchemaFactory.createForClass(UserModel);

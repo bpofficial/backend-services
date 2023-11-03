@@ -1,6 +1,7 @@
 import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
+import { OrgHttpController } from './http.controller';
 import { OrgController } from './org.controller';
 import { OrganisationSchema } from './org.model';
 import { OrgService } from './org.service';
@@ -14,7 +15,7 @@ import { OrgService } from './org.service';
             OrganisationSchema,
         ),
     ],
-    controllers: [OrgController],
+    controllers: [OrgController, OrgHttpController],
     providers: [OrgService],
 })
 export class OrgModule {}

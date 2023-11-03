@@ -28,6 +28,16 @@ export interface DeleteUserResponse {
   success: boolean;
 }
 
+export interface RequestVerificationResponse {
+  verification?: string | undefined;
+  error?: Err | undefined;
+}
+
+export interface VerifyUserResponse {
+  success?: boolean | undefined;
+  error?: Err | undefined;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -385,6 +395,154 @@ export const DeleteUserResponse = {
   fromPartial<I extends Exact<DeepPartial<DeleteUserResponse>, I>>(object: I): DeleteUserResponse {
     const message = createBaseDeleteUserResponse();
     message.success = object.success ?? false;
+    return message;
+  },
+};
+
+function createBaseRequestVerificationResponse(): RequestVerificationResponse {
+  return { verification: undefined, error: undefined };
+}
+
+export const RequestVerificationResponse = {
+  encode(message: RequestVerificationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.verification !== undefined) {
+      writer.uint32(10).string(message.verification);
+    }
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestVerificationResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRequestVerificationResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.verification = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.error = Err.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RequestVerificationResponse {
+    return {
+      verification: isSet(object.verification) ? globalThis.String(object.verification) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+    };
+  },
+
+  toJSON(message: RequestVerificationResponse): unknown {
+    const obj: any = {};
+    if (message.verification !== undefined) {
+      obj.verification = message.verification;
+    }
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(base?: I): RequestVerificationResponse {
+    return RequestVerificationResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(object: I): RequestVerificationResponse {
+    const message = createBaseRequestVerificationResponse();
+    message.verification = object.verification ?? undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
+    return message;
+  },
+};
+
+function createBaseVerifyUserResponse(): VerifyUserResponse {
+  return { success: undefined, error: undefined };
+}
+
+export const VerifyUserResponse = {
+  encode(message: VerifyUserResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.success !== undefined) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VerifyUserResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseVerifyUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.error = Err.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): VerifyUserResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+    };
+  },
+
+  toJSON(message: VerifyUserResponse): unknown {
+    const obj: any = {};
+    if (message.success !== undefined) {
+      obj.success = message.success;
+    }
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<VerifyUserResponse>, I>>(base?: I): VerifyUserResponse {
+    return VerifyUserResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<VerifyUserResponse>, I>>(object: I): VerifyUserResponse {
+    const message = createBaseVerifyUserResponse();
+    message.success = object.success ?? undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
     return message;
   },
 };

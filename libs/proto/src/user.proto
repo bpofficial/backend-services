@@ -35,6 +35,20 @@ message DeleteUserResponse {
   bool success = 1;
 }
 
+message RequestVerificationResponse {
+  oneof result {
+      string verification = 1;
+      Err error = 2;
+  }
+}
+
+message VerifyUserResponse {
+  oneof result {
+      bool success = 1;
+      Err error = 2;
+  }
+}
+
 message User {
   string id = 1;
   string name = 2;

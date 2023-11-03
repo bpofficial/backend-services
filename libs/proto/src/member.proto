@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "errors.proto";
-import "user.proto";
 
 package proto;
 
