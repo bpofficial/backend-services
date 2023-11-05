@@ -1,4 +1,11 @@
-import { CreateOrg, NotFound, Org, OrgByDomain, OrgById } from '@app/proto';
+import {
+    CreateOrgRequest,
+    CreateOrgResponse,
+    DeleteOrgRequest,
+    OrgByDomain,
+    OrgById,
+    OrgResponse,
+} from '@app/proto/org';
 import { OpaPolicy } from '@app/shared';
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
@@ -11,13 +18,13 @@ export class OrgController {
     constructor(private readonly orgService: OrgService) {}
 
     @GrpcMethod('OrgService', 'FindOneById')
-    async findOrgById(data: OrgById): Promise<Org | NotFound> {
+    async findOrgById(data: OrgById): Promise<OrgResponse> {
         this.logger.debug(`findOrgById: uid=${data.uid}, oid=${data.oid}`);
         return this.orgService.getOrgById(data);
     }
 
     @GrpcMethod('OrgService', 'FindOneByDomain')
-    async findOneByDomain(data: OrgByDomain): Promise<Org | NotFound> {
+    async findOneByDomain(data: OrgByDomain): Promise<OrgResponse> {
         this.logger.debug(
             `findOneByDomain: uid=${data.uid}, domain=${data.domain}`,
         );
@@ -25,7 +32,7 @@ export class OrgController {
     }
 
     @GrpcMethod('OrgService', 'Create')
-    async createOrg(data: CreateOrg): Promise<Org> {
+    async createOrg(data: CreateOrgRequest): Promise<CreateOrgResponse> {
         this.logger.debug(
             `createOrg: name=${data.name}, domain=${data.domain}`,
         );
@@ -34,7 +41,7 @@ export class OrgController {
 
     @OpaPolicy('org/allow')
     @GrpcMethod('OrgService', 'Delete')
-    async deleteOrg(data: OrgById): Promise<void> {
+    async deleteOrg(data: DeleteOrgRequest): Promise<void> {
         this.logger.debug(`deleteOrg: oid=${data.oid}, uid=${data.uid}`);
         await this.orgService.deleteOrg(data);
     }

@@ -1,5 +1,5 @@
 import { CreateInviteRequest } from '@app/proto/member';
-import { ErrorResponse, Response } from '@app/shared';
+import { ErrorResponse, OrgDefinedAuthGuard, Response } from '@app/shared';
 import {
     Body,
     Controller,
@@ -8,17 +8,20 @@ import {
     Param,
     Post,
     Query,
+    Request,
+    UseGuards,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 
 @Controller('members')
+@UseGuards(OrgDefinedAuthGuard)
 export class MemberHttpController {
     constructor(private readonly memberService: MemberService) {}
 
     @Get(`/:id`)
-    async getMember(@Param('id') mid: string) {
+    async getMember(@Request() request, @Param('id') mid: string) {
         const { member, error } = await this.memberService.getMemberById({
-            oid: '',
+            oid: request.user.oid,
             mid,
         });
 
@@ -31,10 +34,11 @@ export class MemberHttpController {
 
     @Post('/invite')
     async inviteMember(
+        @Request() request,
         @Body() data: Pick<CreateInviteRequest, 'role' | 'email'>,
     ) {
         const member = await this.memberService.createInvite({
-            oid: '',
+            oid: request.user.oid,
             role: data.role,
             email: data.email,
         });
@@ -49,10 +53,13 @@ export class MemberHttpController {
     }
 
     @Post('/accept')
-    async acceptInvite(@Query('invitation') invitation: string) {
+    async acceptInvite(
+        @Request() request,
+        @Query('invitation') invitation: string,
+    ) {
         const { success } = await this.memberService.acceptInvite({
-            oid: '',
-            uid: '',
+            oid: request.user.oid,
+            uid: request.user.uid,
             invitation,
         });
 
@@ -64,9 +71,9 @@ export class MemberHttpController {
     }
 
     @Delete('/:id')
-    async removeMember(@Param('id') mid: string) {
+    async removeMember(@Request() request, @Param('id') mid: string) {
         const { success } = await this.memberService.deleteMember({
-            oid: '',
+            oid: request.user.oid,
             mid,
         });
 

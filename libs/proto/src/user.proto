@@ -6,6 +6,7 @@ package proto;
 
 service UserService {
   rpc GetUser (GetUserRequest) returns (UserResponse);
+  rpc GetUserByEmail (GetUserByEmailRequest) returns (UserResponse);
   rpc Create (CreateUserRequest) returns (User);
   rpc Update (UpdateUserRequest) returns (UserResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
@@ -20,11 +21,14 @@ message GetUserRequest {
   string uid = 1;
 }
 
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
 message UpdateUserRequest {
     string uid = 1;
     optional string name = 2;
     optional string email = 3;
-    optional bool verified = 4;
 }
 
 message DeleteUserRequest {
@@ -35,25 +39,10 @@ message DeleteUserResponse {
   bool success = 1;
 }
 
-message RequestVerificationResponse {
-  oneof result {
-      string verification = 1;
-      Err error = 2;
-  }
-}
-
-message VerifyUserResponse {
-  oneof result {
-      bool success = 1;
-      Err error = 2;
-  }
-}
-
 message User {
   string id = 1;
   string name = 2;
   string email = 3;
-  bool verified = 4;
 }
 
 message UserResponse {

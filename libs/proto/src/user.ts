@@ -13,11 +13,14 @@ export interface GetUserRequest {
   uid: string;
 }
 
+export interface GetUserByEmailRequest {
+  email: string;
+}
+
 export interface UpdateUserRequest {
   uid: string;
   name?: string | undefined;
   email?: string | undefined;
-  verified?: boolean | undefined;
 }
 
 export interface DeleteUserRequest {
@@ -28,21 +31,10 @@ export interface DeleteUserResponse {
   success: boolean;
 }
 
-export interface RequestVerificationResponse {
-  verification?: string | undefined;
-  error?: Err | undefined;
-}
-
-export interface VerifyUserResponse {
-  success?: boolean | undefined;
-  error?: Err | undefined;
-}
-
 export interface User {
   id: string;
   name: string;
   email: string;
-  verified: boolean;
 }
 
 export interface UserResponse {
@@ -181,8 +173,65 @@ export const GetUserRequest = {
   },
 };
 
+function createBaseGetUserByEmailRequest(): GetUserByEmailRequest {
+  return { email: "" };
+}
+
+export const GetUserByEmailRequest = {
+  encode(message: GetUserByEmailRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.email !== "") {
+      writer.uint32(10).string(message.email);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserByEmailRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserByEmailRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserByEmailRequest {
+    return { email: isSet(object.email) ? globalThis.String(object.email) : "" };
+  },
+
+  toJSON(message: GetUserByEmailRequest): unknown {
+    const obj: any = {};
+    if (message.email !== "") {
+      obj.email = message.email;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserByEmailRequest>, I>>(base?: I): GetUserByEmailRequest {
+    return GetUserByEmailRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserByEmailRequest>, I>>(object: I): GetUserByEmailRequest {
+    const message = createBaseGetUserByEmailRequest();
+    message.email = object.email ?? "";
+    return message;
+  },
+};
+
 function createBaseUpdateUserRequest(): UpdateUserRequest {
-  return { uid: "", name: undefined, email: undefined, verified: undefined };
+  return { uid: "", name: undefined, email: undefined };
 }
 
 export const UpdateUserRequest = {
@@ -195,9 +244,6 @@ export const UpdateUserRequest = {
     }
     if (message.email !== undefined) {
       writer.uint32(26).string(message.email);
-    }
-    if (message.verified !== undefined) {
-      writer.uint32(32).bool(message.verified);
     }
     return writer;
   },
@@ -230,13 +276,6 @@ export const UpdateUserRequest = {
 
           message.email = reader.string();
           continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.verified = reader.bool();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -251,7 +290,6 @@ export const UpdateUserRequest = {
       uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : undefined,
       email: isSet(object.email) ? globalThis.String(object.email) : undefined,
-      verified: isSet(object.verified) ? globalThis.Boolean(object.verified) : undefined,
     };
   },
 
@@ -266,9 +304,6 @@ export const UpdateUserRequest = {
     if (message.email !== undefined) {
       obj.email = message.email;
     }
-    if (message.verified !== undefined) {
-      obj.verified = message.verified;
-    }
     return obj;
   },
 
@@ -280,7 +315,6 @@ export const UpdateUserRequest = {
     message.uid = object.uid ?? "";
     message.name = object.name ?? undefined;
     message.email = object.email ?? undefined;
-    message.verified = object.verified ?? undefined;
     return message;
   },
 };
@@ -399,156 +433,8 @@ export const DeleteUserResponse = {
   },
 };
 
-function createBaseRequestVerificationResponse(): RequestVerificationResponse {
-  return { verification: undefined, error: undefined };
-}
-
-export const RequestVerificationResponse = {
-  encode(message: RequestVerificationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.verification !== undefined) {
-      writer.uint32(10).string(message.verification);
-    }
-    if (message.error !== undefined) {
-      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): RequestVerificationResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRequestVerificationResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.verification = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Err.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): RequestVerificationResponse {
-    return {
-      verification: isSet(object.verification) ? globalThis.String(object.verification) : undefined,
-      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
-    };
-  },
-
-  toJSON(message: RequestVerificationResponse): unknown {
-    const obj: any = {};
-    if (message.verification !== undefined) {
-      obj.verification = message.verification;
-    }
-    if (message.error !== undefined) {
-      obj.error = Err.toJSON(message.error);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(base?: I): RequestVerificationResponse {
-    return RequestVerificationResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(object: I): RequestVerificationResponse {
-    const message = createBaseRequestVerificationResponse();
-    message.verification = object.verification ?? undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
-
-function createBaseVerifyUserResponse(): VerifyUserResponse {
-  return { success: undefined, error: undefined };
-}
-
-export const VerifyUserResponse = {
-  encode(message: VerifyUserResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.success !== undefined) {
-      writer.uint32(8).bool(message.success);
-    }
-    if (message.error !== undefined) {
-      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): VerifyUserResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseVerifyUserResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.success = reader.bool();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.error = Err.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): VerifyUserResponse {
-    return {
-      success: isSet(object.success) ? globalThis.Boolean(object.success) : undefined,
-      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
-    };
-  },
-
-  toJSON(message: VerifyUserResponse): unknown {
-    const obj: any = {};
-    if (message.success !== undefined) {
-      obj.success = message.success;
-    }
-    if (message.error !== undefined) {
-      obj.error = Err.toJSON(message.error);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<VerifyUserResponse>, I>>(base?: I): VerifyUserResponse {
-    return VerifyUserResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<VerifyUserResponse>, I>>(object: I): VerifyUserResponse {
-    const message = createBaseVerifyUserResponse();
-    message.success = object.success ?? undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
-    return message;
-  },
-};
-
 function createBaseUser(): User {
-  return { id: "", name: "", email: "", verified: false };
+  return { id: "", name: "", email: "" };
 }
 
 export const User = {
@@ -561,9 +447,6 @@ export const User = {
     }
     if (message.email !== "") {
       writer.uint32(26).string(message.email);
-    }
-    if (message.verified === true) {
-      writer.uint32(32).bool(message.verified);
     }
     return writer;
   },
@@ -596,13 +479,6 @@ export const User = {
 
           message.email = reader.string();
           continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.verified = reader.bool();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -617,7 +493,6 @@ export const User = {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       email: isSet(object.email) ? globalThis.String(object.email) : "",
-      verified: isSet(object.verified) ? globalThis.Boolean(object.verified) : false,
     };
   },
 
@@ -632,9 +507,6 @@ export const User = {
     if (message.email !== "") {
       obj.email = message.email;
     }
-    if (message.verified === true) {
-      obj.verified = message.verified;
-    }
     return obj;
   },
 
@@ -646,7 +518,6 @@ export const User = {
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.email = object.email ?? "";
-    message.verified = object.verified ?? false;
     return message;
   },
 };
@@ -727,6 +598,7 @@ export const UserResponse = {
 
 export interface UserService {
   GetUser(request: GetUserRequest): Promise<UserResponse>;
+  GetUserByEmail(request: GetUserByEmailRequest): Promise<UserResponse>;
   Create(request: CreateUserRequest): Promise<User>;
   Update(request: UpdateUserRequest): Promise<UserResponse>;
   Delete(request: DeleteUserRequest): Promise<DeleteUserResponse>;

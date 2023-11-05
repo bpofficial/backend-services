@@ -1,6 +1,15 @@
 import { CreateUserRequest } from '@app/proto/user';
 import { ErrorResponse, Response } from '@app/shared';
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Post,
+    Request,
+} from '@nestjs/common';
+import { HttpStatusCode } from 'axios';
 import { UserService } from './user.service';
 
 @Controller('account')
@@ -8,8 +17,11 @@ export class UserHttpController {
     constructor(private userService: UserService) {}
 
     @Get()
-    async getMe() {
-        const { user, error } = await this.userService.getUserById({ uid: '' });
+    @HttpCode(HttpStatusCode.Ok)
+    async getMe(@Request() req: any) {
+        const { user, error } = await this.userService.getUserById({
+            uid: req.user.uid,
+        });
 
         if (error || !user) {
             return new ErrorResponse({ ...error }).toErrorResponse();
@@ -19,6 +31,7 @@ export class UserHttpController {
     }
 
     @Post()
+    @HttpCode(HttpStatusCode.Created)
     async createAccount(@Body() data: CreateUserRequest) {
         const account = await this.userService.createUser(data);
 
@@ -29,15 +42,12 @@ export class UserHttpController {
         return new Response({ account }).toResponse();
     }
 
-    @Post(`/verify`)
-    async verifyEmail(@Body() data: { token: string }) {
-        const result = await this.userService.verifyEmail('', data.token);
-        if (result.success) return { status: 'success', data: null };
-    }
-
     @Delete()
-    async deleteAccount() {
-        const { success } = await this.userService.deleteUser({ uid: '' });
+    @HttpCode(HttpStatusCode.NoContent)
+    async deleteAccount(@Request() req: any) {
+        const { success } = await this.userService.deleteUser({
+            uid: req.user.uid,
+        });
 
         if (success) return;
 

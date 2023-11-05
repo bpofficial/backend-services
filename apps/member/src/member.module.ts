@@ -1,6 +1,6 @@
 import { MongoDbModule } from '@app/db';
-import { SharedModule } from '@app/shared';
-import { Module } from '@nestjs/common';
+import { OrgIdMiddleware, SharedModule } from '@app/shared';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MemberHttpController } from './http.controller';
 import { MemberInvitationSchema } from './invitation.model';
 import { MemberController } from './member.controller';
@@ -16,4 +16,8 @@ import { MemberService } from './member.service';
     controllers: [MemberController, MemberHttpController],
     providers: [MemberService],
 })
-export class MemberModule {}
+export class MemberModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(OrgIdMiddleware).forRoutes(MemberHttpController);
+    }
+}

@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+import "google/protobuf/field_mask.proto";
+import "errors.proto";
+
+package proto;
+
+service ConnectionService {
+  rpc GetConnection (GetConnectionRequest) returns (ConnectionResponse);
+  rpc Create (CreateConnectionRequest) returns (Connection);
+  rpc Update (UpdateConnectionRequest) returns (ConnectionResponse);
+  rpc Delete (DeleteConnectionRequest) returns (DeleteConnectionResponse);
+}
+
+message CreateConnectionRequest {
+    string oid = 1;
+    string name = 2;
+    string key = 3;
+    ConnectionType type = 4;
+    ConnectionConfig config = 5;
+}
+
+message GetConnectionRequest {
+  string cid = 1;
+}
+
+message UpdateConnectionRequest {
+    string cid = 1;
+    Connection connection = 2;
+    google.protobuf.FieldMask update_mask = 3;
+}
+
+message DeleteConnectionRequest {
+  string cid = 1;
+}
+
+message DeleteConnectionResponse {
+  bool success = 1;
+}
+
+message Connection {
+  string id = 1;
+  string oid = 2;
+  string name = 3;
+  string key = 4;
+  ConnectionType type = 5;
+  ConnectionConfig config = 6;
+}
+
+enum ConnectionType {
+  OIDC = 0;
+  LOCAL = 1;
+  LDAP = 2;
+}
+
+message OIDCConfig {
+  optional string clientId = 1;
+  optional string clientSecret = 2;
+  optional string issuer = 3;
+  optional string authorizationURL = 4;
+  optional string tokenURL = 5;
+  optional string callbackURL = 6;
+  optional string userInfoURL = 7;
+  repeated string scopes = 8;
+}
+
+message LocalConfig {
+  string policy = 1;
+}
+
+message LDAPConfig {
+  string ldapServerUrl = 1;
+  string bindDN = 2;
+  string bindPassword = 3;
+  string baseDN = 4;
+  string searchFilter = 5;
+}
+
+message ConnectionConfig {
+  oneof config {
+    OIDCConfig oidc = 1;
+    LocalConfig local = 2;
+    LDAPConfig ldap = 3;
+  }
+}
+
+message ConnectionResponse {
+    oneof result {
+        Connection connection = 1;
+        Err error = 2;
+    }
+}

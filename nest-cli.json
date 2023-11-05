@@ -115,6 +115,33 @@
       "compilerOptions": {
         "tsConfigPath": "apps/user/tsconfig.app.json"
       }
+    },
+    "settings": {
+      "type": "application",
+      "root": "apps/settings",
+      "entryFile": "main",
+      "sourceRoot": "apps/settings/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/settings/tsconfig.app.json"
+      }
+    },
+    "account": {
+      "type": "application",
+      "root": "apps/account",
+      "entryFile": "main",
+      "sourceRoot": "apps/account/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/account/tsconfig.app.json"
+      }
+    },
+    "connection": {
+      "type": "application",
+      "root": "apps/connection",
+      "entryFile": "main",
+      "sourceRoot": "apps/connection/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/connection/tsconfig.app.json"
+      }
     }
   }
 }

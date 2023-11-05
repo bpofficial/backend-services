@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+import "google/protobuf/field_mask.proto";
+import "errors.proto";
+
+package proto;
+
+service AccountService {
+  rpc GetAccount (GetAccountRequest) returns (AccountResponse);
+  rpc Update (UpdateAccountRequest) returns (AccountResponse);
+  rpc Connect (ConnectAccountRequest) returns (Account);
+  rpc Disconnect (DisconnectAccountRequest) returns (DisconnectAccountResponse);
+}
+
+message ConnectAccountRequest {
+  string uid = 1;
+  string cid = 2;
+  Account account = 3;
+  google.protobuf.FieldMask create_mask = 4;
+}
+
+message GetAccountRequest {
+  string aid = 1;
+  string uid = 2;
+}
+
+message UpdateAccountRequest {
+    string aid = 1;
+    string uid = 2;
+    Account account = 3;
+    google.protobuf.FieldMask update_mask = 4;
+}
+
+message DisconnectAccountRequest {
+  string aid = 1;
+  string uid = 2;
+}
+
+message DisconnectAccountResponse {
+  bool success = 1;
+}
+
+message RequestVerificationResponse {
+  oneof result {
+      string verification = 1;
+      Err error = 2;
+  }
+}
+
+message VerifyAccountResponse {
+  oneof result {
+      bool success = 1;
+      Err error = 2;
+  }
+}
+
+message Account {
+  string id = 1;
+  string uid = 2;
+  string cid = 3;
+
+  // Local password connection
+  optional string password = 4;
+  optional bool verified = 5;
+  optional string verificationToken = 6;
+  optional int64 verificationExpires = 7;
+
+  // OIDC Connection
+  optional string sub = 8;
+  optional string issuer = 9;
+  optional string name = 10;
+  optional string username = 11;
+  optional string email = 12;
+  optional string idToken = 13;
+  optional string accessToken = 14;
+  optional string refreshToken = 15;
+}
+
+message AccountResponse {
+    oneof result {
+        Account account = 1;
+        Err error = 2;
+    }
+}

@@ -9,21 +9,6 @@ export class UserModel extends Document implements Omit<User, 'id'> {
 
     @Prop({ required: true })
     email: string;
-
-    @Prop({ required: true, default: false })
-    verified: boolean;
-
-    /**
-     * Randomly generated data to uniquely identify the user
-     */
-    @Prop({ required: false })
-    verificationToken: string;
-
-    /**
-     * Verification expiry timestamp in milliseconds
-     */
-    @Prop({ required: false })
-    verificationExpires: number;
 }
 
 const UserSchema = SchemaFactory.createForClass(UserModel);

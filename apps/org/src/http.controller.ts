@@ -1,9 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { OrgDefinedAuthGuard } from '@app/shared';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Post,
+    Request,
+    UseGuards,
+} from '@nestjs/common';
 
 @Controller('org')
 export class OrgHttpController {
     @Get()
-    async getOrg(@Param('id') memberId: string) {
+    @UseGuards(OrgDefinedAuthGuard)
+    async getOrg(@Request() request) {
         //
     }
 
@@ -13,6 +23,7 @@ export class OrgHttpController {
     }
 
     @Delete()
+    @UseGuards(OrgDefinedAuthGuard)
     async deleteOrg() {
         //
     }

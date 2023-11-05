@@ -1,0 +1,76 @@
+syntax = "proto3";
+package proto;
+import "errors.proto";
+
+service SettingsService {
+    rpc GetAuthConfig (GetAuthConfigRequest) returns (GetAuthConfigResponse) {}
+    rpc UpdateAuthConfig (UpdateAuthConfigRequest) returns (UpdateAuthConfigResponse) {}
+}
+
+message GetAuthConfigRequest {
+    string oid = 1;
+}
+
+message OidcConfig {
+    string clientId = 1;
+    string clientSecret = 2;
+    string issuer = 3;
+    string authorizationURL = 4;
+    string tokenURL = 5;
+    string callbackURL = 6;
+    string userInfoURL = 7;
+}
+
+message UpdateOidcConfig {
+    optional string clientId = 1;
+    optional string clientSecret = 2;
+    optional string issuer = 3;
+    optional string authorizationURL = 4;
+    optional string tokenURL = 5;
+    optional string callbackURL = 6;
+    optional string userInfoURL = 7;
+}
+
+message CredentialsConfig {
+
+}
+
+message UpdateCredentialsConfig {
+    
+}
+
+
+message AuthConfig {
+    oneof type {
+        OidcConfig oidc = 1;
+        CredentialsConfig credentials = 2;
+    }
+}
+
+message Settings {
+    string id = 1;
+    string oid = 2;
+    AuthConfig authConfig = 3;
+}
+
+message GetAuthConfigResponse {
+    oneof request {
+        AuthConfig config = 1;
+        Err error = 2;
+    }
+}
+
+message UpdateAuthConfigRequest {
+    string oid = 1;
+    oneof type {
+        UpdateOidcConfig oidc = 2;
+        UpdateCredentialsConfig credentials = 3;
+    }
+}
+
+message UpdateAuthConfigResponse {
+    oneof request {
+        bool success = 1;
+        Err error = 2;
+    }
+}

@@ -1,4 +1,9 @@
-import { MemberClientModule, UserClientModule } from '@app/clients';
+import {
+    ConnectionClientModule,
+    MemberClientModule,
+    SettingsClientModule,
+    UserClientModule,
+} from '@app/clients';
 import { OrgClientModule } from '@app/clients/org';
 import { AppConfigModule } from '@app/config';
 import { HttpModule } from '@nestjs/axios';
@@ -12,6 +17,8 @@ import { OpaService } from './opa/opa.service';
         OrgClientModule,
         MemberClientModule,
         UserClientModule,
+        SettingsClientModule,
+        ConnectionClientModule,
     ],
     providers: [OpaService],
     exports: [
@@ -19,6 +26,8 @@ import { OpaService } from './opa/opa.service';
         OrgClientModule,
         MemberClientModule,
         UserClientModule,
+        SettingsClientModule,
+        ConnectionClientModule,
     ],
 })
 export class SharedModule {}
