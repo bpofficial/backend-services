@@ -142,6 +142,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/connection/tsconfig.app.json"
       }
+    },
+    "authorize": {
+      "type": "application",
+      "root": "apps/authorize",
+      "entryFile": "main",
+      "sourceRoot": "apps/authorize/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/authorize/tsconfig.app.json"
+      }
     }
   }
 }
