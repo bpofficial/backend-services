@@ -7,9 +7,13 @@ package proto;
 
 service AccountService {
   rpc GetAccount (GetAccountRequest) returns (AccountResponse);
+  rpc GetAccountByUsername (GetAccountByUsernameRequest) returns (AccountResponse);
   rpc Update (UpdateAccountRequest) returns (AccountResponse);
   rpc Connect (ConnectAccountRequest) returns (Account);
   rpc Disconnect (DisconnectAccountRequest) returns (DisconnectAccountResponse);
+
+  // username-password connections
+  rpc ValidatePassword (ValidatePasswordRequest) returns (AccountResponse);
 }
 
 message ConnectAccountRequest {
@@ -22,6 +26,11 @@ message ConnectAccountRequest {
 message GetAccountRequest {
   string aid = 1;
   string uid = 2;
+}
+
+message GetAccountByUsernameRequest {
+  string username = 1;
+  string cid = 2;
 }
 
 message UpdateAccountRequest {
@@ -52,6 +61,12 @@ message VerifyAccountResponse {
       bool success = 1;
       Err error = 2;
   }
+}
+
+message ValidatePasswordRequest {
+  string username = 1;
+  string password = 2;
+  string cid = 3;
 }
 
 message Account {

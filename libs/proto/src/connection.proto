@@ -45,6 +45,16 @@ message Connection {
   string key = 4;
   ConnectionType type = 5;
   ConnectionConfig config = 6;
+  TokenOptions token = 7;
+}
+
+message TokenOptions {
+  string issuer = 1;
+  string audience = 2;
+  int64 expiry = 3;
+  bool refresh = 4;
+  string secret = 5;
+  int64 refreshExpiry = 6;
 }
 
 enum ConnectionType {

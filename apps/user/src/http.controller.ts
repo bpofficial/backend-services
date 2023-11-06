@@ -12,7 +12,7 @@ import {
 import { HttpStatusCode } from 'axios';
 import { UserService } from './user.service';
 
-@Controller('account')
+@Controller('user')
 export class UserHttpController {
     constructor(private userService: UserService) {}
 

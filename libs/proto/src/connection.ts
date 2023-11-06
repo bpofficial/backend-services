@@ -2,6 +2,7 @@
 import * as _m0 from "protobufjs/minimal";
 import { Err } from "./errors";
 import { FieldMask } from "./google/protobuf/field_mask";
+import Long = require("long");
 
 export const protobufPackage = "proto";
 
@@ -77,6 +78,16 @@ export interface Connection {
   key: string;
   type: ConnectionType;
   config: ConnectionConfig | undefined;
+  token: TokenOptions | undefined;
+}
+
+export interface TokenOptions {
+  issuer: string;
+  audience: string;
+  expiry: number;
+  refresh: boolean;
+  secret: string;
+  refreshExpiry: number;
 }
 
 export interface OIDCConfig {
@@ -497,7 +508,7 @@ export const DeleteConnectionResponse = {
 };
 
 function createBaseConnection(): Connection {
-  return { id: "", oid: "", name: "", key: "", type: 0, config: undefined };
+  return { id: "", oid: "", name: "", key: "", type: 0, config: undefined, token: undefined };
 }
 
 export const Connection = {
@@ -519,6 +530,9 @@ export const Connection = {
     }
     if (message.config !== undefined) {
       ConnectionConfig.encode(message.config, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.token !== undefined) {
+      TokenOptions.encode(message.token, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -572,6 +586,13 @@ export const Connection = {
 
           message.config = ConnectionConfig.decode(reader, reader.uint32());
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.token = TokenOptions.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -589,6 +610,7 @@ export const Connection = {
       key: isSet(object.key) ? globalThis.String(object.key) : "",
       type: isSet(object.type) ? connectionTypeFromJSON(object.type) : 0,
       config: isSet(object.config) ? ConnectionConfig.fromJSON(object.config) : undefined,
+      token: isSet(object.token) ? TokenOptions.fromJSON(object.token) : undefined,
     };
   },
 
@@ -612,6 +634,9 @@ export const Connection = {
     if (message.config !== undefined) {
       obj.config = ConnectionConfig.toJSON(message.config);
     }
+    if (message.token !== undefined) {
+      obj.token = TokenOptions.toJSON(message.token);
+    }
     return obj;
   },
 
@@ -628,6 +653,143 @@ export const Connection = {
     message.config = (object.config !== undefined && object.config !== null)
       ? ConnectionConfig.fromPartial(object.config)
       : undefined;
+    message.token = (object.token !== undefined && object.token !== null)
+      ? TokenOptions.fromPartial(object.token)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTokenOptions(): TokenOptions {
+  return { issuer: "", audience: "", expiry: 0, refresh: false, secret: "", refreshExpiry: 0 };
+}
+
+export const TokenOptions = {
+  encode(message: TokenOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.issuer !== "") {
+      writer.uint32(10).string(message.issuer);
+    }
+    if (message.audience !== "") {
+      writer.uint32(18).string(message.audience);
+    }
+    if (message.expiry !== 0) {
+      writer.uint32(24).int64(message.expiry);
+    }
+    if (message.refresh === true) {
+      writer.uint32(32).bool(message.refresh);
+    }
+    if (message.secret !== "") {
+      writer.uint32(42).string(message.secret);
+    }
+    if (message.refreshExpiry !== 0) {
+      writer.uint32(48).int64(message.refreshExpiry);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TokenOptions {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTokenOptions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.issuer = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.audience = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.expiry = longToNumber(reader.int64() as Long);
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.refresh = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.secret = reader.string();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.refreshExpiry = longToNumber(reader.int64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TokenOptions {
+    return {
+      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : "",
+      audience: isSet(object.audience) ? globalThis.String(object.audience) : "",
+      expiry: isSet(object.expiry) ? globalThis.Number(object.expiry) : 0,
+      refresh: isSet(object.refresh) ? globalThis.Boolean(object.refresh) : false,
+      secret: isSet(object.secret) ? globalThis.String(object.secret) : "",
+      refreshExpiry: isSet(object.refreshExpiry) ? globalThis.Number(object.refreshExpiry) : 0,
+    };
+  },
+
+  toJSON(message: TokenOptions): unknown {
+    const obj: any = {};
+    if (message.issuer !== "") {
+      obj.issuer = message.issuer;
+    }
+    if (message.audience !== "") {
+      obj.audience = message.audience;
+    }
+    if (message.expiry !== 0) {
+      obj.expiry = Math.round(message.expiry);
+    }
+    if (message.refresh === true) {
+      obj.refresh = message.refresh;
+    }
+    if (message.secret !== "") {
+      obj.secret = message.secret;
+    }
+    if (message.refreshExpiry !== 0) {
+      obj.refreshExpiry = Math.round(message.refreshExpiry);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TokenOptions>, I>>(base?: I): TokenOptions {
+    return TokenOptions.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TokenOptions>, I>>(object: I): TokenOptions {
+    const message = createBaseTokenOptions();
+    message.issuer = object.issuer ?? "";
+    message.audience = object.audience ?? "";
+    message.expiry = object.expiry ?? 0;
+    message.refresh = object.refresh ?? false;
+    message.secret = object.secret ?? "";
+    message.refreshExpiry = object.refreshExpiry ?? 0;
     return message;
   },
 };
@@ -1170,6 +1332,18 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

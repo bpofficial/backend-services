@@ -18,6 +18,11 @@ export interface GetAccountRequest {
   uid: string;
 }
 
+export interface GetAccountByUsernameRequest {
+  username: string;
+  cid: string;
+}
+
 export interface UpdateAccountRequest {
   aid: string;
   uid: string;
@@ -42,6 +47,12 @@ export interface RequestVerificationResponse {
 export interface VerifyAccountResponse {
   success?: boolean | undefined;
   error?: Err | undefined;
+}
+
+export interface ValidatePasswordRequest {
+  username: string;
+  password: string;
+  cid: string;
 }
 
 export interface Account {
@@ -247,6 +258,80 @@ export const GetAccountRequest = {
     const message = createBaseGetAccountRequest();
     message.aid = object.aid ?? "";
     message.uid = object.uid ?? "";
+    return message;
+  },
+};
+
+function createBaseGetAccountByUsernameRequest(): GetAccountByUsernameRequest {
+  return { username: "", cid: "" };
+}
+
+export const GetAccountByUsernameRequest = {
+  encode(message: GetAccountByUsernameRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    if (message.cid !== "") {
+      writer.uint32(18).string(message.cid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountByUsernameRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetAccountByUsernameRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.cid = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetAccountByUsernameRequest {
+    return {
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      cid: isSet(object.cid) ? globalThis.String(object.cid) : "",
+    };
+  },
+
+  toJSON(message: GetAccountByUsernameRequest): unknown {
+    const obj: any = {};
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.cid !== "") {
+      obj.cid = message.cid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetAccountByUsernameRequest>, I>>(base?: I): GetAccountByUsernameRequest {
+    return GetAccountByUsernameRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetAccountByUsernameRequest>, I>>(object: I): GetAccountByUsernameRequest {
+    const message = createBaseGetAccountByUsernameRequest();
+    message.username = object.username ?? "";
+    message.cid = object.cid ?? "";
     return message;
   },
 };
@@ -636,6 +721,95 @@ export const VerifyAccountResponse = {
   },
 };
 
+function createBaseValidatePasswordRequest(): ValidatePasswordRequest {
+  return { username: "", password: "", cid: "" };
+}
+
+export const ValidatePasswordRequest = {
+  encode(message: ValidatePasswordRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    if (message.password !== "") {
+      writer.uint32(18).string(message.password);
+    }
+    if (message.cid !== "") {
+      writer.uint32(26).string(message.cid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ValidatePasswordRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseValidatePasswordRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.password = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.cid = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ValidatePasswordRequest {
+    return {
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      password: isSet(object.password) ? globalThis.String(object.password) : "",
+      cid: isSet(object.cid) ? globalThis.String(object.cid) : "",
+    };
+  },
+
+  toJSON(message: ValidatePasswordRequest): unknown {
+    const obj: any = {};
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.password !== "") {
+      obj.password = message.password;
+    }
+    if (message.cid !== "") {
+      obj.cid = message.cid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ValidatePasswordRequest>, I>>(base?: I): ValidatePasswordRequest {
+    return ValidatePasswordRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ValidatePasswordRequest>, I>>(object: I): ValidatePasswordRequest {
+    const message = createBaseValidatePasswordRequest();
+    message.username = object.username ?? "";
+    message.password = object.password ?? "";
+    message.cid = object.cid ?? "";
+    return message;
+  },
+};
+
 function createBaseAccount(): Account {
   return {
     id: "",
@@ -1001,9 +1175,12 @@ export const AccountResponse = {
 
 export interface AccountService {
   GetAccount(request: GetAccountRequest): Promise<AccountResponse>;
+  GetAccountByUsername(request: GetAccountByUsernameRequest): Promise<AccountResponse>;
   Update(request: UpdateAccountRequest): Promise<AccountResponse>;
   Connect(request: ConnectAccountRequest): Promise<Account>;
   Disconnect(request: DisconnectAccountRequest): Promise<DisconnectAccountResponse>;
+  /** username-password connections */
+  ValidatePassword(request: ValidatePasswordRequest): Promise<AccountResponse>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
