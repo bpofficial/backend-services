@@ -6,7 +6,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import JWT from 'jsonwebtoken';
 import { Model } from 'mongoose';
-import { TokenModel } from './tokens.model';
+import { TokenModel } from '../models/tokens.model';
 
 @Injectable()
 export class LocalAuthorizeService {
@@ -14,66 +14,6 @@ export class LocalAuthorizeService {
         private readonly accountServiceProvider: AccountServiceProvider,
         @MongoModel('token') private tokenModel: Model<TokenModel>,
     ) {}
-
-    async createAccessToken(account: Account, connection: Connection) {
-        const accessToken = {
-            sub: account.id,
-            exp: Date.now() + connection.token.expiry * 1000,
-            iat: Date.now(),
-            aud: connection.token.audience,
-            iss: connection.token.issuer,
-            jti: randomBytes(16).toString('hex'),
-        };
-
-        const atJwt = JWT.sign(accessToken, connection.token.secret);
-
-        const refreshToken = {
-            sub: account.id,
-            exp: Date.now() + connection.token.refreshExpiry * 1000,
-            iat: Date.now(),
-            aud: connection.token.audience,
-            iss: connection.token.issuer,
-            jti: randomBytes(16).toString('hex'),
-        };
-
-        const rtJwt = JWT.sign(refreshToken, connection.token.secret);
-
-        const session = await this.tokenModel.startSession();
-        session.startTransaction();
-
-        const tokens = [
-            {
-                aid: account.id,
-                cid: connection.id,
-                ...accessToken,
-                jwt: atJwt,
-            },
-        ];
-
-        if (connection.token.refresh) {
-            tokens.push({
-                aid: account.id,
-                cid: connection.id,
-                ...refreshToken,
-                jwt: rtJwt,
-            });
-        }
-
-        await this.tokenModel.create(tokens, { session });
-        await session.endSession();
-
-        return {
-            access_token: atJwt,
-            token_type: 'Bearer',
-            expires_in: connection.token.expiry,
-            refresh_token: connection.token.refresh ? rtJwt : undefined,
-            scope: 'basic',
-        };
-    }
-
-    async revokeToken(aid: string, jti: string) {
-        await this.tokenModel.updateOne({ aid, jti }, { revoked: true });
-    }
 
     async authorize(request: Request, connection: Connection) {
         const url = new URL(request.url);
@@ -107,5 +47,65 @@ export class LocalAuthorizeService {
             error_description:
                 'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.',
         });
+    }
+
+    async createAccessToken(account: Account, connection: Connection) {
+        const accessToken = {
+            sub: account.id,
+            exp: Date.now() + connection.token.expiry * 1000,
+            iat: Date.now(),
+            aud: connection.token.audience,
+            iss: connection.token.issuer,
+            jti: randomBytes(16).toString('hex'),
+            cid: connection.id,
+        };
+
+        const atJwt = JWT.sign(accessToken, connection.token.secret);
+
+        const refreshToken = {
+            sub: account.id,
+            exp: Date.now() + connection.token.refreshExpiry * 1000,
+            iat: Date.now(),
+            aud: connection.token.audience,
+            iss: connection.token.issuer,
+            jti: randomBytes(16).toString('hex'),
+            cid: connection.id,
+        };
+
+        const rtJwt = JWT.sign(refreshToken, connection.token.secret);
+
+        const session = await this.tokenModel.startSession();
+        session.startTransaction();
+
+        const tokens = [
+            {
+                aid: account.id,
+                ...accessToken,
+                token: atJwt,
+            },
+        ];
+
+        if (connection.token.refresh) {
+            tokens.push({
+                aid: account.id,
+                ...refreshToken,
+                token: rtJwt,
+            });
+        }
+
+        await this.tokenModel.create(tokens, { session });
+        await session.endSession();
+
+        return {
+            access_token: atJwt,
+            token_type: 'Bearer',
+            expires_in: connection.token.expiry,
+            refresh_token: connection.token.refresh ? rtJwt : undefined,
+            scope: 'basic',
+        };
+    }
+
+    async revokeToken(aid: string, jti: string) {
+        await this.tokenModel.updateOne({ aid, jti }, { revoked: true });
     }
 }

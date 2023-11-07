@@ -9,8 +9,8 @@ import {
     Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { LocalAuthorizeService } from './local.service';
-import { OidcAuthorizeService } from './oidc.service';
+import { LocalAuthorizeService } from '../services/local.service';
+import { OidcAuthorizeService } from '../services/oidc.service';
 
 @Controller('auth/authorize')
 export class AuthorizeHttpController {

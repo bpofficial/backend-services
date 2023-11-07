@@ -1,3 +1,4 @@
+import { MongoModel } from '@app/db';
 import { Connection } from '@app/proto/connection';
 import {
     BadRequestException,
@@ -6,10 +7,17 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import * as JWT from 'jsonwebtoken';
+import { TokenModel } from '../models/tokens.model';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class OidcAuthorizeService {
-    constructor(private readonly configService: ConfigService) {}
+    constructor(
+        @MongoModel('token')
+        private readonly tokenModel: Model<TokenModel>,
+        private readonly configService: ConfigService,
+    ) {}
 
     authorize(request: Request, response: Response, connection: Connection) {
         const url = new URL(request.url);
@@ -27,6 +35,22 @@ export class OidcAuthorizeService {
         });
     }
 
+    async storeTokens(tokens: Record<string, string>, connection: Connection) {
+        const tokenArr = [];
+        for (const key in tokens) {
+            const payload = JWT.decode(tokens[key]) as JWT.JwtPayload;
+            tokenArr.push({
+                ...payload,
+                type: key,
+                token: tokens[key],
+                cid: connection.id,
+            });
+        }
+
+        await this.tokenModel.create(tokenArr);
+        return tokens;
+    }
+
     private authorizationCodeFlow(
         request: Request,
         response: Response,
@@ -34,6 +58,14 @@ export class OidcAuthorizeService {
     ) {
         const url = new URL(request.url);
         const search = url.searchParams;
+
+        const initialState = search.get('state');
+        const state = JSON.stringify({
+            cid: connection.id,
+            state: initialState,
+        });
+
+        search.set('state', Buffer.from(state, 'utf-8').toString('base64'));
 
         // Overwrite the connection id with the actual oidc client id
         search.set('client_id', connection.config.oidc.clientId);
@@ -54,6 +86,6 @@ export class OidcAuthorizeService {
 
         authorizationUrl.search = search.toString();
 
-        return response.redirect(authorizationUrl.toString());
+        return response.redirect(302, authorizationUrl.toString());
     }
 }
