@@ -1,5 +1,6 @@
 const env = process.env;
 export const configuration = () => ({
+    url: '',
     opa: {
         url: env.OPA_URL,
     },

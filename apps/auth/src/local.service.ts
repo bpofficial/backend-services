@@ -2,7 +2,7 @@ import { AccountServiceProvider } from '@app/clients';
 import { MongoModel } from '@app/db';
 import { Account } from '@app/proto/account';
 import { Connection } from '@app/proto/connection';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import JWT from 'jsonwebtoken';
 import { Model } from 'mongoose';
@@ -63,8 +63,11 @@ export class LocalAuthorizeService {
         await session.endSession();
 
         return {
-            accessToken: atJwt,
-            refreshToken: connection.token.refresh ? rtJwt : undefined,
+            access_token: atJwt,
+            token_type: 'Bearer',
+            expires_in: connection.token.expiry,
+            refresh_token: connection.token.refresh ? rtJwt : undefined,
+            scope: 'basic',
         };
     }
 
@@ -81,7 +84,11 @@ export class LocalAuthorizeService {
         const password = search.get('password')?.trim?.();
 
         if (grantType !== 'password') {
-            // error
+            throw new BadRequestException({
+                error: 'unsupported_grant_type',
+                error_description:
+                    'The authorization grant type is not supported by the authorization server or the client.',
+            });
         }
 
         const accountService = this.accountServiceProvider.getService();
@@ -95,6 +102,10 @@ export class LocalAuthorizeService {
             return this.createAccessToken(account, connection);
         }
 
-        return null;
+        throw new BadRequestException({
+            error: 'invalid_grant',
+            error_description:
+                'The provided authorization grant (e.g., authorization code, resource owner credentials) or refresh token is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.',
+        });
     }
 }

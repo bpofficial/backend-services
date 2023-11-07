@@ -1,20 +1,17 @@
 import { createService } from '@app/utils';
 import { Logger } from '@nestjs/common';
-import { AuthorizeModule } from './authorize.module';
+import { AuthModule } from './auth.module';
 
 const logger = new Logger();
 
 async function bootstrap() {
     const [{ listen }, { url }] = await createService(
         `service.authorize`,
-        AuthorizeModule,
+        AuthModule,
     );
     await listen();
 
-    logger.log(
-        `Authorize microservice listening at ${url} on gRPC`,
-        'Microservice',
-    );
+    logger.log(`Auth microservice listening at ${url} on gRPC`, 'Microservice');
 }
 
 bootstrap();

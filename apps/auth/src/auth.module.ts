@@ -1,17 +1,18 @@
 import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
-import { AuthorizeController } from './authorize.controller';
+import { AuthorizeHttpController } from './authorize.controller';
 import { AuthorizeService } from './authorize.service';
+import { CallbackHttpController } from './callback.controller';
 import { LocalAuthorizeService } from './local.service';
 import { TokenSchema } from './tokens.model';
 
 @Module({
     imports: [
         SharedModule,
-        MongoDbModule.forRoot('service.authorize', 'token', TokenSchema),
+        MongoDbModule.forRoot('service.auth', 'token', TokenSchema),
     ],
-    controllers: [AuthorizeController],
+    controllers: [AuthorizeHttpController, CallbackHttpController],
     providers: [AuthorizeService, LocalAuthorizeService],
 })
-export class AuthorizeModule {}
+export class AuthModule {}
