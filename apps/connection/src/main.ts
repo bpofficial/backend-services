@@ -5,14 +5,19 @@ import { ConnectionModule } from './connection.module';
 const logger = new Logger();
 
 async function bootstrap() {
-    const [{ listen }, { url }] = await createService(
+    const [ms, app, { url, httpPort }] = await createService(
         `service.connection`,
         ConnectionModule,
     );
-    await listen();
+
+    await Promise.all([ms.listen(), app.listen(httpPort)]);
 
     logger.log(
-        `Connection microservice listening at ${url} on gRPC`,
+        `Connection GRPC microservice listening at ${url}`,
+        'Microservice',
+    );
+    logger.log(
+        `Connection HTTP microservice listening at ${httpPort}`,
         'Microservice',
     );
 }

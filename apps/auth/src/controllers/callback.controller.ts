@@ -1,13 +1,12 @@
-import { ConnectionServiceProvider } from '@app/clients';
+import { ConnectionServiceProvider, OrgServiceProvider } from '@app/clients';
+import { MongoModel } from '@app/db';
+import { OtoPromise } from '@app/utils';
+import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { LocalAuthorizeService } from '../services/local.service';
-import { OidcAuthorizeService } from '../services/oidc.service';
-import { MongoModel } from '@app/db';
-import { OidcExchangeModel } from '../models/oidc-exchange.model';
 import { Model } from 'mongoose';
-import { HttpService } from '@nestjs/axios';
-import { OtoPromise } from '@app/utils';
+import { OidcExchangeModel } from '../models/oidc-exchange.model';
+import { OidcAuthorizeService } from '../services/oidc.service';
 
 @Controller('auth/callback')
 export class CallbackHttpController {
@@ -15,8 +14,8 @@ export class CallbackHttpController {
         @MongoModel('oidc-exchange')
         private readonly oidcExchangeModel: Model<OidcExchangeModel>,
         private readonly httpService: HttpService,
+        private readonly orgServiceProvider: OrgServiceProvider,
         private readonly connectionServiceProvider: ConnectionServiceProvider,
-        private readonly localAuthorizeService: LocalAuthorizeService,
         private readonly oidcAuthorizeService: OidcAuthorizeService,
     ) {}
 
@@ -48,6 +47,15 @@ export class CallbackHttpController {
             cid,
         });
 
+        const orgService = this.orgServiceProvider.getService();
+        const { org, error: orgError } = await orgService.FindOneById({
+            oid: connection.oid,
+        });
+
+        if (orgError) {
+            //
+        }
+
         const exchange = await this.oidcExchangeModel.findOne({
             id: stateData.eid,
             state: stateData.state,
@@ -78,7 +86,7 @@ export class CallbackHttpController {
             const idToken = tokenRes.data.id_token;
             const refreshToken = tokenRes.data.refresh_token;
 
-            return this.oidcAuthorizeService.storeTokens(
+            const tokens = await this.oidcAuthorizeService.storeTokens(
                 {
                     accessToken,
                     idToken,
@@ -86,6 +94,14 @@ export class CallbackHttpController {
                 },
                 connection,
             );
+
+            // redirect to client callback url
+            const redirectUrl = new URL(org.callbackUrl);
+            redirectUrl.searchParams.set(`access_token`, accessToken);
+            redirectUrl.searchParams.set(`id_token`, idToken);
+            redirectUrl.searchParams.set(`refresh_token`, refreshToken);
+
+            return res.redirect(302, redirectUrl.toString());
         }
     }
 }

@@ -25,7 +25,7 @@ export class OrgService {
     ) {}
 
     async getOrgById(req: OrgById): Promise<OrgResponse> {
-        this.logger.debug(`getOrgById: uid=${req.uid}, oid=${req.oid}`);
+        this.logger.debug(`getOrgById: oid=${req.oid}`);
         const result = await this.model.findById(req.oid);
 
         if (result) {
@@ -37,9 +37,7 @@ export class OrgService {
     }
 
     async getOrgByDomain(req: OrgByDomain): Promise<OrgResponse> {
-        this.logger.debug(
-            `getOrgByDomain: uid=${req.uid}, domain=${req.domain}`,
-        );
+        this.logger.debug(`getOrgByDomain: domain=${req.domain}`);
         const result = await this.model.findOne({ domain: req.domain });
 
         if (result) {

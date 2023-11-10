@@ -5,13 +5,18 @@ import { UserModule } from './user.module';
 const logger = new Logger();
 
 async function bootstrap() {
-    const [{ listen }, { url }] = await createService(
+    const [ms, app, { url, httpPort }] = await createService(
         `service.user`,
         UserModule,
     );
-    await listen();
 
-    logger.log(`User microservice listening at ${url} on gRPC`, 'Microservice');
+    await Promise.all([ms.listen(), app.listen(httpPort)]);
+
+    logger.log(`User GRPC microservice listening at ${url}`, 'Microservice');
+    logger.log(
+        `User HTTP microservice listening at ${httpPort}`,
+        'Microservice',
+    );
 }
 
 bootstrap();

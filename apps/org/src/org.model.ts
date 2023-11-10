@@ -1,5 +1,5 @@
 // org.schema.ts
-import { Org } from '@app/proto';
+import { Org } from '@app/proto/org';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -9,10 +9,13 @@ export class Organisation extends Document implements Omit<Org, 'id'> {
     name: string;
 
     @Prop({ required: true })
-    owner: number;
+    owner: string;
 
     @Prop({ required: true })
     domain: string;
+
+    @Prop({ required: true })
+    callbackUrl: string;
 }
 
 const OrganisationSchema = SchemaFactory.createForClass(Organisation);

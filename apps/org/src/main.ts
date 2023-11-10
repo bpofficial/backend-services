@@ -5,11 +5,19 @@ import { OrgModule } from './org.module';
 const logger = new Logger();
 
 async function bootstrap() {
-    const [{ listen }, { url }] = await createService(`service.org`, OrgModule);
-    await listen();
+    const [ms, app, { url, httpPort }] = await createService(
+        `service.org`,
+        OrgModule,
+    );
+
+    await Promise.all([ms.listen(), app.listen(httpPort)]);
 
     logger.log(
-        `Organisation microservice listening at ${url} on gRPC`,
+        `Organisation GRPC microservice listening at ${url}`,
+        'Microservice',
+    );
+    logger.log(
+        `Organisation HTTP microservice listening at ${httpPort}`,
         'Microservice',
     );
 }

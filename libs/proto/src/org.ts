@@ -6,11 +6,9 @@ export const protobufPackage = "proto";
 
 export interface OrgById {
   oid: string;
-  uid: number;
 }
 
 export interface OrgByDomain {
-  uid: number;
   domain: string;
 }
 
@@ -18,6 +16,7 @@ export interface CreateOrgRequest {
   name: string;
   domain: string;
   owner: string;
+  callbackUrl: string;
 }
 
 export interface CreateOrgResponse {
@@ -39,6 +38,7 @@ export interface Org {
   name: string;
   domain: string;
   owner: string;
+  callbackUrl: string;
 }
 
 export interface OrgResponse {
@@ -47,16 +47,13 @@ export interface OrgResponse {
 }
 
 function createBaseOrgById(): OrgById {
-  return { oid: "", uid: 0 };
+  return { oid: "" };
 }
 
 export const OrgById = {
   encode(message: OrgById, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.oid !== "") {
       writer.uint32(10).string(message.oid);
-    }
-    if (message.uid !== 0) {
-      writer.uint32(16).int32(message.uid);
     }
     return writer;
   },
@@ -75,13 +72,6 @@ export const OrgById = {
 
           message.oid = reader.string();
           continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.uid = reader.int32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -92,19 +82,13 @@ export const OrgById = {
   },
 
   fromJSON(object: any): OrgById {
-    return {
-      oid: isSet(object.oid) ? globalThis.String(object.oid) : "",
-      uid: isSet(object.uid) ? globalThis.Number(object.uid) : 0,
-    };
+    return { oid: isSet(object.oid) ? globalThis.String(object.oid) : "" };
   },
 
   toJSON(message: OrgById): unknown {
     const obj: any = {};
     if (message.oid !== "") {
       obj.oid = message.oid;
-    }
-    if (message.uid !== 0) {
-      obj.uid = Math.round(message.uid);
     }
     return obj;
   },
@@ -115,22 +99,18 @@ export const OrgById = {
   fromPartial<I extends Exact<DeepPartial<OrgById>, I>>(object: I): OrgById {
     const message = createBaseOrgById();
     message.oid = object.oid ?? "";
-    message.uid = object.uid ?? 0;
     return message;
   },
 };
 
 function createBaseOrgByDomain(): OrgByDomain {
-  return { uid: 0, domain: "" };
+  return { domain: "" };
 }
 
 export const OrgByDomain = {
   encode(message: OrgByDomain, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.uid !== 0) {
-      writer.uint32(8).int32(message.uid);
-    }
     if (message.domain !== "") {
-      writer.uint32(18).string(message.domain);
+      writer.uint32(10).string(message.domain);
     }
     return writer;
   },
@@ -143,14 +123,7 @@ export const OrgByDomain = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.uid = reader.int32();
-          continue;
-        case 2:
-          if (tag !== 18) {
+          if (tag !== 10) {
             break;
           }
 
@@ -166,17 +139,11 @@ export const OrgByDomain = {
   },
 
   fromJSON(object: any): OrgByDomain {
-    return {
-      uid: isSet(object.uid) ? globalThis.Number(object.uid) : 0,
-      domain: isSet(object.domain) ? globalThis.String(object.domain) : "",
-    };
+    return { domain: isSet(object.domain) ? globalThis.String(object.domain) : "" };
   },
 
   toJSON(message: OrgByDomain): unknown {
     const obj: any = {};
-    if (message.uid !== 0) {
-      obj.uid = Math.round(message.uid);
-    }
     if (message.domain !== "") {
       obj.domain = message.domain;
     }
@@ -188,14 +155,13 @@ export const OrgByDomain = {
   },
   fromPartial<I extends Exact<DeepPartial<OrgByDomain>, I>>(object: I): OrgByDomain {
     const message = createBaseOrgByDomain();
-    message.uid = object.uid ?? 0;
     message.domain = object.domain ?? "";
     return message;
   },
 };
 
 function createBaseCreateOrgRequest(): CreateOrgRequest {
-  return { name: "", domain: "", owner: "" };
+  return { name: "", domain: "", owner: "", callbackUrl: "" };
 }
 
 export const CreateOrgRequest = {
@@ -208,6 +174,9 @@ export const CreateOrgRequest = {
     }
     if (message.owner !== "") {
       writer.uint32(26).string(message.owner);
+    }
+    if (message.callbackUrl !== "") {
+      writer.uint32(34).string(message.callbackUrl);
     }
     return writer;
   },
@@ -240,6 +209,13 @@ export const CreateOrgRequest = {
 
           message.owner = reader.string();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.callbackUrl = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -254,6 +230,7 @@ export const CreateOrgRequest = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       domain: isSet(object.domain) ? globalThis.String(object.domain) : "",
       owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+      callbackUrl: isSet(object.callbackUrl) ? globalThis.String(object.callbackUrl) : "",
     };
   },
 
@@ -268,6 +245,9 @@ export const CreateOrgRequest = {
     if (message.owner !== "") {
       obj.owner = message.owner;
     }
+    if (message.callbackUrl !== "") {
+      obj.callbackUrl = message.callbackUrl;
+    }
     return obj;
   },
 
@@ -279,6 +259,7 @@ export const CreateOrgRequest = {
     message.name = object.name ?? "";
     message.domain = object.domain ?? "";
     message.owner = object.owner ?? "";
+    message.callbackUrl = object.callbackUrl ?? "";
     return message;
   },
 };
@@ -489,7 +470,7 @@ export const DeleteOrgResponse = {
 };
 
 function createBaseOrg(): Org {
-  return { id: "", name: "", domain: "", owner: "" };
+  return { id: "", name: "", domain: "", owner: "", callbackUrl: "" };
 }
 
 export const Org = {
@@ -505,6 +486,9 @@ export const Org = {
     }
     if (message.owner !== "") {
       writer.uint32(34).string(message.owner);
+    }
+    if (message.callbackUrl !== "") {
+      writer.uint32(42).string(message.callbackUrl);
     }
     return writer;
   },
@@ -544,6 +528,13 @@ export const Org = {
 
           message.owner = reader.string();
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.callbackUrl = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -559,6 +550,7 @@ export const Org = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       domain: isSet(object.domain) ? globalThis.String(object.domain) : "",
       owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+      callbackUrl: isSet(object.callbackUrl) ? globalThis.String(object.callbackUrl) : "",
     };
   },
 
@@ -576,6 +568,9 @@ export const Org = {
     if (message.owner !== "") {
       obj.owner = message.owner;
     }
+    if (message.callbackUrl !== "") {
+      obj.callbackUrl = message.callbackUrl;
+    }
     return obj;
   },
 
@@ -588,6 +583,7 @@ export const Org = {
     message.name = object.name ?? "";
     message.domain = object.domain ?? "";
     message.owner = object.owner ?? "";
+    message.callbackUrl = object.callbackUrl ?? "";
     return message;
   },
 };

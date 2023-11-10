@@ -5,13 +5,18 @@ import { AuthModule } from './auth.module';
 const logger = new Logger();
 
 async function bootstrap() {
-    const [{ listen }, { url }] = await createService(
+    const [ms, app, { url, httpPort }] = await createService(
         `service.authorize`,
         AuthModule,
     );
-    await listen();
 
-    logger.log(`Auth microservice listening at ${url} on gRPC`, 'Microservice');
+    await Promise.all([ms.listen(), app.listen(httpPort)]);
+
+    logger.log(`Auth GRPC microservice listening at ${url}`, 'Microservice');
+    logger.log(
+        `Auth HTTP microservice listening at ${httpPort}`,
+        'Microservice',
+    );
 }
 
 bootstrap();

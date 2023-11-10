@@ -11,18 +11,17 @@ service OrgService {
 
 message OrgById {
   string oid = 1;
-  int32 uid = 2;
 }
 
 message OrgByDomain {
-  int32 uid = 1;
-  string domain = 2;
+  string domain = 1;
 }
 
 message CreateOrgRequest {
   string name = 1;
   string domain = 2;
   string owner = 3;
+  string callbackUrl = 4;
 }
 
 message CreateOrgResponse {
@@ -46,6 +45,7 @@ message Org {
   string name = 2;
   string domain = 3;
   string owner = 4;
+  string callbackUrl = 5;
 }
 
 message OrgResponse {

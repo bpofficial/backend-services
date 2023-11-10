@@ -5,14 +5,16 @@ import { MemberModule } from './member.module';
 const logger = new Logger();
 
 async function bootstrap() {
-    const [{ listen }, { url }] = await createService(
+    const [ms, app, { url, httpPort }] = await createService(
         `service.member`,
         MemberModule,
     );
-    await listen();
 
+    await Promise.all([ms.listen(), app.listen(httpPort)]);
+
+    logger.log(`Member GRPC microservice listening at ${url}`, 'Microservice');
     logger.log(
-        `Member microservice listening at ${url} on gRPC`,
+        `Member HTTP microservice listening at ${httpPort}`,
         'Microservice',
     );
 }

@@ -1,4 +1,4 @@
-import { OrgService } from '@app/proto';
+import { OrgService } from '@app/proto/org';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 

@@ -19,15 +19,13 @@ export class OrgController {
 
     @GrpcMethod('OrgService', 'FindOneById')
     async findOrgById(data: OrgById): Promise<OrgResponse> {
-        this.logger.debug(`findOrgById: uid=${data.uid}, oid=${data.oid}`);
+        this.logger.debug(`findOrgById: oid=${data.oid}`);
         return this.orgService.getOrgById(data);
     }
 
     @GrpcMethod('OrgService', 'FindOneByDomain')
     async findOneByDomain(data: OrgByDomain): Promise<OrgResponse> {
-        this.logger.debug(
-            `findOneByDomain: uid=${data.uid}, domain=${data.domain}`,
-        );
+        this.logger.debug(`findOneByDomain: domain=${data.domain}`);
         return this.orgService.getOrgByDomain(data);
     }
 
