@@ -8,7 +8,7 @@ import { UserService } from './user.service';
 @Module({
     imports: [
         SharedModule,
-        MongoDbModule.forRoot('service.user', 'user', UserSchema),
+        MongoDbModule.forRoot('service.user', { user: UserSchema }),
     ],
     controllers: [UserController],
     providers: [UserService],

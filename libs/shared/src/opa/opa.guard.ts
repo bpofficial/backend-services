@@ -52,7 +52,6 @@ export class OpaGuard implements CanActivate {
         // Assuming the OrgService has a method getOrgById for fetching an organization
         const org = await orgService.FindOneById({
             oid: orgId,
-            uid: Number(user),
         });
 
         if (org && Object.keys(org).length) {

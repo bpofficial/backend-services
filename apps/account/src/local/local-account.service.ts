@@ -3,7 +3,7 @@ import { VerifyAccountResponse } from '@app/proto/account';
 import { Err } from '@app/proto/errors';
 import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 import { AccountModel } from '../account.model';
 import { AccountService } from '../account.service';
 

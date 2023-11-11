@@ -8,11 +8,9 @@ import { ConnectionService } from './connection.service';
 @Module({
     imports: [
         SharedModule,
-        MongoDbModule.forRoot(
-            'service.connection',
-            'connection',
-            ConnectionSchema,
-        ),
+        MongoDbModule.forRoot('service.connection', {
+            connection: ConnectionSchema,
+        }),
     ],
     controllers: [ConnectionController],
     providers: [ConnectionService],

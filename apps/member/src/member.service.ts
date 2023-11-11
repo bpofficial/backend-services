@@ -15,7 +15,7 @@ import {
     MemberResponse,
 } from '@app/proto/member';
 import { Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 import { MemberInvitation } from './invitation.model';
 
 @Injectable()

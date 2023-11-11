@@ -1,4 +1,3 @@
-import { MongoModel } from '@app/db';
 import { Connection } from '@app/proto/connection';
 import {
     BadRequestException,
@@ -6,15 +5,16 @@ import {
     InternalServerErrorException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
 import { Response } from 'express';
 import * as JWT from 'jsonwebtoken';
-import { TokenModel } from '../models/tokens.model';
 import { Model } from 'mongoose';
+import { TokenModel } from '../models/tokens.model';
 
 @Injectable()
 export class OidcAuthorizeService {
     constructor(
-        @MongoModel('token')
+        @InjectModel('token')
         private readonly tokenModel: Model<TokenModel>,
         private readonly configService: ConfigService,
     ) {}

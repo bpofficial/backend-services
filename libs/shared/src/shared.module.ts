@@ -1,7 +1,7 @@
 import {
+    AccountClientModule,
     ConnectionClientModule,
     MemberClientModule,
-    SettingsClientModule,
     UserClientModule,
 } from '@app/clients';
 import { OrgClientModule } from '@app/clients/org';
@@ -17,8 +17,8 @@ import { OpaService } from './opa/opa.service';
         OrgClientModule,
         MemberClientModule,
         UserClientModule,
-        SettingsClientModule,
         ConnectionClientModule,
+        AccountClientModule,
     ],
     providers: [OpaService],
     exports: [
@@ -26,8 +26,9 @@ import { OpaService } from './opa/opa.service';
         OrgClientModule,
         MemberClientModule,
         UserClientModule,
-        SettingsClientModule,
         ConnectionClientModule,
+        AccountClientModule,
+        AppConfigModule,
     ],
 })
 export class SharedModule {}

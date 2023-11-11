@@ -1,8 +1,8 @@
 import { AccountServiceProvider } from '@app/clients';
-import { MongoModel } from '@app/db';
 import { Account } from '@app/proto/account';
 import { Connection } from '@app/proto/connection';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
 import JWT from 'jsonwebtoken';
 import { Model } from 'mongoose';
@@ -11,8 +11,9 @@ import { TokenModel } from '../models/tokens.model';
 @Injectable()
 export class LocalAuthorizeService {
     constructor(
+        @InjectModel('token')
+        private readonly tokenModel: Model<TokenModel>,
         private readonly accountServiceProvider: AccountServiceProvider,
-        @MongoModel('token') private tokenModel: Model<TokenModel>,
     ) {}
 
     async authorize(request: Request, connection: Connection) {

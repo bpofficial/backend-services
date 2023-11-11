@@ -10,8 +10,10 @@ import { MemberService } from './member.service';
 @Module({
     imports: [
         SharedModule,
-        MongoDbModule.forRoot('service.member', 'member', MemberSchema),
-        MongoDbModule.forFeature('invitation', MemberInvitationSchema),
+        MongoDbModule.forRoot('service.member', {
+            member: MemberSchema,
+            invitation: MemberInvitationSchema,
+        }),
     ],
     controllers: [MemberController, MemberHttpController],
     providers: [MemberService],

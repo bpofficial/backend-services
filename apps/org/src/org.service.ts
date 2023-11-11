@@ -11,7 +11,7 @@ import {
     OrgResponse,
 } from '@app/proto/org';
 import { Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 import { Organisation } from './org.model';
 
 @Injectable()

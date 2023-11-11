@@ -1,8 +1,8 @@
 import { ConnectionServiceProvider, OrgServiceProvider } from '@app/clients';
-import { MongoModel } from '@app/db';
 import { OtoPromise } from '@app/utils';
 import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Req, Res } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Response } from 'express';
 import { Model } from 'mongoose';
 import { OidcExchangeModel } from '../models/oidc-exchange.model';
@@ -11,7 +11,7 @@ import { OidcAuthorizeService } from '../services/oidc.service';
 @Controller('auth/callback')
 export class CallbackHttpController {
     constructor(
-        @MongoModel('oidc-exchange')
+        @InjectModel('oidc-exchange')
         private readonly oidcExchangeModel: Model<OidcExchangeModel>,
         private readonly httpService: HttpService,
         private readonly orgServiceProvider: OrgServiceProvider,

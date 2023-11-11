@@ -5,14 +5,18 @@ export const configuration = () => ({
         url: env.OPA_URL,
     },
     common: {
-        cookie: {
-            secret: env.AUTH_SECRET,
+        redis: {
+            host: env.REDIS_HOST,
+            port: parseInt(env.REDIS_PORT || '6739'),
+        },
+        session: {
+            secret: env.SESSION_SECRET,
             resave: true,
             saveUninitialized: true,
             cookie: {
                 secure: true,
                 httpOnly: true,
-                maxAge: 3600000,
+                maxAge: parseInt(env.SESSION_MAX_AGE || '3600000'),
             },
         },
     },

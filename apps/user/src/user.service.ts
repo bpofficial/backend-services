@@ -8,7 +8,7 @@ import {
     UserResponse,
 } from '@app/proto/user';
 import { Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {

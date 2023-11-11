@@ -1,5 +1,6 @@
-import { Inject, applyDecorators, createParamDecorator } from '@nestjs/common';
+import { applyDecorators, createParamDecorator } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 export const MongoModel = createParamDecorator((schema: any) => {
-    return applyDecorators(Inject(`Model/${schema.name}`));
+    return applyDecorators(InjectModel(schema.name));
 });

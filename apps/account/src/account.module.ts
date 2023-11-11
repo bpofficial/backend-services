@@ -10,7 +10,7 @@ import { LocalAccountHttpController } from './local/local-http.controller';
 @Module({
     imports: [
         SharedModule,
-        MongoDbModule.forRoot('service.account', 'account', AccountSchema),
+        MongoDbModule.forRoot('service.account', { account: AccountSchema }),
     ],
     controllers: [
         AccountController,

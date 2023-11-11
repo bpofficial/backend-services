@@ -6,9 +6,10 @@ const logger = new Logger();
 
 async function bootstrap() {
     const [ms, app, { url, httpPort }] = await createService(
-        `service.authorize`,
+        'service.auth',
         AuthModule,
     );
+    logger.log(`Auth service created`, 'Microservice');
 
     await Promise.all([ms.listen(), app.listen(httpPort)]);
 

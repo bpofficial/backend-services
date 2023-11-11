@@ -8,7 +8,7 @@ import {
     GetAccountRequest,
 } from '@app/proto/account';
 import { Injectable, Logger } from '@nestjs/common';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 
 @Injectable()
 export class AccountService {

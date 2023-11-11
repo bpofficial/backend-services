@@ -1,32 +1,39 @@
 // mongo-db.module.ts
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import mongoose, { Connection } from 'mongoose';
+
+const logger = new Logger('MongoDbModule');
 
 @Global()
 @Module({})
 export class MongoDbModule {
     static forRoot(
         service: `service.${string}`,
-        name: string,
-        schema: any,
+        schemas: Record<string, any>,
     ): DynamicModule {
-        const configProvider = {
-            provide: `Config/${service}`,
-            useFactory: (configService: ConfigService) => {
-                const uri = configService.getOrThrow(`${service}.mongodb.uri`);
-                return { uri };
-            },
+        logger.log(`Creating module for ${service}`);
+        const dbProvider = {
+            provide: 'DATABASE_CONNECTION',
             inject: [ConfigService],
+            useFactory: (
+                configService: ConfigService,
+            ): Promise<typeof mongoose> => {
+                const uri = configService.getOrThrow(`${service}.mongodb.uri`);
+                logger.debug(`Connecting to MongoDB for ${service}`);
+                return mongoose.connect(uri);
+            },
         };
 
-        const modelProvider = {
-            provide: `Model/${name}`,
-            useFactory: (connection: Connection) =>
-                connection.model(name, schema),
+        const modelProviders = Object.keys(schemas).map((modelName) => ({
+            provide: `Model/${modelName}`,
             inject: ['DATABASE_CONNECTION'],
-        };
+            useFactory: (connection: Connection) =>
+                connection.model(modelName, schemas[modelName]),
+        }));
+
+        logger.log(`Found ${modelProviders.length} models to provide.`);
 
         return {
             module: MongoDbModule,
@@ -34,31 +41,24 @@ export class MongoDbModule {
                 ConfigModule,
                 MongooseModule.forRootAsync({
                     imports: [ConfigModule],
-                    useFactory: async (serviceConfig) => {
-                        return { uri: serviceConfig.uri };
+                    useFactory: (configService: ConfigService) => {
+                        const uri = configService.getOrThrow(
+                            `${service}.mongodb.uri`,
+                        );
+
+                        return { uri };
                     },
-                    inject: [`Config/${service}`],
+                    inject: [ConfigService],
                 }),
-                MongooseModule.forFeature([{ name, schema }]),
+                MongooseModule.forFeature(
+                    Object.keys(schemas).map((modelName) => ({
+                        name: modelName,
+                        schema: schemas[modelName],
+                    })),
+                ),
             ],
-            providers: [configProvider, modelProvider],
-            exports: [MongooseModule, modelProvider],
-        };
-    }
-
-    static forFeature(name: string, schema: any): DynamicModule {
-        const modelProvider = {
-            provide: `Model/${name}`,
-            useFactory: (connection: Connection) =>
-                connection.model(name, schema),
-            inject: ['DATABASE_CONNECTION'],
-        };
-
-        return {
-            module: MongoDbModule,
-            imports: [MongooseModule.forFeature([{ name, schema }])],
-            providers: [modelProvider],
-            exports: [modelProvider],
+            providers: [dbProvider, ...modelProviders],
+            exports: [MongooseModule, dbProvider, ...modelProviders],
         };
     }
 }
