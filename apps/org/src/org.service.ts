@@ -1,5 +1,4 @@
 import { MemberServiceProvider, UserServiceProvider } from '@app/clients';
-import { MongoModel } from '@app/db';
 import {
     CreateOrgRequest,
     CreateOrgResponse,
@@ -11,7 +10,8 @@ import {
     OrgResponse,
 } from '@app/proto/org';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Organisation } from './org.model';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class OrgService {
     private readonly logger = new Logger('OrgService');
 
     constructor(
-        @MongoModel('organisation') private model: Model<Organisation>,
+        @InjectModel('organisation') private model: Model<Organisation>,
         private readonly userServiceProvider: UserServiceProvider,
         private readonly memberServiceProvider: MemberServiceProvider,
     ) {}

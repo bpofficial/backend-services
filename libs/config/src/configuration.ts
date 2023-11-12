@@ -1,8 +1,8 @@
 const env = process.env;
 export const configuration = () => ({
-    url: env.APP_URL,
+    url: env.APP_GRPC_PORT,
     opa: {
-        url: env.OPA_URL,
+        url: env.OPA_GRPC_PORT,
     },
     common: {
         redis: {
@@ -24,16 +24,13 @@ export const configuration = () => ({
         org: {
             package: env.ORG_PACKAGE,
             proto: env.ORG_PROTO,
-            url: env.ORG_URL,
+            grpcPort: env.ORG_GRPC_PORT,
             httpPort: env.ORG_HTTP_PORT,
             mongodb: {
                 uri: env.ORG_MONGO_URI,
             },
         },
         auth: {
-            package: env.AUTH_PACKAGE,
-            proto: env.AUTH_PROTO,
-            url: env.AUTH_URL,
             httpPort: env.AUTH_HTTP_PORT,
             mongodb: {
                 uri: env.AUTH_MONGO_URI,
@@ -42,7 +39,7 @@ export const configuration = () => ({
         account: {
             package: env.ACCOUNT_PACKAGE,
             proto: env.ACCOUNT_PROTO,
-            url: env.ACCOUNT_URL,
+            grpcPort: env.ACCOUNT_GRPC_PORT,
             httpPort: env.ACCOUNT_HTTP_PORT,
             mongodb: {
                 uri: env.ACCOUNT_MONGO_URI,
@@ -51,7 +48,7 @@ export const configuration = () => ({
         user: {
             package: env.USER_PACKAGE,
             proto: env.USER_PROTO,
-            url: env.USER_URL,
+            grpcPort: env.USER_GRPC_PORT,
             httpPort: env.USER_HTTP_PORT,
             mongodb: {
                 uri: env.USER_MONGO_URI,
@@ -60,7 +57,7 @@ export const configuration = () => ({
         member: {
             package: env.MEMBER_PACKAGE,
             proto: env.MEMBER_PROTO,
-            url: env.MEMBER_URL,
+            grpcPort: env.MEMBER_GRPC_PORT,
             httpPort: env.MEMBER_HTTP_PORT,
             mongodb: {
                 uri: env.MEMBER_MONGO_URI,
@@ -69,7 +66,7 @@ export const configuration = () => ({
         connection: {
             package: env.CONNECTION_PACKAGE,
             proto: env.CONNECTION_PROTO,
-            url: env.CONNECTION_URL,
+            grpcPort: env.CONNECTION_GRPC_PORT,
             httpPort: env.CONNECTION_HTTP_PORT,
             mongodb: {
                 uri: env.CONNECTION_MONGO_URI,

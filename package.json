@@ -6,6 +6,7 @@
     "private": true,
     "scripts": {
         "build": "/bin/bash ./scripts/build-all.sh",
+        "build:app": "/bin/bash ./scripts/build.sh",
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",
         "start:dev": "nest start --watch",
