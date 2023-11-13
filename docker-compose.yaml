@@ -7,6 +7,9 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5003:9090
+      - 5033:80
 
   auth:
     build:
@@ -15,6 +18,8 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5066:80
 
   connection:
     build:
@@ -23,6 +28,9 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5005:9090
+      - 5055:80
 
   member:
     build:
@@ -31,6 +39,9 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5004:9090
+      - 5044:80
 
   org:
     build:
@@ -39,6 +50,9 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5001:9090
+      - 5011:80
 
   user:
     build:
@@ -47,9 +61,14 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
+    ports:
+      - 5002:9090
+      - 5022:80
 
   redis:
     image: redis:latest
+    ports:
+     - 6379:6379
 
   mongodb:
     image: mongo:latest
@@ -58,5 +77,6 @@ services:
 
   opa:
     image: openpolicyagent/opa:latest
+    command: "run --server"
     ports:
       - "8181:8181"
