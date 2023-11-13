@@ -1,7 +1,12 @@
+import { Logger } from '@nestjs/common';
 import { consulKv, getServiceHost } from './consul';
 import { fetchSecret } from './vault';
 
+const logger = new Logger('Configuration');
+
 export const prodConfiguration = async () => {
+    logger.log('Fetching configurations from key stores.');
+
     return {
         prod: true,
         app: {
