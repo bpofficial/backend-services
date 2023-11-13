@@ -3,67 +3,91 @@ services:
   account:
     build:
       context: ./artifacts/account/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5003:9090
-      - 5033:80
+      - 5003:5003
+      - 5033:5033
 
   auth:
     build:
       context: ./artifacts/auth/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5066:80
+      - 5066:5066
 
   connection:
     build:
       context: ./artifacts/connection/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5005:9090
-      - 5055:80
+      - 5005:5005
+      - 5055:5055
 
   member:
     build:
       context: ./artifacts/member/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5004:9090
-      - 5044:80
+      - 5004:5004
+      - 5044:5044
 
   org:
     build:
       context: ./artifacts/org/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5001:9090
-      - 5011:80
+      - 5001:5001
+      - 5011:5011
 
   user:
     build:
       context: ./artifacts/user/app
+    depends_on:
+      - redis
+      - mongodb
+      - opa
     environment:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
     ports:
-      - 5002:9090
-      - 5022:80
+      - 5002:5002
+      - 5022:5022
 
   redis:
     image: redis:latest

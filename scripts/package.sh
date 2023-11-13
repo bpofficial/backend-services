@@ -41,10 +41,8 @@ cp -r "policies" "$TEMP_DIR/app/policies/"
 cp -r "dist/apps/$APP_NAME/." "$TEMP_DIR/app/"
 
 # Copy the templates to the packaging directory
-cp -r "templates/." "$TEMP_DIR/"
-
-mv "$TEMP_DIR/Dockerfile" "$TEMP_DIR/app/Dockerfile"
-mv "$TEMP_DIR/Procfile" "$TEMP_DIR/app/Procfile"
+cp -r "templates/k8s/." "$TEMP_DIR/"
+cp -r "templates/container/." "$TEMP_DIR/app/"
 
 # Copy package.json and yarn.lock files to the packaging directory
 cp "./package.json" "$TEMP_DIR/app"

@@ -32,6 +32,7 @@ export const dockerConfiguration = () => ({
             httpPort: '5033',
         },
         auth: {
+            host: 'auth',
             httpPort: '5066',
         },
         connection: {

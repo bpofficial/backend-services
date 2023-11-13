@@ -9,7 +9,9 @@ import { AppConfigModule } from '@app/config';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { DynamicStrategyService } from './auth/dynamic.strategy';
+import { HealthModule } from './health';
 import { OpaService } from './opa/opa.service';
+import { RedisModule } from './redis';
 
 @Module({
     imports: [
@@ -20,6 +22,8 @@ import { OpaService } from './opa/opa.service';
         UserClientModule,
         ConnectionClientModule,
         AccountClientModule,
+        RedisModule,
+        HealthModule,
     ],
     providers: [OpaService, DynamicStrategyService],
     exports: [
@@ -32,6 +36,7 @@ import { OpaService } from './opa/opa.service';
         AccountClientModule,
         AppConfigModule,
         DynamicStrategyService,
+        RedisModule,
     ],
 })
 export class SharedModule {}
