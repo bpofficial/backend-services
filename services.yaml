@@ -1,0 +1,19 @@
+services:
+  account:
+    httpPort: 5003
+    grpcPort: 5033
+  auth:
+    httpPort: 5066
+  connection:
+    httpPort: 5005
+    grpcPort: 5055
+  member:
+    httpPort: 5004
+    grpcPort: 5044
+  org:
+    httpPort: 5001
+    grpcPort: 5011
+  user:
+    httpPort: 5002
+    grpcPort: 5022
+

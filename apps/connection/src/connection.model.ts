@@ -2,6 +2,7 @@ import {
     Connection,
     ConnectionConfig,
     ConnectionType,
+    TokenOptions,
 } from '@app/proto/connection';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
@@ -25,6 +26,9 @@ export class ConnectionModel
 
     @Prop({ required: true })
     config: ConnectionConfig;
+
+    @Prop({ required: true })
+    token: TokenOptions;
 }
 
 const ConnectionSchema = SchemaFactory.createForClass(ConnectionModel);

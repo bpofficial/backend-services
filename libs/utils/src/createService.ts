@@ -23,7 +23,6 @@ export async function createService(
     });
 
     const configService = app.get(ConfigService);
-    const serviceConfig = configService.getOrThrow(service);
 
     await createMicroservice(name, service, app, configService);
 
@@ -46,10 +45,10 @@ export async function createService(
     if (hasHttp) {
         // Create a Redis client
         const redisClient = redis.createClient({
-            ...configService.getOrThrow('common.redis'),
+            ...configService.getOrThrow('redis.uri'),
         });
 
-        const sessionConfig = configService.getOrThrow('common.session');
+        const sessionConfig = configService.getOrThrow('session');
         const sessionMiddleware = session({
             ...sessionConfig,
             store: new ConnectRedis({
@@ -64,9 +63,11 @@ export async function createService(
         app.use(cookieParser());
         app.use(sessionMiddleware);
 
-        await app.listen(parseInt(serviceConfig.httpPort));
+        const httpPort = configService.get(`${service}.httpPort`) || '80';
+        await app.listen(parseInt(httpPort));
+
         logger.log(
-            `${name} HTTP microservice listening at ${serviceConfig.httpPort}`,
+            `${name} HTTP microservice listening at ${httpPort}`,
             'Microservice',
         );
     }

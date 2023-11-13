@@ -1,36 +1,77 @@
 #!/bin/bash
 
-# Check if app name argument is provided
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <app-name> [additional nest arguments]"
-    exit 1
+# Initialize variables with default values
+APP_NAME="*"
+NEST_ARGS=()
+CHANGED_FLAG=false
+DOCKER_FLAG=false
+
+# Process command-line arguments
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --app|-a)
+      APP_NAME="$2"
+      shift # past the --app or -a argument
+      shift # past the app name
+      ;;
+    --changed)
+      CHANGED_FLAG=true
+      shift # past the --changed argument
+      ;;
+    --docker)  # New option to build Docker image
+      DOCKER_FLAG=true
+      shift # past the --docker argument
+      ;;
+    *)
+      # Collect other arguments for nest build
+      NEST_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+# Get the list of changed apps in the 'apps' directory if the --changed flag is provided
+if [ "$CHANGED_FLAG" = true ]; then
+  CHANGED_APPS=$(git diff --name-only HEAD~1 HEAD "apps/" | cut -d'/' -f2 | sort -u)
+
+  # Check if there are any changed apps
+  if [ -z "$CHANGED_APPS" ]; then
+    echo "No changed apps found in 'apps'."
+    exit 0
+  fi
 fi
 
-APP_NAME=$1
+# Build only the specified app or all apps if no specific app is provided
+if [ "$APP_NAME" = "*" ]; then
+  APPS=$(ls -1 ./apps)
+  for APP in $APPS; do
+    echo "Building service: $APP"
+    nest build "$APP" "${NEST_ARGS[@]}" &> /dev/null
 
-# Shift all positional parameters to the left by 1
-# This drops $1 and leaves $2 as $1, $3 as $2, and so on
-shift 1
-
-# Build the app with additional arguments
-nest build $APP_NAME "$@"
-
-# Check if the build succeeded
-if [ "$?" -ne 0 ]; then
-    echo "Build failed. Exiting."
-    exit 1
-fi
-
-# Create the proto directory in the build output if it doesn't exist
-mkdir -p "dist/apps/$APP_NAME/proto"
-
-# Copy proto files to the build output
-cp "libs/proto/src/"*.proto "dist/apps/$APP_NAME/proto"
-
-# Print success message
-if [ "$?" -eq 0 ]; then
-    echo "Proto files have been copied successfully to dist/apps/$APP_NAME/proto"
+    if [ "$DOCKER_FLAG" = true ]; then
+      echo "Building Docker image for $APP"
+      bash ./scripts/package.sh --app $APP --docker
+    else
+      bash ./scripts/package.sh --app $APP
+    fi
+  done
 else
-    echo "Failed to copy proto files."
-    exit 1
+  # Build the specified app with additional arguments
+  echo "Building app: $APP_NAME"
+  nest build "$APP_NAME" "${NEST_ARGS[@]}" &> /dev/null
+
+  if [ "$DOCKER_FLAG" = true ]; then
+    echo "Building Docker image for $APP"
+    bash ./scripts/package.sh --app $APP_NAME --docker
+  else
+    bash ./scripts/package.sh --app $APP_NAME
+  fi
+fi
+
+echo "All builds completed successfully."
+
+if [ "$PACKAGE_FLAG" = true ]; then
+  echo "All apps have been packaged."
 fi

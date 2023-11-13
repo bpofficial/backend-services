@@ -1,6 +1,8 @@
 import { ConfigModule } from '@nestjs/config';
-import { configuration } from './configuration';
+import { devConfiguration } from './configuration.dev';
+import { prodConfiguration } from './configuration.prod';
 
+const inContainer = !!process.env.SERVICE_NAME.length;
 export const AppConfigModule = ConfigModule.forRoot({
-    load: [configuration],
+    load: [inContainer ? prodConfiguration : devConfiguration],
 });

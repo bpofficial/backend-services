@@ -6,7 +6,7 @@ const logger = new Logger();
 
 async function bootstrap() {
     await createService('Organisation', 'service.org', OrgModule);
-    logger.log(`Auth service created`, 'Microservice');
+    logger.log(`Organisation service created`, 'Microservice');
 }
 
 bootstrap();

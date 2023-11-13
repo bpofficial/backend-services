@@ -1,42 +1,33 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Transport } from '@nestjs/microservices';
 import { existsSync } from 'fs';
-import { dirname, join } from 'path';
+import { getGrpcConfig } from './getGrpcConfig';
+import { registerService } from './registerService';
 
 const logger = new Logger();
 
 export async function createMicroservice(
     name: string,
-    service: string,
+    service: `service.${string}`,
     app: INestApplication<any>,
     configService: ConfigService,
 ) {
-    const serviceConfig = configService.getOrThrow(service);
-
-    const protoPath = join(
-        dirname(__filename),
-        configService.get(`${service}.proto`) || `${service}.proto`,
-    );
-
-    const hasGrpc = existsSync(protoPath);
+    const grpcConfig = getGrpcConfig(service, configService);
+    const hasGrpc = existsSync(grpcConfig.options.protoPath);
 
     if (hasGrpc) {
         app.connectMicroservice({
             logger: ['debug', 'log', 'warn', 'error', 'fatal'],
-            transport: Transport.GRPC,
-            options: {
-                package: configService.getOrThrow(`${service}.package`),
-                protoPath,
-                url: `0.0.0.0:${configService.getOrThrow(
-                    `${service}.grpcPort`,
-                )}`,
-            },
+            ...grpcConfig,
         });
 
         await app.startAllMicroservices();
+
+        // Register with consul service discovery (when needed)
+        await registerService(service, configService);
+
         logger.log(
-            `${name} GRPC microservice listening at ${serviceConfig.grpcPort}`,
+            `${name} GRPC microservice listening at ${grpcConfig.options.url}`,
             'Microservice',
         );
     }
