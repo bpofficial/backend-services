@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode } from '@nestjs/common';
+import { Controller, Get, HttpCode, Logger } from '@nestjs/common';
 import {
     HealthCheckService,
     MemoryHealthIndicator,
@@ -8,6 +8,8 @@ import { HealthService } from './health.service';
 
 @Controller('/health')
 export class HealthController {
+    private readonly logger = new Logger('HealthController');
+
     constructor(
         private healthService: HealthService,
         private health: HealthCheckService,
@@ -18,6 +20,7 @@ export class HealthController {
     @Get()
     @HttpCode(200)
     async checkHealth() {
+        this.logger.debug('Checking health across services.');
         return this.health.check([
             this.healthService.pingCheck('service.account'),
             this.healthService.pingCheck('service.auth'),
@@ -33,6 +36,7 @@ export class HealthController {
     @Get('/ping')
     @HttpCode(200)
     async pingHealth() {
+        this.logger.debug('Service being pinged for availability.');
         return {
             status: 'up',
         };

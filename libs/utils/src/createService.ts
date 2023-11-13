@@ -1,9 +1,9 @@
+import { RedisService } from '@liaoliaots/nestjs-redis';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import ConnectRedis from 'connect-redis';
 import * as session from 'express-session';
-import * as redis from 'redis';
 import { createMicroservice } from './createMicroservice';
 import { hasGrpcMethods } from './hasGrpcMethods';
 
@@ -23,6 +23,7 @@ export async function createService(
     });
 
     const configService = app.get(ConfigService);
+    const redisService = app.get(RedisService);
 
     await createMicroservice(name, service, app, configService);
 
@@ -44,9 +45,7 @@ export async function createService(
 
     if (hasHttp) {
         // Create a Redis client
-        const redisClient = redis.createClient({
-            ...configService.getOrThrow('redis.uri'),
-        });
+        const redisClient = redisService.getClient();
 
         const sessionConfig = configService.getOrThrow('session');
         const sessionMiddleware = session({
