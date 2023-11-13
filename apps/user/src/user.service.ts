@@ -1,4 +1,3 @@
-import { MongoModel } from '@app/db';
 import {
     CreateUserRequest,
     DeleteUserRequest,
@@ -8,13 +7,14 @@ import {
     UserResponse,
 } from '@app/proto/user';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
     private readonly logger = new Logger('UserService');
 
-    constructor(@MongoModel('user') private model: Model<User>) {}
+    constructor(@InjectModel('user') private model: Model<User>) {}
 
     async getUserById(req: GetUserRequest): Promise<UserResponse> {
         this.logger.debug(`getUserById: uid=${req.uid}`);

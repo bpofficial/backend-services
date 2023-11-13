@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  account:
+    build:
+      context: ./artifacts/account/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  auth:
+    build:
+      context: ./artifacts/auth/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  connection:
+    build:
+      context: ./artifacts/connection/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  member:
+    build:
+      context: ./artifacts/member/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  org:
+    build:
+      context: ./artifacts/org/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  user:
+    build:
+      context: ./artifacts/user/app
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+
+  redis:
+    image: redis:latest
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+
+  opa:
+    image: openpolicyagent/opa:latest
+    ports:
+      - "8181:8181"

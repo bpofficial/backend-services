@@ -74,17 +74,20 @@ if [ "$DOCKER_FLAG" = true ]; then
 
   IMAGE="$APPLICATION/$APP_NAME:$VERSION-commit$COMMIT_HASH-$TIMESTAMP"
 
-  docker build -t "$IMAGE" -f "$TEMP_DIR/app/Dockerfile" "$TEMP_DIR/app/"
+  # Calculate MD5 hash of package.json and yarn.lock
+  PACKAGE_HASH=$(md5sum "$CURRENT_DIR/package.json" "$CURRENT_DIR/yarn.lock" | awk '{print $1}')
+
+  docker build -t "$IMAGE" -f "$TEMP_DIR/app/Dockerfile" "$TEMP_DIR/app/" --build-arg CACHEBUST=$(date +%s) --build-arg SERVICE=$APP_NAME --build-arg PACKAGE_HASH="$PACKAGE_HASH"
 
   # Set the image name
   yq eval --inplace ".image = \"$IMAGE\"" "$VALUES_YAML"
+else
+  # Create the zip file with the contents of the temporary directory
+  zip -r "$APP_NAME.zip" . &> /dev/null
+
+  # Move the zip file to the desired location
+  mv "$APP_NAME.zip" "$CURRENT_DIR/artifacts/"
 fi
-
-# Create the zip file with the contents of the temporary directory
-zip -r "$APP_NAME.zip" . &> /dev/null
-
-# Move the zip file to the desired location
-mv "$APP_NAME.zip" "$CURRENT_DIR/artifacts/"
 
 # Print success message
 if [ "$?" -eq 0 ]; then

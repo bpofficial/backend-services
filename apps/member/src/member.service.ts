@@ -1,5 +1,4 @@
 import { UserServiceProvider } from '@app/clients';
-import { MongoModel } from '@app/db';
 import {
     AcceptInviteRequest,
     AcceptInviteResponse,
@@ -15,7 +14,8 @@ import {
     MemberResponse,
 } from '@app/proto/member';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { MemberInvitation } from './invitation.model';
 
 @Injectable()
@@ -23,8 +23,8 @@ export class MemberService {
     private readonly logger = new Logger('MemberService');
 
     constructor(
-        @MongoModel('member') private model: Model<Member>,
-        @MongoModel('invitation')
+        @InjectModel('member') private model: Model<Member>,
+        @InjectModel('invitation')
         private invitationModel: Model<MemberInvitation>,
         private userServiceProvider: UserServiceProvider,
     ) {}

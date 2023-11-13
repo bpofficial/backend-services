@@ -3,9 +3,27 @@ import {
     ConnectionConfig,
     ConnectionType,
     TokenOptions,
+    OIDCConfig,
+    LocalConfig,
+    LDAPConfig,
 } from '@app/proto/connection';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+
+class ConnectionConfigModel implements ConnectionConfig {
+    oidc?: OIDCConfig | undefined;
+    local?: LocalConfig | undefined;
+    ldap?: LDAPConfig | undefined;
+}
+
+class TokenOptionsModel implements TokenOptions {
+    issuer: string;
+    audience: string;
+    expiry: number;
+    refresh: boolean;
+    secret: string;
+    refreshExpiry: number;
+}
 
 @Schema({ toJSON: { virtuals: true } })
 export class ConnectionModel
@@ -21,13 +39,13 @@ export class ConnectionModel
     @Prop({ required: true })
     key: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, type: 'Number' })
     type: ConnectionType;
 
-    @Prop({ required: true })
+    @Prop({ required: true, type: ConnectionConfigModel })
     config: ConnectionConfig;
 
-    @Prop({ required: true })
+    @Prop({ required: true, type: TokenOptionsModel })
     token: TokenOptions;
 }
 

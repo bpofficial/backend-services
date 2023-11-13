@@ -1,9 +1,12 @@
-import Vault from 'node-vault';
+import type { VaultOptions, client } from 'node-vault';
 
-export const VaultClient = Vault({
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const vault = require('node-vault');
+
+export const VaultClient: client = vault({
     apiVersion: 'v1',
     endpoint: process.env.VAULT_URI,
-});
+} as VaultOptions);
 
 export async function fetchSecret(secretPath: string) {
     try {

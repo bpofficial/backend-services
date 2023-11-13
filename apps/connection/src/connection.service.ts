@@ -1,4 +1,3 @@
-import { MongoModel } from '@app/db';
 import {
     Connection,
     ConnectionResponse,
@@ -8,13 +7,14 @@ import {
     GetConnectionRequest,
 } from '@app/proto/connection';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ConnectionService {
     private readonly logger = new Logger('ConnectionService');
 
-    constructor(@MongoModel('connection') private model: Model<Connection>) {}
+    constructor(@InjectModel('connection') private model: Model<Connection>) {}
 
     async getConnectionById(
         req: GetConnectionRequest,

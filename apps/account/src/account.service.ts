@@ -1,4 +1,3 @@
-import { MongoModel } from '@app/db';
 import {
     Account,
     AccountResponse,
@@ -8,13 +7,14 @@ import {
     GetAccountRequest,
 } from '@app/proto/account';
 import { Injectable, Logger } from '@nestjs/common';
-import type { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AccountService {
     private readonly logger = new Logger('AccountService');
 
-    constructor(@MongoModel('account') private model: Model<Account>) {}
+    constructor(@InjectModel('account') private model: Model<Account>) {}
 
     async getAccountById(req: GetAccountRequest): Promise<AccountResponse> {
         this.logger.debug(`getAccountById: aid=${req.aid}`);

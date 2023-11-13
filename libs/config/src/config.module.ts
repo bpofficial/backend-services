@@ -1,8 +1,17 @@
 import { ConfigModule } from '@nestjs/config';
 import { devConfiguration } from './configuration.dev';
+import { dockerConfiguration } from './configuration.docker';
 import { prodConfiguration } from './configuration.prod';
 
-const inContainer = !!process.env.SERVICE_NAME.length;
+const inPod = !!process.env.SERVICE_NAME?.length;
+const inDocker = process.env.DOCKER_ENV === 'true';
+
 export const AppConfigModule = ConfigModule.forRoot({
-    load: [inContainer ? prodConfiguration : devConfiguration],
+    load: [
+        inPod
+            ? prodConfiguration
+            : inDocker
+            ? dockerConfiguration
+            : devConfiguration,
+    ],
 });

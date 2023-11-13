@@ -1,6 +1,6 @@
 const env = process.env;
 
-export const devConfiguration = () => ({
+export const dockerConfiguration = () => ({
     prod: false,
     app: {
         uri: env.APP_URI,
@@ -8,7 +8,7 @@ export const devConfiguration = () => ({
     opa: {
         uri: env.OPA_URI,
     },
-    mongo: {
+    mongodb: {
         uri: env.MONGO_URI,
     },
     redis: {
@@ -24,32 +24,29 @@ export const devConfiguration = () => ({
             maxAge: 3600000,
         },
     },
-    // The variables like `env.ORG_SERVICE_HOST || env.SERVICE_HOST` allow us to
-    // define the variable locally and target it for the service or generally
-    // (within a container) when there's no conflicting values.
     service: {
         org: {
-            proto: '../../../libs/proto/src/org.proto',
+            proto: 'proto/org.proto',
             grpcPort: '5001',
             httpPort: '5011',
         },
         user: {
-            proto: '../../../libs/proto/src/user.proto',
+            proto: 'proto/user.proto',
             grpcPort: '5002',
             httpPort: '5022',
         },
         account: {
-            proto: '../../../libs/proto/src/account.proto',
+            proto: 'proto/account.proto',
             grpcPort: '5003',
             httpPort: '5033',
         },
         member: {
-            proto: '../../../libs/proto/src/member.proto',
+            proto: 'proto/member.proto',
             grpcPort: '5004',
             httpPort: '5044',
         },
         connection: {
-            proto: '../../../libs/proto/src/connection.proto',
+            proto: 'proto/connection.proto',
             grpcPort: '5005',
             httpPort: '5055',
         },

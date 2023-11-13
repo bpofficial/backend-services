@@ -8,7 +8,8 @@ export function createMongoDbModule(service: `service.${string}`) {
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (serviceConfig) => {
-                return { uri: serviceConfig.uri };
+                const dbName = serviceConfig.dbName || service;
+                return { uri: serviceConfig.uri + dbName };
             },
             inject: [`Config/${service}`],
         }),

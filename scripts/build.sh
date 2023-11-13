@@ -48,7 +48,7 @@ if [ "$APP_NAME" = "*" ]; then
   APPS=$(ls -1 ./apps)
   for APP in $APPS; do
     echo "Building service: $APP"
-    nest build "$APP" "${NEST_ARGS[@]}" &> /dev/null
+    nest build "$APP" "${NEST_ARGS[@]}"
 
     if [ "$DOCKER_FLAG" = true ]; then
       echo "Building Docker image for $APP"
@@ -60,7 +60,7 @@ if [ "$APP_NAME" = "*" ]; then
 else
   # Build the specified app with additional arguments
   echo "Building app: $APP_NAME"
-  nest build "$APP_NAME" "${NEST_ARGS[@]}" &> /dev/null
+  nest build "$APP_NAME" "${NEST_ARGS[@]}"
 
   if [ "$DOCKER_FLAG" = true ]; then
     echo "Building Docker image for $APP"

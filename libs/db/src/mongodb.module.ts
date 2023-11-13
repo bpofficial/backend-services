@@ -13,27 +13,30 @@ export class MongoDbModule {
         service: `service.${string}`,
         schemas: Record<string, any>,
     ): DynamicModule {
-        logger.log(`Creating module for ${service}`);
         const dbProvider = {
             provide: 'DATABASE_CONNECTION',
-            inject: [ConfigService],
-            useFactory: (
-                configService: ConfigService,
-            ): Promise<typeof mongoose> => {
-                const uri = configService.getOrThrow(`${service}.mongodb.uri`);
-                logger.debug(`Connecting to MongoDB for ${service}`);
-                return mongoose.connect(uri);
+            useFactory: async (configService: ConfigService) => {
+                const uri = await configService.getOrThrow('mongodb.uri');
+                const db = (
+                    (await configService.get('mongodb.database')) || service
+                ).replace(/\./gi, '-');
+
+                logger.log(`Creating module for ${service}`);
+                logger.debug(
+                    `Connecting to MongoDB for ${service} at ${uri + db}`,
+                );
+
+                return mongoose.connect(uri + db);
             },
+            inject: [ConfigService],
         };
 
         const modelProviders = Object.keys(schemas).map((modelName) => ({
             provide: `Model/${modelName}`,
-            inject: ['DATABASE_CONNECTION'],
             useFactory: (connection: Connection) =>
                 connection.model(modelName, schemas[modelName]),
+            inject: ['DATABASE_CONNECTION'],
         }));
-
-        logger.log(`Found ${modelProviders.length} models to provide.`);
 
         return {
             module: MongoDbModule,
@@ -42,11 +45,11 @@ export class MongoDbModule {
                 MongooseModule.forRootAsync({
                     imports: [ConfigModule],
                     useFactory: (configService: ConfigService) => {
-                        const uri = configService.getOrThrow(
-                            `${service}.mongodb.uri`,
-                        );
-
-                        return { uri };
+                        const uri = configService.getOrThrow(`mongodb.uri`);
+                        const db = (
+                            configService.get('mongodb.database') || service
+                        ).replace(/\./gi, '-');
+                        return { uri: uri + db };
                     },
                     inject: [ConfigService],
                 }),

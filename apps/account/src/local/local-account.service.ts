@@ -1,9 +1,9 @@
-import { MongoModel } from '@app/db';
 import { VerifyAccountResponse } from '@app/proto/account';
 import { Err } from '@app/proto/errors';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
-import type { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { AccountModel } from '../account.model';
 import { AccountService } from '../account.service';
 
@@ -12,7 +12,7 @@ export class LocalAccountService {
     private readonly logger = new Logger('LocalAccountService');
 
     constructor(
-        @MongoModel('account') private model: Model<AccountModel>,
+        @InjectModel('account') private model: Model<AccountModel>,
         private accountService: AccountService,
     ) {}
 

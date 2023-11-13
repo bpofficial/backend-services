@@ -1,8 +1,11 @@
-import Consul from 'consul';
+import { Consul } from 'consul';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const consul = require('consul');
 
 // Create a Consul client to connect to your Consul server
-export const consulClient = Consul();
-export const consulKv = new Consul.Kv(consulClient);
+export const consulClient: Consul = new consul();
+export const consulKv = new consul.Kv(consulClient);
 
 // Function to fetch service host URL using Consul
 export async function getServiceHost(serviceName: string) {

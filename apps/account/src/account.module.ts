@@ -5,6 +5,7 @@ import { AccountController } from './account.controller';
 import { AccountSchema } from './account.model';
 import { AccountService } from './account.service';
 import { AccountHttpController } from './http.controller';
+import { LocalAccountService } from './local/local-account.service';
 import { LocalAccountHttpController } from './local/local-http.controller';
 
 @Module({
@@ -17,6 +18,6 @@ import { LocalAccountHttpController } from './local/local-http.controller';
         AccountHttpController,
         LocalAccountHttpController,
     ],
-    providers: [AccountService],
+    providers: [AccountService, LocalAccountService],
 })
 export class AccountModule {}

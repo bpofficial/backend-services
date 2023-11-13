@@ -11,7 +11,7 @@ export function getGrpcConfig(
 
     const protoPath = join(
         __dirname,
-        configService.getOrThrow(`${service}.proto`),
+        configService.get(`${service}.proto`) || '.proto',
     );
 
     return {
