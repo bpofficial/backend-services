@@ -12,21 +12,21 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { OrgService } from './org.service';
 
 @Controller()
-export class OrgController {
-    private readonly logger = new Logger('OrgController');
+export class OrgGrpcController {
+    private readonly logger = new Logger('OrgGrpcController');
 
     constructor(private readonly orgService: OrgService) {}
 
     @GrpcMethod('OrgService', 'FindOneById')
     async findOrgById(data: OrgById): Promise<OrgResponse> {
         this.logger.debug(`findOrgById: oid=${data.oid}`);
-        return this.orgService.getOrgById(data);
+        return this.orgService.getOrgById(data.oid);
     }
 
     @GrpcMethod('OrgService', 'FindOneByDomain')
     async findOneByDomain(data: OrgByDomain): Promise<OrgResponse> {
         this.logger.debug(`findOneByDomain: domain=${data.domain}`);
-        return this.orgService.getOrgByDomain(data);
+        return this.orgService.getOrgByDomain(data.domain);
     }
 
     @GrpcMethod('OrgService', 'Create')
@@ -41,6 +41,6 @@ export class OrgController {
     @GrpcMethod('OrgService', 'Delete')
     async deleteOrg(data: DeleteOrgRequest): Promise<void> {
         this.logger.debug(`deleteOrg: oid=${data.oid}, uid=${data.uid}`);
-        await this.orgService.deleteOrg(data);
+        await this.orgService.deleteOrg(data.oid, data.uid);
     }
 }

@@ -10,7 +10,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { UserService } from './user.service';
 
 @Controller()
-export class UserController {
+export class UserGrpcController {
     private readonly logger = new Logger('UserController');
 
     constructor(private readonly userService: UserService) {}
@@ -18,7 +18,7 @@ export class UserController {
     @GrpcMethod('UserService', 'GetUser')
     async findUserById(data: GetUserRequest): Promise<UserResponse> {
         this.logger.debug(`findUserById: uid=${data.uid}`);
-        return this.userService.getUserById(data);
+        return this.userService.getUserById(data.uid);
     }
 
     @GrpcMethod('UserService', 'Create')
@@ -30,6 +30,6 @@ export class UserController {
     @GrpcMethod('UserService', 'Delete')
     async deleteUser(data: DeleteUserRequest): Promise<DeleteUserResponse> {
         this.logger.debug(`deleteUser: uid=${data.uid}`);
-        return this.userService.deleteUser(data);
+        return this.userService.deleteUser(data.uid);
     }
 }

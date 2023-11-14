@@ -2,11 +2,8 @@ import { MemberServiceProvider, UserServiceProvider } from '@app/clients';
 import {
     CreateOrgRequest,
     CreateOrgResponse,
-    DeleteOrgRequest,
     DeleteOrgResponse,
     Org,
-    OrgByDomain,
-    OrgById,
     OrgResponse,
 } from '@app/proto/org';
 import { Injectable, Logger } from '@nestjs/common';
@@ -24,26 +21,26 @@ export class OrgService {
         private readonly memberServiceProvider: MemberServiceProvider,
     ) {}
 
-    async getOrgById(req: OrgById): Promise<OrgResponse> {
-        this.logger.debug(`getOrgById: oid=${req.oid}`);
-        const result = await this.model.findById(req.oid);
+    async getOrgById(oid: string): Promise<OrgResponse> {
+        this.logger.debug(`getOrgById: oid=${oid}`);
+        const result = await this.model.findById(oid);
 
         if (result) {
             return { org: Org.fromJSON(result.toJSON()) };
         } else {
-            this.logger.warn(`getOrgById: not found, oid=${req.oid}`);
+            this.logger.warn(`getOrgById: not found, oid=${oid}`);
             return { error: { message: 'Not found' } };
         }
     }
 
-    async getOrgByDomain(req: OrgByDomain): Promise<OrgResponse> {
-        this.logger.debug(`getOrgByDomain: domain=${req.domain}`);
-        const result = await this.model.findOne({ domain: req.domain });
+    async getOrgByDomain(domain: string): Promise<OrgResponse> {
+        this.logger.debug(`getOrgByDomain: domain=${domain}`);
+        const result = await this.model.findOne({ domain });
 
         if (result) {
             return { org: Org.fromJSON(result.toJSON()) };
         } else {
-            this.logger.warn(`getOrgByDomain: not found, domain=${req.domain}`);
+            this.logger.warn(`getOrgByDomain: not found, domain=${domain}`);
             return { error: { message: 'Not found' } };
         }
     }
@@ -78,22 +75,22 @@ export class OrgService {
         return { org: Org.fromJSON(result.toJSON()) };
     }
 
-    async deleteOrg(req: DeleteOrgRequest): Promise<DeleteOrgResponse> {
-        this.logger.debug(`deleteOrg: oid=${req.oid}, uid=${req.uid}`);
+    async deleteOrg(oid: string, uid: string): Promise<DeleteOrgResponse> {
+        this.logger.debug(`deleteOrg: oid=${oid}, uid=${uid}`);
         const result = await this.model.deleteOne({
-            _id: req.oid,
-            owner: req.uid,
+            _id: oid,
+            owner: uid,
         });
 
         const memberService = this.memberServiceProvider.getService();
-        await memberService.DeleteAll({ oid: req.oid });
+        await memberService.DeleteAll({ oid });
 
         if (result.deletedCount) {
-            this.logger.debug(`deleteOrg: deleted, oid=${req.oid}`);
+            this.logger.debug(`deleteOrg: deleted, oid=${oid}`);
             return { success: true };
         }
 
-        this.logger.warn(`deleteOrg: not deleted, oid=${req.oid}`);
+        this.logger.warn(`deleteOrg: not deleted, oid=${oid}`);
         return { success: false };
     }
 }

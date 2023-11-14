@@ -1,8 +1,6 @@
 import {
     CreateUserRequest,
-    DeleteUserRequest,
     DeleteUserResponse,
-    GetUserRequest,
     User,
     UserResponse,
 } from '@app/proto/user';
@@ -16,14 +14,14 @@ export class UserService {
 
     constructor(@InjectModel('user') private model: Model<User>) {}
 
-    async getUserById(req: GetUserRequest): Promise<UserResponse> {
-        this.logger.debug(`getUserById: uid=${req.uid}`);
-        const result = await this.model.findById(req.uid);
+    async getUserById(uid: string): Promise<UserResponse> {
+        this.logger.debug(`getUserById: uid=${uid}`);
+        const result = await this.model.findById(uid);
 
         if (result) {
             return { user: User.fromJSON(result.toJSON()) };
         } else {
-            this.logger.warn(`getUserById: not found, uid=${req.uid}`);
+            this.logger.warn(`getUserById: not found, uid=${uid}`);
             return { error: { message: 'Not found' } };
         }
     }
@@ -58,17 +56,17 @@ export class UserService {
         };
     }
 
-    async deleteUser(req: DeleteUserRequest): Promise<DeleteUserResponse> {
-        this.logger.debug(`deleteUser: uid=${req.uid}`);
+    async deleteUser(uid: string): Promise<DeleteUserResponse> {
+        this.logger.debug(`deleteUser: uid=${uid}`);
         const result = await this.model.deleteOne({
-            _id: req.uid,
+            _id: uid,
         });
 
         if (result.deletedCount) {
-            this.logger.debug(`deleteUser: deleted, mid=${req.uid}`);
+            this.logger.debug(`deleteUser: deleted, mid=${uid}`);
             return DeleteUserResponse.create({ success: true });
         }
 
-        this.logger.warn(`deleteUser: not deleted, uid=${req.uid}`);
+        this.logger.warn(`deleteUser: not deleted, uid=${uid}`);
     }
 }

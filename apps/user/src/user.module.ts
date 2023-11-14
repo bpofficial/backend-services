@@ -1,7 +1,8 @@
 import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
-import { UserController } from './user.controller';
+import { UserGrpcController } from './grpc.controller';
+import { UserHttpController } from './http.controller';
 import { UserSchema } from './user.model';
 import { UserService } from './user.service';
 
@@ -10,7 +11,7 @@ import { UserService } from './user.service';
         SharedModule,
         MongoDbModule.forRoot('service.user', { user: UserSchema }),
     ],
-    controllers: [UserController],
+    controllers: [UserGrpcController, UserHttpController],
     providers: [UserService],
 })
 export class UserModule {}
