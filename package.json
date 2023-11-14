@@ -98,7 +98,26 @@
         "collectCoverageFrom": [
             "**/*.(t|j)s"
         ],
+        "collectCoverage": true,
         "coverageDirectory": "./coverage",
+        "coveragePathIgnorePatterns": [
+            "node_modules",
+            ".module.ts",
+            ".model.ts",
+            ".mock.ts",
+            "main.ts",
+            "index.ts",
+            ".spec.ts",
+            ".test.ts",
+            ".decorator.ts",
+            "libs/proto/*",
+            "libs/config/*",
+            "libs/clients/*",
+            "libs/shared/*",
+            "libs/utils/*",
+            "libs/db/*",
+            "test/fixtures"
+        ],
         "testEnvironment": "node",
         "roots": [
             "<rootDir>/apps/",

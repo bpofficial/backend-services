@@ -29,16 +29,17 @@ export class ResponseBuilder<T> {
     }
 
     toJSON(code?: number) {
+        code && this.response.status(code);
+
         if (this.status === 'error') {
-            return {
+            return this.response.json({
                 status: 'error',
                 data: {
                     message: this.error,
                 },
-            };
+            });
         }
 
-        code && this.response.status(code);
         return this.response.json({
             status: this.status,
             data: this.data,

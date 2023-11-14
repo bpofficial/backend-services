@@ -6,6 +6,8 @@ import { UserService } from '../src/user.service';
 import { mockUser } from './fixtures/mockUser';
 
 describe('UserHttpController', () => {
+    const userAuthorized = jest.fn().mockReturnValue(true);
+
     let app: INestApplication;
     let httpServer: HttpServer;
     let userService: UserService;
@@ -27,7 +29,10 @@ describe('UserHttpController', () => {
 
         app = moduleFixture.createNestApplication();
         app.use((req, res, next) => {
-            req.user = mockUser;
+            if (userAuthorized()) {
+                req.user = mockUser;
+            }
+
             next();
         });
         await app.init();
@@ -38,8 +43,6 @@ describe('UserHttpController', () => {
     afterAll(async () => {
         await app.close();
     });
-
-    // Tests for GET /user
     describe('getMe', () => {
         it('should return user details', async () => {
             jest.spyOn(userService, 'getUserById').mockResolvedValue({
@@ -48,7 +51,7 @@ describe('UserHttpController', () => {
             });
 
             return request(httpServer)
-                .get('/user')
+                .get('/user/@me')
                 .expect(200)
                 .expect({
                     status: 'success',
@@ -58,17 +61,30 @@ describe('UserHttpController', () => {
                 });
         });
 
+        it('should handle errors when finding the user', async () => {
+            jest.spyOn(userService, 'getUserById').mockResolvedValue({
+                user: null,
+                error: { message: 'Some random error...' },
+            });
+
+            return request(httpServer).get('/user/@me').expect(500);
+        });
+
         it('should handle errors when user not found', async () => {
             jest.spyOn(userService, 'getUserById').mockResolvedValue({
                 user: null,
                 error: null,
             });
 
-            return request(httpServer).get('/user').expect(404);
+            return request(httpServer).get('/user/@me').expect(404);
+        });
+
+        it('should handle when the request does not have a session', async () => {
+            userAuthorized.mockReturnValueOnce(false);
+            return request(httpServer).get('/user/@me').expect(401);
         });
     });
 
-    // Tests for POST /user
     describe('createAccount', () => {
         it('should create a user account', async () => {
             jest.spyOn(userService, 'createUser').mockResolvedValue({
@@ -101,7 +117,6 @@ describe('UserHttpController', () => {
         });
     });
 
-    // Tests for DELETE /user
     describe('deleteAccount', () => {
         it('should delete a user account', async () => {
             jest.spyOn(userService, 'deleteUser').mockResolvedValue({
@@ -117,6 +132,11 @@ describe('UserHttpController', () => {
             });
 
             return request(httpServer).delete('/user').expect(500);
+        });
+
+        it('should handle when the request does not have a session', async () => {
+            userAuthorized.mockReturnValueOnce(false);
+            return request(httpServer).del('/user').expect(401);
         });
     });
 });
