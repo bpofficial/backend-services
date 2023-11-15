@@ -23,8 +23,6 @@ export class OrgHttpController {
     @Get()
     @UseGuards(OrgDefinedAuthGuard)
     async getOrg(@Req() req: Request, @Res() res: Response) {
-        if (!req.user.oid) return Unauthorized(res);
-
         const { org, error } = await this.orgService.getOrgById(req.user.oid);
 
         const response = new ResponseBuilder(res);
@@ -33,15 +31,26 @@ export class OrgHttpController {
     }
 
     @Post()
-    async createOrg(@Body() data: any) {
-        //
+    async createOrg(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Body() data: any,
+    ) {
+        if (!req.user.id) return Unauthorized(res);
+
+        const { org, error } = await this.orgService.createOrg({
+            ...data,
+            owner: req.user.id,
+        });
+
+        const response = new ResponseBuilder(res);
+        if (error) return response.setError(error.message).toJSON(500);
+        return response.setData({ org }).toJSON(201);
     }
 
     @Delete()
     @UseGuards(OrgDefinedAuthGuard)
     async deleteOrg(@Req() req: Request, @Res() res: Response) {
-        if (!req.user.oid) return Unauthorized(res);
-
         const { success } = await this.orgService.deleteOrg(
             req.user.oid,
             req.user.id,
