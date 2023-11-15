@@ -15,15 +15,23 @@ export class UserService {
     constructor(@InjectModel('user') private model: Model<User>) {}
 
     async getUserById(uid: string): Promise<UserResponse> {
-        this.logger.debug(`getUserById: uid=${uid}`);
-        const result = await this.model.findById(uid);
+        try {
+            this.logger.debug(`getUserById: uid=${uid}`);
+            const result = await this.model.findById(uid);
 
-        if (result) {
-            return { user: User.fromJSON(result.toJSON()) };
-        } else {
-            this.logger.warn(`getUserById: not found, uid=${uid}`);
-            return { error: { message: 'Not found' } };
+            if (result) {
+                return { user: User.fromJSON(result.toJSON()) };
+            } else {
+                this.logger.warn(`getUserById: not found, uid=${uid}`);
+                return { error: { message: 'Not found' } };
+            }
+        } catch (error: any) {
+            this.logger.error(`getUserById: failed to get user by id=${uid}`, {
+                error,
+            });
         }
+
+        return { error: { message: 'An error occured' } };
     }
 
     async createUser(req: CreateUserRequest): Promise<UserResponse> {
@@ -42,31 +50,42 @@ export class UserService {
             if (result) {
                 return { user: User.fromJSON(result.toJSON()) };
             }
-        } catch (err) {
-            return {
-                error: { message: 'Failed to create user', info: err?.message },
-            };
+        } catch (error) {
+            this.logger.error(`createUser: failed to create user`, {
+                error,
+                user: req,
+            });
         }
 
         return {
             error: {
                 message: 'Failed to create user',
-                info: 'Creation was falsy',
             },
         };
     }
 
     async deleteUser(uid: string): Promise<DeleteUserResponse> {
-        this.logger.debug(`deleteUser: uid=${uid}`);
-        const result = await this.model.deleteOne({
-            _id: uid,
-        });
+        try {
+            this.logger.debug(`deleteUser: uid=${uid}`);
+            const result = await this.model.deleteOne({
+                _id: uid,
+            });
 
-        if (result.deletedCount) {
-            this.logger.debug(`deleteUser: deleted, mid=${uid}`);
-            return DeleteUserResponse.create({ success: true });
+            if (result.deletedCount) {
+                this.logger.debug(`deleteUser: deleted, mid=${uid}`);
+                return DeleteUserResponse.create({ success: true });
+            }
+
+            this.logger.warn(`deleteUser: not deleted, uid=${uid}`);
+        } catch (error) {
+            this.logger.error(
+                `deleteUser: failed to delete user with id=${uid}`,
+                {
+                    error,
+                },
+            );
         }
 
-        this.logger.warn(`deleteUser: not deleted, uid=${uid}`);
+        return { success: false };
     }
 }

@@ -1,5 +1,5 @@
 export const mockUser = {
-    id: '123',
-    name: 'Test User',
-    email: 'test@test.com',
+    id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
 };
