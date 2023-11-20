@@ -21,10 +21,10 @@ export class LocalAccountService {
         uid: string,
         token: string,
     ): Promise<VerifyAccountResponse> {
-        const { account, error } = await this.accountService.getAccountById({
+        const { account, error } = await this.accountService.getAccountById(
             aid,
             uid,
-        });
+        );
 
         if (error) return { error };
 

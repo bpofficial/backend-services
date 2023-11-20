@@ -41,7 +41,10 @@ message CreateInviteRequest {
 }
 
 message CreateInviteResponse {
-  string invitation = 1;
+  oneof result {
+      string invitation = 1;
+      Err error = 2;
+  }
 }
 
 message GetMemberRequest {

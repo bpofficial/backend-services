@@ -9,7 +9,6 @@ import {
     DeleteMemberRequest,
     DeleteMemberResponse,
     GetMemberRequest,
-    Member,
     MemberResponse,
 } from '@app/proto/member';
 import { Controller, Logger } from '@nestjs/common';
@@ -17,7 +16,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { MemberService } from './member.service';
 
 @Controller()
-export class MemberController {
+export class MemberGrpcController {
     private readonly logger = new Logger('MemberController');
 
     constructor(private readonly memberService: MemberService) {}
@@ -25,7 +24,7 @@ export class MemberController {
     @GrpcMethod('MemberService', 'GetMember')
     async findMemberById(data: GetMemberRequest): Promise<MemberResponse> {
         this.logger.debug(`findMemberById: mid=${data.mid}, oid=${data.oid}`);
-        return this.memberService.getMemberById(data);
+        return this.memberService.getMemberById(data.mid, data.oid);
     }
 
     @GrpcMethod('MemberService', 'CreateInvite')
@@ -47,7 +46,7 @@ export class MemberController {
     }
 
     @GrpcMethod('MemberService', 'Create')
-    async createMember(data: CreateMemberRequest): Promise<Member> {
+    async createMember(data: CreateMemberRequest): Promise<MemberResponse> {
         this.logger.debug(
             `createMember: oid=${data.oid}, uid=${data.uid}, role=${data.role}`,
         );
@@ -59,7 +58,7 @@ export class MemberController {
         data: DeleteMemberRequest,
     ): Promise<DeleteMemberResponse> {
         this.logger.debug(`deleteMember: mid=${data.mid}, oid=${data.oid}`);
-        return this.memberService.deleteMember(data);
+        return this.memberService.deleteMember(data.mid, data.oid);
     }
 
     @GrpcMethod('MemberService', 'DeleteAll')
@@ -67,6 +66,6 @@ export class MemberController {
         data: DeleteAllMembersRequest,
     ): Promise<DeleteAllMembersResponse> {
         this.logger.debug(`deleteAllMembers: oid=${data.oid}`);
-        return this.memberService.deleteAllMembers(data);
+        return this.memberService.deleteAllMembers(data.oid);
     }
 }

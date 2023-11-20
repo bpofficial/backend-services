@@ -1,9 +1,9 @@
 import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
+import { MemberGrpcController } from './grpc.controller';
 import { MemberHttpController } from './http.controller';
 import { MemberInvitationSchema } from './invitation.model';
-import { MemberController } from './member.controller';
 import { MemberSchema } from './member.model';
 import { MemberService } from './member.service';
 
@@ -15,7 +15,7 @@ import { MemberService } from './member.service';
             invitation: MemberInvitationSchema,
         }),
     ],
-    controllers: [MemberController, MemberHttpController],
+    controllers: [MemberGrpcController, MemberHttpController],
     providers: [MemberService],
 })
 export class MemberModule {}

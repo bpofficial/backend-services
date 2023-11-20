@@ -1,5 +1,7 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { ResponseBuilder } from '@app/shared/responses';
+import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
+import { Response } from 'express';
 import { LocalAccountService } from './local-account.service';
 
 @Controller('accounts')
@@ -9,6 +11,7 @@ export class LocalAccountHttpController {
     @Post(`/verify`)
     @HttpCode(HttpStatusCode.Ok)
     async verifyEmail(
+        @Res() res: Response,
         @Body() data: { aid: string; uid: string; token: string },
     ) {
         const result = await this.accountService.verifyEmail(
@@ -17,6 +20,10 @@ export class LocalAccountHttpController {
             data.token,
         );
 
-        if (result.success) return { status: 'success', data: null };
+        const response = new ResponseBuilder(res);
+        if (!result.success)
+            return response.setError('Invalid token').toJSON(400);
+
+        return response.setData(null).toJSON(200);
     }
 }

@@ -1,5 +1,6 @@
 import { CreateInviteRequest } from '@app/proto/member';
-import { ErrorResponse, OrgDefinedAuthGuard, Response } from '@app/shared';
+import { OrgDefinedAuthGuard } from '@app/shared';
+import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
     Controller,
@@ -8,9 +9,11 @@ import {
     Param,
     Post,
     Query,
-    Request,
+    Req,
+    Res,
     UseGuards,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { MemberService } from './member.service';
 
 @Controller('members')
@@ -19,68 +22,68 @@ export class MemberHttpController {
     constructor(private readonly memberService: MemberService) {}
 
     @Get(`/:id`)
-    async getMember(@Request() request, @Param('id') mid: string) {
-        const { member, error } = await this.memberService.getMemberById({
-            oid: request.user.oid,
+    async getMember(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Param('id') mid: string,
+    ) {
+        const { member, error } = await this.memberService.getMemberById(
+            req.user.oid,
             mid,
-        });
+        );
 
-        if (error || !member) {
-            return new ErrorResponse({ ...error }).toErrorResponse();
-        }
-
-        return new Response({ member }).toResponse();
+        const response = new ResponseBuilder(res);
+        if (error) return response.setError(error.message).toJSON(500);
+        return response.setData({ member }).toJSON(200);
     }
 
     @Post('/invite')
     async inviteMember(
-        @Request() request,
+        @Req() req: Request,
+        @Res() res: Response,
         @Body() data: Pick<CreateInviteRequest, 'role' | 'email'>,
     ) {
-        const member = await this.memberService.createInvite({
-            oid: request.user.oid,
+        const { invitation, error } = await this.memberService.createInvite({
+            oid: req.user.oid,
             role: data.role,
             email: data.email,
         });
 
-        if (member.invitation) {
-            return new Response({ invitation: member.invitation }).toResponse();
-        }
-
-        return new ErrorResponse({
-            message: 'An unknown issue occured',
-        }).toFailureResponse();
+        const response = new ResponseBuilder(res);
+        if (error) return response.setError(error.message).toJSON(500);
+        return response.setData({ invitation }).toJSON(200);
     }
 
     @Post('/accept')
     async acceptInvite(
-        @Request() request,
+        @Req() req: Request,
+        @Res() res: Response,
         @Query('invitation') invitation: string,
     ) {
         const { success } = await this.memberService.acceptInvite({
-            oid: request.user.oid,
-            uid: request.user.uid,
+            oid: req.user.oid,
+            uid: req.user.id,
             invitation,
         });
 
-        if (success) return;
-
-        return new ErrorResponse({
-            message: 'Failed to accept invitation',
-        }).toFailureResponse();
+        const response = new ResponseBuilder(res);
+        if (success) return response.setData(null).toJSON(204);
+        return response.setError('Failed to accept invitation').toJSON(500);
     }
 
     @Delete('/:id')
-    async removeMember(@Request() request, @Param('id') mid: string) {
-        const { success } = await this.memberService.deleteMember({
-            oid: request.user.oid,
+    async removeMember(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Param('id') mid: string,
+    ) {
+        const { success } = await this.memberService.deleteMember(
+            req.user.oid,
             mid,
-        });
+        );
 
-        if (success) return;
-
-        return new ErrorResponse({
-            message: 'Failed to remove member',
-        }).toFailureResponse();
+        const response = new ResponseBuilder(res);
+        if (success) return response.setData(null).toJSON(204);
+        return response.setError('Failed to delete member').toJSON(500);
     }
 }

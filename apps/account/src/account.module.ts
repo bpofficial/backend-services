@@ -1,9 +1,9 @@
 import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
-import { AccountController } from './account.controller';
 import { AccountSchema } from './account.model';
 import { AccountService } from './account.service';
+import { AccountGrpcController } from './grpc.controller';
 import { AccountHttpController } from './http.controller';
 import { LocalAccountService } from './local/local-account.service';
 import { LocalAccountHttpController } from './local/local-http.controller';
@@ -14,7 +14,7 @@ import { LocalAccountHttpController } from './local/local-http.controller';
         MongoDbModule.forRoot('service.account', { account: AccountSchema }),
     ],
     controllers: [
-        AccountController,
+        AccountGrpcController,
         AccountHttpController,
         LocalAccountHttpController,
     ],

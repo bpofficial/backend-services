@@ -32,7 +32,8 @@ export interface CreateInviteRequest {
 }
 
 export interface CreateInviteResponse {
-  invitation: string;
+  invitation?: string | undefined;
+  error?: Err | undefined;
 }
 
 export interface GetMemberRequest {
@@ -469,13 +470,16 @@ export const CreateInviteRequest = {
 };
 
 function createBaseCreateInviteResponse(): CreateInviteResponse {
-  return { invitation: "" };
+  return { invitation: undefined, error: undefined };
 }
 
 export const CreateInviteResponse = {
   encode(message: CreateInviteResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.invitation !== "") {
+    if (message.invitation !== undefined) {
       writer.uint32(10).string(message.invitation);
+    }
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -494,6 +498,13 @@ export const CreateInviteResponse = {
 
           message.invitation = reader.string();
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.error = Err.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -504,13 +515,19 @@ export const CreateInviteResponse = {
   },
 
   fromJSON(object: any): CreateInviteResponse {
-    return { invitation: isSet(object.invitation) ? globalThis.String(object.invitation) : "" };
+    return {
+      invitation: isSet(object.invitation) ? globalThis.String(object.invitation) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+    };
   },
 
   toJSON(message: CreateInviteResponse): unknown {
     const obj: any = {};
-    if (message.invitation !== "") {
+    if (message.invitation !== undefined) {
       obj.invitation = message.invitation;
+    }
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
     }
     return obj;
   },
@@ -520,7 +537,8 @@ export const CreateInviteResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<CreateInviteResponse>, I>>(object: I): CreateInviteResponse {
     const message = createBaseCreateInviteResponse();
-    message.invitation = object.invitation ?? "";
+    message.invitation = object.invitation ?? undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
     return message;
   },
 };

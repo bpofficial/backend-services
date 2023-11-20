@@ -10,7 +10,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { AccountService } from './account.service';
 
 @Controller()
-export class AccountController {
+export class AccountGrpcController {
     private readonly logger = new Logger('AccountController');
 
     constructor(private readonly accountService: AccountService) {}
@@ -18,7 +18,7 @@ export class AccountController {
     @GrpcMethod('AccountService', 'GetAccount')
     async findAccountById(data: GetAccountRequest): Promise<AccountResponse> {
         this.logger.debug(`findAccountById: aid=${data.aid}`);
-        return this.accountService.getAccountById(data);
+        return this.accountService.getAccountById(data.aid, data.uid);
     }
 
     @GrpcMethod('AccountService', 'Connect')
@@ -32,6 +32,6 @@ export class AccountController {
         data: DisconnectAccountRequest,
     ): Promise<DisconnectAccountResponse> {
         this.logger.debug(`disconnectAccount: aid=${data.aid}`);
-        return this.accountService.disconnectAccount(data);
+        return this.accountService.disconnectAccount(data.aid, data.uid);
     }
 }
