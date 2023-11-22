@@ -1,5 +1,5 @@
 import { CreateConnectionRequest } from '@app/proto/connection';
-import { ErrorResponse, Response } from '@app/shared';
+import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
     Controller,
@@ -8,8 +8,10 @@ import {
     HttpCode,
     Param,
     Post,
+    Res,
 } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
+import { Response } from 'express';
 import { ConnectionService } from './connection.service';
 
 @Controller('connections')
@@ -18,40 +20,42 @@ export class ConnectionHttpController {
 
     @Get(`/:id`)
     @HttpCode(HttpStatusCode.Ok)
-    async getConnection(@Param('id') cid: string) {
+    async getConnection(@Res() res: Response, @Param('id') cid: string) {
         const { connection, error } =
-            await this.connectionService.getConnectionById({ cid });
+            await this.connectionService.getConnectionById(cid);
 
-        if (error || !connection) {
-            return new ErrorResponse({ ...error }).toErrorResponse();
-        }
+        const response = new ResponseBuilder(res);
 
-        return new Response({ connection }).toResponse();
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
+        return response.setData({ connection }).toJSON(200);
     }
 
     @Post()
     @HttpCode(HttpStatusCode.Created)
-    async createConnection(@Body() data: CreateConnectionRequest) {
-        const connection = await this.connectionService.createConnection(data);
+    async createConnection(
+        @Res() res: Response,
+        @Body() data: CreateConnectionRequest,
+    ) {
+        const { connection, error } =
+            await this.connectionService.createConnection(data);
 
-        if (connection.error || !connection.connection) {
-            return new ErrorResponse({ ...connection.error }).toErrorResponse();
-        }
+        const response = new ResponseBuilder(res);
 
-        return new Response({ connection }).toResponse();
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
+        return response.setData({ connection }).toJSON(201);
     }
 
     @Delete('/:id')
     @HttpCode(HttpStatusCode.NoContent)
-    async deleteConnection(@Param('id') cid: string) {
-        const { success } = await this.connectionService.deleteConnection({
-            cid,
-        });
+    async deleteConnection(@Res() res: Response, @Param('id') cid: string) {
+        const { success } = await this.connectionService.deleteConnection(cid);
 
-        if (success) return;
-
-        return new ErrorResponse({
-            message: 'Failed to remove connection',
-        }).toFailureResponse();
+        const response = new ResponseBuilder(res);
+        if (success) return response.setData(null).toJSON(204);
+        return response.setError('Failed to delete connection').toJSON(500);
     }
 }

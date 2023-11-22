@@ -6,10 +6,11 @@ export const protobufPackage = "proto";
 export interface Err {
   message?: string | undefined;
   info?: string | undefined;
+  code?: number | undefined;
 }
 
 function createBaseErr(): Err {
-  return { message: undefined, info: undefined };
+  return { message: undefined, info: undefined, code: undefined };
 }
 
 export const Err = {
@@ -19,6 +20,9 @@ export const Err = {
     }
     if (message.info !== undefined) {
       writer.uint32(18).string(message.info);
+    }
+    if (message.code !== undefined) {
+      writer.uint32(24).int32(message.code);
     }
     return writer;
   },
@@ -44,6 +48,13 @@ export const Err = {
 
           message.info = reader.string();
           continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.code = reader.int32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -57,6 +68,7 @@ export const Err = {
     return {
       message: isSet(object.message) ? globalThis.String(object.message) : undefined,
       info: isSet(object.info) ? globalThis.String(object.info) : undefined,
+      code: isSet(object.code) ? globalThis.Number(object.code) : undefined,
     };
   },
 
@@ -68,6 +80,9 @@ export const Err = {
     if (message.info !== undefined) {
       obj.info = message.info;
     }
+    if (message.code !== undefined) {
+      obj.code = Math.round(message.code);
+    }
     return obj;
   },
 
@@ -78,6 +93,7 @@ export const Err = {
     const message = createBaseErr();
     message.message = object.message ?? undefined;
     message.info = object.info ?? undefined;
+    message.code = object.code ?? undefined;
     return message;
   },
 };

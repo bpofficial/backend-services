@@ -27,10 +27,17 @@ export class AccountService {
                 `getAccountById: failed to get account, aid=${aid}`,
                 { error: JSON.stringify(error) },
             );
+
+            return {
+                error: {
+                    message: 'An error occured finding the account',
+                    code: 500,
+                },
+            };
         }
 
         this.logger.warn(`getAccountById: not found, aid=${aid}`);
-        return { error: { message: 'Not found' } };
+        return { error: { message: 'Not found', code: 404 } };
     }
 
     async connectAccount(req: ConnectAccountRequest): Promise<AccountResponse> {
@@ -57,6 +64,7 @@ export class AccountService {
                 error: {
                     message: 'Failed to create account',
                     info: error?.message,
+                    code: 500,
                 },
             };
         }
@@ -68,6 +76,7 @@ export class AccountService {
             error: {
                 message: 'Failed to create account',
                 info: 'Creation was falsy',
+                code: 500,
             },
         };
     }

@@ -2,9 +2,7 @@ import {
     Connection,
     ConnectionResponse,
     CreateConnectionRequest,
-    DeleteConnectionRequest,
     DeleteConnectionResponse,
-    GetConnectionRequest,
 } from '@app/proto/connection';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,26 +14,36 @@ export class ConnectionService {
 
     constructor(@InjectModel('connection') private model: Model<Connection>) {}
 
-    async getConnectionById(
-        req: GetConnectionRequest,
-    ): Promise<ConnectionResponse> {
-        this.logger.debug(`getConnectionById: cid=${req.cid}`);
-        const result = await this.model.findById(req.cid);
+    async getConnectionById(cid: string): Promise<ConnectionResponse> {
+        try {
+            this.logger.debug(`getConnectionById: cid=${cid}`);
+            const result = await this.model.findById(cid);
 
-        if (result) {
-            return { connection: Connection.fromJSON(result.toJSON()) };
-        } else {
-            this.logger.warn(`getConnectionById: not found, cid=${req.cid}`);
-            return { error: { message: 'Not found' } };
+            if (result) {
+                return { connection: Connection.fromJSON(result) };
+            }
+        } catch (error) {
+            this.logger.error(
+                `getConnectionById: failed to get connection, cid=${cid}`,
+                { error: JSON.stringify(error) },
+            );
+
+            return {
+                error: {
+                    message: 'An error occured finding the connection',
+                    code: 500,
+                },
+            };
         }
+
+        this.logger.warn(`getConnectionById: not found, cid=${cid}`);
+        return { error: { message: 'Not found', code: 404 } };
     }
 
     async createConnection(
         req: CreateConnectionRequest,
     ): Promise<ConnectionResponse> {
         try {
-            this.logger.debug(`createConnection: name=${req.name}`);
-
             const result = await this.model.create({
                 oid: req.oid,
                 name: req.name,
@@ -44,16 +52,23 @@ export class ConnectionService {
                 config: req.config,
             });
 
-            this.logger.debug(`createConnection: created, cid=${result.id}`);
-
             if (result) {
-                return { connection: Connection.fromJSON(result.toJSON()) };
+                this.logger.debug(
+                    `createConnection: created, cid=${result.id}`,
+                );
+                return { connection: Connection.fromJSON(result) };
             }
-        } catch (err) {
+        } catch (error) {
+            this.logger.error(`createConnection: failed to create connection`, {
+                error: JSON.stringify(error),
+                connection: req,
+            });
+
             return {
                 error: {
                     message: 'Failed to create connection',
-                    info: err?.message,
+                    info: error?.message,
+                    code: 500,
                 },
             };
         }
@@ -62,23 +77,30 @@ export class ConnectionService {
             error: {
                 message: 'Failed to create connection',
                 info: 'Creation was falsy',
+                code: 500,
             },
         };
     }
 
-    async deleteConnection(
-        req: DeleteConnectionRequest,
-    ): Promise<DeleteConnectionResponse> {
-        this.logger.debug(`deleteConnection: cid=${req.cid}`);
-        const result = await this.model.deleteOne({
-            _id: req.cid,
-        });
+    async deleteConnection(cid: string): Promise<DeleteConnectionResponse> {
+        try {
+            this.logger.debug(`deleteConnection: cid=${cid}`);
+            const result = await this.model.deleteOne({
+                _id: cid,
+            });
 
-        if (result.deletedCount) {
-            this.logger.debug(`deleteConnection: deleted, mid=${req.cid}`);
-            return DeleteConnectionResponse.create({ success: true });
+            if (result.deletedCount) {
+                this.logger.debug(`deleteConnection: deleted, cid=${cid}`);
+                return { success: true };
+            }
+        } catch (error) {
+            this.logger.error(
+                `deleteConnection: failed to delete connection, cid=${cid}`,
+                { error: JSON.stringify(error) },
+            );
         }
 
-        this.logger.warn(`deleteConnection: not deleted, cid=${req.cid}`);
+        this.logger.debug(`deleteConnection: not deleted, cid=${cid}`);
+        return { success: false };
     }
 }

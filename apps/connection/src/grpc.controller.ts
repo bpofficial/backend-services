@@ -10,7 +10,7 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { ConnectionService } from './connection.service';
 
 @Controller()
-export class ConnectionController {
+export class ConnectionGrpcController {
     private readonly logger = new Logger('ConnectionController');
 
     constructor(private readonly connectionService: ConnectionService) {}
@@ -20,7 +20,7 @@ export class ConnectionController {
         data: GetConnectionRequest,
     ): Promise<ConnectionResponse> {
         this.logger.debug(`findConnectionById: cid=${data.cid}`);
-        return this.connectionService.getConnectionById(data);
+        return this.connectionService.getConnectionById(data.cid);
     }
 
     @GrpcMethod('ConnectionService', 'Create')
@@ -36,6 +36,6 @@ export class ConnectionController {
         data: DeleteConnectionRequest,
     ): Promise<DeleteConnectionResponse> {
         this.logger.debug(`deleteConnection: cid=${data.cid}`);
-        return this.connectionService.deleteConnection(data);
+        return this.connectionService.deleteConnection(data.cid);
     }
 }

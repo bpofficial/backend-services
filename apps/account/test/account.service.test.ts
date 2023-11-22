@@ -40,7 +40,9 @@ describe('AccountService', () => {
             accountModelMock.findOne.mockResolvedValue(null);
 
             const result = await accountService.getAccountById('2', 'user2');
-            expect(result).toEqual({ error: { message: 'Not found' } });
+            expect(result).toEqual({
+                error: { message: 'Not found', code: 404 },
+            });
         });
     });
 
@@ -69,6 +71,7 @@ describe('AccountService', () => {
                 error: {
                     message: 'Failed to create account',
                     info: 'Creation was falsy',
+                    code: 500,
                 },
             });
         });
