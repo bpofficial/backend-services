@@ -1,12 +1,12 @@
 {
     "$schema": "https://json.schemastore.org/nest-cli",
     "collection": "@nestjs/schematics",
-    "root": "apps/org/src",
-    "sourceRoot": "apps/org/src",
+    "root": "apps/core/org/src",
+    "sourceRoot": "apps/core/org/src",
     "compilerOptions": {
         "deleteOutDir": true,
         "webpack": true,
-        "tsConfigPath": "apps/org/tsconfig.app.json",
+        "tsConfigPath": "apps/core/org/tsconfig.app.json",
         "assets": [
             {
                 "include": "./**/**/*.proto",
@@ -17,15 +17,6 @@
     },
     "monorepo": true,
     "projects": {
-        "org": {
-            "type": "application",
-            "root": "apps/org",
-            "entryFile": "main",
-            "sourceRoot": "apps/org/src",
-            "compilerOptions": {
-                "tsConfigPath": "apps/org/tsconfig.app.json"
-            }
-        },
         "shared": {
             "type": "library",
             "root": "libs/shared",
@@ -80,40 +71,49 @@
                 "tsConfigPath": "libs/db/tsconfig.lib.json"
             }
         },
+        "org": {
+            "type": "application",
+            "root": "apps/core/org",
+            "entryFile": "main",
+            "sourceRoot": "apps/core/org/src",
+            "compilerOptions": {
+                "tsConfigPath": "apps/core/org/tsconfig.app.json"
+            }
+        },
         "member": {
             "type": "application",
-            "root": "apps/member",
+            "root": "apps/core/org-member",
             "entryFile": "main",
-            "sourceRoot": "apps/member/src",
+            "sourceRoot": "apps/core/org-member/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/member/tsconfig.app.json"
+                "tsConfigPath": "apps/core/org-member/tsconfig.app.json"
             }
         },
         "user": {
             "type": "application",
-            "root": "apps/user",
+            "root": "apps/core/user",
             "entryFile": "main",
-            "sourceRoot": "apps/user/src",
+            "sourceRoot": "apps/core/user/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/user/tsconfig.app.json"
+                "tsConfigPath": "apps/core/user/tsconfig.app.json"
             }
         },
         "account": {
             "type": "application",
-            "root": "apps/account",
+            "root": "apps/core/user-account",
             "entryFile": "main",
-            "sourceRoot": "apps/account/src",
+            "sourceRoot": "apps/core/user-account/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/account/tsconfig.app.json"
+                "tsConfigPath": "apps/core/user-account/tsconfig.app.json"
             }
         },
         "connection": {
             "type": "application",
-            "root": "apps/connection",
+            "root": "apps/auth/connection",
             "entryFile": "main",
-            "sourceRoot": "apps/connection/src",
+            "sourceRoot": "apps/auth/connection/src",
             "compilerOptions": {
-                "tsConfigPath": "apps/connection/tsconfig.app.json"
+                "tsConfigPath": "apps/auth/connection/tsconfig.app.json"
             }
         },
         "auth": {
