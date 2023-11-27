@@ -1,4 +1,5 @@
-import { CreateInviteRequest } from '@app/proto/member';
+import { MemberServiceProvider } from '@app/clients';
+import { CreateInviteRequest, MemberService } from '@app/proto/member';
 import { OrgDefinedAuthGuard } from '@app/shared';
 import { ResponseBuilder } from '@app/shared/responses';
 import {
@@ -6,6 +7,7 @@ import {
     Controller,
     Delete,
     Get,
+    Logger,
     Param,
     Post,
     Query,
@@ -14,12 +16,16 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { MemberService } from './member.service';
 
 @Controller('members')
 @UseGuards(OrgDefinedAuthGuard)
 export class MemberHttpController {
-    constructor(private readonly memberService: MemberService) {}
+    private readonly logger = new Logger('MemberHttpController');
+    private readonly memberService: MemberService;
+
+    constructor(private readonly memberServiceProvider: MemberServiceProvider) {
+        this.memberService = this.memberServiceProvider.getService();
+    }
 
     @Get(`/:id`)
     async getMember(
@@ -27,10 +33,10 @@ export class MemberHttpController {
         @Res() res: Response,
         @Param('id') mid: string,
     ) {
-        const { member, error } = await this.memberService.getMemberById(
-            req.user.oid,
+        const { member, error } = await this.memberService.GetMember({
+            oid: req.user.oid,
             mid,
-        );
+        });
 
         const response = new ResponseBuilder(res);
         if (error) return response.setError(error.message).toJSON(500);
@@ -43,7 +49,7 @@ export class MemberHttpController {
         @Res() res: Response,
         @Body() data: Pick<CreateInviteRequest, 'role' | 'email'>,
     ) {
-        const { invitation, error } = await this.memberService.createInvite({
+        const { invitation, error } = await this.memberService.CreateInvite({
             oid: req.user.oid,
             role: data.role,
             email: data.email,
@@ -60,7 +66,7 @@ export class MemberHttpController {
         @Res() res: Response,
         @Query('invitation') invitation: string,
     ) {
-        const { success } = await this.memberService.acceptInvite({
+        const { success } = await this.memberService.AcceptInvite({
             oid: req.user.oid,
             uid: req.user.id,
             invitation,
@@ -77,10 +83,10 @@ export class MemberHttpController {
         @Res() res: Response,
         @Param('id') mid: string,
     ) {
-        const { success } = await this.memberService.deleteMember(
-            req.user.oid,
+        const { success } = await this.memberService.Delete({
+            oid: req.user.oid,
             mid,
-        );
+        });
 
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);

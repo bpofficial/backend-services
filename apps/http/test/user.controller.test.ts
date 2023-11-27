@@ -2,8 +2,8 @@ import { HttpServer, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { UserHttpController } from '../src/http.controller';
-import { UserService } from '../src/user.service';
-import { mockUser } from './fixtures/mockUser';
+import { UserService } from '../../core/user/src/user.service';
+import { mockUser } from '../../core/user/test/fixtures/mockUser';
 
 describe('UserHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);

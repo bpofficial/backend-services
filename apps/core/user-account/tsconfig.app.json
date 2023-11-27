@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/account"
+    "outDir": "../../dist/apps/core/user-account"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*test.ts"]

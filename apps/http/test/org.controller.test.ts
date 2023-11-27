@@ -3,14 +3,20 @@ import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { OrgHttpController } from '../src/http.controller';
-import { OrgService } from '../src/org.service';
-import { mockOrg } from './fixtures/mockOrg';
+import { mockOrg } from '../../core/org/test/fixtures/mockOrg';
+import { OrgHttpController } from '../src/org.controller';
+import { OrgServiceProvider } from '@app/clients';
 
 describe('OrgHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);
     let app: INestApplication;
-    let orgService: OrgService;
+
+    const orgService = {
+        FindOneById: jest.fn(),
+        FindOneByDomain: jest.fn(),
+        Create: jest.fn(),
+        Delete: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -25,11 +31,9 @@ describe('OrgHttpController', () => {
                     },
                 },
                 {
-                    provide: OrgService,
+                    provide: OrgServiceProvider,
                     useValue: {
-                        getOrgById: jest.fn(),
-                        createOrg: jest.fn(),
-                        deleteOrg: jest.fn(),
+                        getService: () => orgService,
                     },
                 },
             ],
@@ -48,7 +52,6 @@ describe('OrgHttpController', () => {
         });
 
         await app.init();
-        orgService = module.get<OrgService>(OrgService);
     });
 
     afterEach(async () => {
@@ -57,7 +60,7 @@ describe('OrgHttpController', () => {
 
     describe('getOrg', () => {
         it('should return organisation details', async () => {
-            jest.spyOn(orgService, 'getOrgById').mockResolvedValue({
+            orgService.FindOneById.mockResolvedValueOnce({
                 org: mockOrg,
                 error: null,
             });
@@ -70,7 +73,7 @@ describe('OrgHttpController', () => {
         });
 
         it('should return an error when organisation not found', async () => {
-            jest.spyOn(orgService, 'getOrgById').mockResolvedValue({
+            orgService.FindOneById.mockResolvedValueOnce({
                 org: null,
                 error: { message: 'Org not found' },
             });
@@ -104,9 +107,7 @@ describe('OrgHttpController', () => {
 
         it('should create an organisation', async () => {
             const mockCreateResponse = { org: { id: '2', ...createOrgData } };
-            jest.spyOn(orgService, 'createOrg').mockResolvedValue(
-                mockCreateResponse,
-            );
+            orgService.Create.mockResolvedValueOnce(mockCreateResponse);
 
             return request(app.getHttpServer())
                 .post('/org')
@@ -116,7 +117,7 @@ describe('OrgHttpController', () => {
         });
 
         it('should return an error if org creation fails', async () => {
-            jest.spyOn(orgService, 'createOrg').mockResolvedValue({
+            orgService.Create.mockResolvedValueOnce({
                 error: { message: 'Creation failed' },
             });
 
@@ -133,7 +134,7 @@ describe('OrgHttpController', () => {
 
     describe('deleteOrg', () => {
         it('should delete an organisation', async () => {
-            jest.spyOn(orgService, 'deleteOrg').mockResolvedValue({
+            orgService.Delete.mockResolvedValueOnce({
                 success: true,
             });
 
@@ -144,7 +145,7 @@ describe('OrgHttpController', () => {
         });
 
         it('should return an error during organisation deletion', async () => {
-            jest.spyOn(orgService, 'deleteOrg').mockResolvedValue({
+            orgService.Delete.mockResolvedValueOnce({
                 success: false,
             });
 

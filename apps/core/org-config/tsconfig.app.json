@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/connection"
+    "outDir": "../../dist/apps/core/org-config"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*test.ts"]

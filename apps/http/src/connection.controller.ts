@@ -1,4 +1,8 @@
-import { CreateConnectionRequest } from '@app/proto/connection';
+import { ConnectionServiceProvider } from '@app/clients';
+import {
+    ConnectionService,
+    CreateConnectionRequest,
+} from '@app/proto/connection';
 import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
@@ -6,23 +10,28 @@ import {
     Delete,
     Get,
     HttpCode,
+    Logger,
     Param,
     Post,
     Res,
 } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 import { Response } from 'express';
-import { ConnectionService } from './connection.service';
 
 @Controller('connections')
 export class ConnectionHttpController {
-    constructor(private connectionService: ConnectionService) {}
+    private readonly logger = new Logger('ConnectionHttpController');
+    private readonly connectionService: ConnectionService;
+
+    constructor(private connectionServiceProvider: ConnectionServiceProvider) {
+        this.connectionService = this.connectionServiceProvider.getService();
+    }
 
     @Get(`/:id`)
     @HttpCode(HttpStatusCode.Ok)
     async getConnection(@Res() res: Response, @Param('id') cid: string) {
         const { connection, error } =
-            await this.connectionService.getConnectionById(cid);
+            await this.connectionService.GetConnection({ cid });
 
         const response = new ResponseBuilder(res);
 
@@ -38,21 +47,16 @@ export class ConnectionHttpController {
         @Res() res: Response,
         @Body() data: CreateConnectionRequest,
     ) {
-        const { connection, error } =
-            await this.connectionService.createConnection(data);
+        const connection = await this.connectionService.Create(data);
 
         const response = new ResponseBuilder(res);
-
-        if (error)
-            return response.setError(error.message).toJSON(error.code || 500);
-
         return response.setData({ connection }).toJSON(201);
     }
 
     @Delete('/:id')
     @HttpCode(HttpStatusCode.NoContent)
     async deleteConnection(@Res() res: Response, @Param('id') cid: string) {
-        const { success } = await this.connectionService.deleteConnection(cid);
+        const { success } = await this.connectionService.Delete({ cid });
 
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);

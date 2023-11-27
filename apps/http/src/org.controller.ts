@@ -1,3 +1,5 @@
+import { OrgServiceProvider } from '@app/clients';
+import { OrgService } from '@app/proto/org';
 import { OrgDefinedAuthGuard } from '@app/shared';
 import { ResponseBuilder, Unauthorized } from '@app/shared/responses';
 import {
@@ -12,18 +14,22 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { OrgService } from './org.service';
 
 @Controller('org')
 export class OrgHttpController {
     private readonly logger = new Logger('OrgHttpController');
+    private readonly orgService: OrgService;
 
-    constructor(private readonly orgService: OrgService) {}
+    constructor(private readonly orgServiceProvider: OrgServiceProvider) {
+        this.orgService = this.orgServiceProvider.getService();
+    }
 
     @Get()
     @UseGuards(OrgDefinedAuthGuard)
     async getOrg(@Req() req: Request, @Res() res: Response) {
-        const { org, error } = await this.orgService.getOrgById(req.user.oid);
+        const { org, error } = await this.orgService.FindOneById({
+            oid: req.user.oid,
+        });
 
         const response = new ResponseBuilder(res);
         if (error) return response.setError(error.message).toJSON(500);
@@ -38,7 +44,7 @@ export class OrgHttpController {
     ) {
         if (!req.user.id) return Unauthorized(res);
 
-        const { org, error } = await this.orgService.createOrg({
+        const { org, error } = await this.orgService.Create({
             ...data,
             owner: req.user.id,
         });
@@ -51,10 +57,9 @@ export class OrgHttpController {
     @Delete()
     @UseGuards(OrgDefinedAuthGuard)
     async deleteOrg(@Req() req: Request, @Res() res: Response) {
-        const { success } = await this.orgService.deleteOrg(
-            req.user.oid,
-            req.user.id,
-        );
+        const { success } = await this.orgService.Delete({
+            oid: req.user.oid,
+        });
 
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);

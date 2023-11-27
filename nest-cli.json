@@ -80,7 +80,25 @@
                 "tsConfigPath": "apps/core/org/tsconfig.app.json"
             }
         },
-        "member": {
+        "org-config": {
+            "type": "application",
+            "root": "apps/core/org-config",
+            "entryFile": "main",
+            "sourceRoot": "apps/core/org-config/src",
+            "compilerOptions": {
+                "tsConfigPath": "apps/core/org-config/tsconfig.app.json"
+            }
+        },
+        "org-connection": {
+            "type": "application",
+            "root": "apps/core/org-connection",
+            "entryFile": "main",
+            "sourceRoot": "apps/core/org-connection/src",
+            "compilerOptions": {
+                "tsConfigPath": "apps/core/org-connection/tsconfig.app.json"
+            }
+        },
+        "org-member": {
             "type": "application",
             "root": "apps/core/org-member",
             "entryFile": "main",
@@ -98,22 +116,13 @@
                 "tsConfigPath": "apps/core/user/tsconfig.app.json"
             }
         },
-        "account": {
+        "user-account": {
             "type": "application",
             "root": "apps/core/user-account",
             "entryFile": "main",
             "sourceRoot": "apps/core/user-account/src",
             "compilerOptions": {
                 "tsConfigPath": "apps/core/user-account/tsconfig.app.json"
-            }
-        },
-        "connection": {
-            "type": "application",
-            "root": "apps/auth/connection",
-            "entryFile": "main",
-            "sourceRoot": "apps/auth/connection/src",
-            "compilerOptions": {
-                "tsConfigPath": "apps/auth/connection/tsconfig.app.json"
             }
         },
         "auth": {

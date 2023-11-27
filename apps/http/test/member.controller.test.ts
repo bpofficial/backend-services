@@ -3,8 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { MemberHttpController } from '../src/http.controller';
-import { MemberService } from '../src/member.service';
-import { mockMember } from './fixtures/mockMember';
+import { MemberService } from '../../core/org-member/src/member.service';
+import { mockMember } from '../../core/org-member/test/fixtures/mockMember';
 
 describe('MemberHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);

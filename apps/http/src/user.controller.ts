@@ -1,4 +1,5 @@
-import { CreateUserRequest } from '@app/proto/user';
+import { UserServiceProvider } from '@app/clients';
+import { CreateUserRequest, UserService } from '@app/proto/user';
 import { Unauthorized } from '@app/shared/responses';
 import { ResponseBuilder } from '@app/shared/responses/builders';
 import {
@@ -13,13 +14,15 @@ import {
     Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UserService } from './user.service';
 
 @Controller('user')
 export class UserHttpController {
     private readonly logger = new Logger('UserHttpController');
+    private readonly userService: UserService;
 
-    constructor(private userService: UserService) {}
+    constructor(private userServiceProvider: UserServiceProvider) {
+        this.userService = this.userServiceProvider.getService();
+    }
 
     @Get('/@me')
     @HttpCode(200)
@@ -30,7 +33,9 @@ export class UserHttpController {
             return Unauthorized(res);
         }
 
-        const { user, error } = await this.userService.getUserById(req.user.id);
+        const { user, error } = await this.userService.GetUser({
+            uid: req.user.id,
+        });
 
         const response = new ResponseBuilder(res);
         if (error) {
@@ -50,10 +55,9 @@ export class UserHttpController {
     @Post()
     @HttpCode(201)
     async createUser(@Body() data: CreateUserRequest, @Res() res: Response) {
-        const { user, error } = await this.userService.createUser(data);
+        const user = await this.userService.Create(data);
 
         const response = new ResponseBuilder(res);
-        if (error) return response.setError(error.message).toJSON(500);
         return response.setData({ user }).toJSON(201);
     }
 
@@ -62,7 +66,7 @@ export class UserHttpController {
     async deleteUser(@Req() req: Request, @Res() res: Response) {
         if (!req?.user?.id) return Unauthorized(res);
 
-        const { success } = await this.userService.deleteUser(req.user.id);
+        const { success } = await this.userService.Delete({ uid: req.user.id });
 
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);

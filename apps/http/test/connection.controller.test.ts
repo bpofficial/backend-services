@@ -2,24 +2,28 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatusCode } from 'axios';
 import * as request from 'supertest';
-import { ConnectionService } from '../src/connection.service';
-import { ConnectionHttpController } from '../src/http.controller';
+import { ConnectionHttpController } from '../src/connection.controller';
+import { ConnectionServiceProvider } from '@app/clients';
+import { ConnectionService } from '@app/proto/connection';
 import { mockConnection } from './fixtures/mockConnection';
 
 describe('ConnectionHttpController', () => {
     let app: INestApplication;
-    let connectionService: ConnectionService;
+    const connectionService = {
+        GetConnection: jest.fn(),
+        Create: jest.fn(),
+        Update: jest.fn(),
+        Delete: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ConnectionHttpController],
             providers: [
                 {
-                    provide: ConnectionService,
+                    provide: ConnectionServiceProvider,
                     useValue: {
-                        getConnectionById: jest.fn(),
-                        createConnection: jest.fn(),
-                        deleteConnection: jest.fn(),
+                        getService: () => connectionService,
                     },
                 },
             ],
@@ -27,15 +31,13 @@ describe('ConnectionHttpController', () => {
 
         app = module.createNestApplication();
         await app.init();
-        connectionService = module.get<ConnectionService>(ConnectionService);
     });
 
     describe('GET /connections/:id', () => {
         it('should return connection details', async () => {
-            jest.spyOn(
-                connectionService,
-                'getConnectionById',
-            ).mockResolvedValue({ connection: mockConnection });
+            connectionService.GetConnection.mockResolvedValueOnce({
+                connection: mockConnection,
+            });
 
             return request(app.getHttpServer())
                 .get('/connections/1')
@@ -47,10 +49,9 @@ describe('ConnectionHttpController', () => {
         });
 
         it('should return an error if connection not found', async () => {
-            jest.spyOn(
-                connectionService,
-                'getConnectionById',
-            ).mockResolvedValue({ error: { message: 'Not found', code: 404 } });
+            connectionService.GetConnection.mockResolvedValueOnce({
+                error: { message: 'Not found', code: 404 },
+            });
 
             return request(app.getHttpServer())
                 .get('/connections/1')
@@ -69,9 +70,9 @@ describe('ConnectionHttpController', () => {
 
             const mockConnection: any = { id: '1', ...mockCreateData };
 
-            jest.spyOn(connectionService, 'createConnection').mockResolvedValue(
-                { connection: mockConnection },
-            );
+            connectionService.Create.mockResolvedValueOnce({
+                connection: mockConnection,
+            });
 
             return request(app.getHttpServer())
                 .post('/connections')
@@ -84,15 +85,16 @@ describe('ConnectionHttpController', () => {
         });
 
         it('should return an error if connection creation fails', async () => {
-            jest.spyOn(connectionService, 'createConnection').mockResolvedValue(
-                { error: { message: 'Creation failed', code: 500 } },
-            );
+            connectionService.Create.mockResolvedValueOnce({
+                error: { message: 'Creation failed', code: 500 },
+            });
 
             const mockCreateData = {
                 name: 'New Connection',
                 type: 'type',
                 config: {},
             };
+
             return request(app.getHttpServer())
                 .post('/connections')
                 .send(mockCreateData)
@@ -106,9 +108,7 @@ describe('ConnectionHttpController', () => {
 
     describe('DELETE /connections/:id', () => {
         it('should successfully delete a connection', async () => {
-            jest.spyOn(connectionService, 'deleteConnection').mockResolvedValue(
-                { success: true },
-            );
+            connectionService.Delete.mockResolvedValueOnce({ success: true });
 
             return request(app.getHttpServer())
                 .delete('/connections/1')
@@ -116,9 +116,7 @@ describe('ConnectionHttpController', () => {
         });
 
         it('should return an error if connection deletion fails', async () => {
-            jest.spyOn(connectionService, 'deleteConnection').mockResolvedValue(
-                { success: false },
-            );
+            connectionService.Delete.mockResolvedValueOnce({ success: false });
 
             return request(app.getHttpServer())
                 .delete('/connections/1')

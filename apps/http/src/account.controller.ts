@@ -1,4 +1,5 @@
-import { ConnectAccountRequest } from '@app/proto/account';
+import { AccountServiceProvider } from '@app/clients';
+import { AccountService, ConnectAccountRequest } from '@app/proto/account';
 import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
@@ -13,11 +14,14 @@ import {
 } from '@nestjs/common';
 import { HttpStatusCode } from 'axios';
 import { Request, Response } from 'express';
-import { AccountService } from './account.service';
 
 @Controller('accounts')
 export class AccountHttpController {
-    constructor(private accountService: AccountService) {}
+    private readonly accountService: AccountService;
+
+    constructor(private accountServiceProvider: AccountServiceProvider) {
+        this.accountService = this.accountServiceProvider.getService();
+    }
 
     @Get('/:id')
     @HttpCode(HttpStatusCode.Ok)
@@ -26,10 +30,10 @@ export class AccountHttpController {
         @Res() res: Response,
         @Param('id') aid: string,
     ) {
-        const { account, error } = await this.accountService.getAccountById(
+        const { account, error } = await this.accountService.GetAccount({
             aid,
-            req.user.id,
-        );
+            uid: req.user.id,
+        });
 
         const response = new ResponseBuilder(res);
         if (error) return response.setError(error.message).toJSON(500);
@@ -43,11 +47,9 @@ export class AccountHttpController {
         @Res() res: Response,
         @Body() data: ConnectAccountRequest,
     ) {
-        const { account, error } =
-            await this.accountService.connectAccount(data);
+        const account = await this.accountService.Connect(data);
 
         const response = new ResponseBuilder(res);
-        if (error) return response.setError(error.message).toJSON(500);
         return response.setData({ account }).toJSON(201);
     }
 
@@ -58,10 +60,10 @@ export class AccountHttpController {
         @Res() res: Response,
         @Param('id') aid: string,
     ) {
-        const { success } = await this.accountService.disconnectAccount(
+        const { success } = await this.accountService.Disconnect({
             aid,
-            req.user.id,
-        );
+            uid: req.user.id,
+        });
 
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);
