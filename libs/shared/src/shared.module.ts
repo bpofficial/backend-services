@@ -2,6 +2,7 @@ import {
     AccountClientModule,
     ConnectionClientModule,
     MemberClientModule,
+    NotifyClientModule,
     UserClientModule,
 } from '@app/clients';
 import { OrgClientModule } from '@app/clients/org';
@@ -22,6 +23,7 @@ import { RedisModule } from './redis';
         UserClientModule,
         ConnectionClientModule,
         AccountClientModule,
+        NotifyClientModule,
         RedisModule,
         HealthModule,
     ],
@@ -34,6 +36,7 @@ import { RedisModule } from './redis';
         UserClientModule,
         ConnectionClientModule,
         AccountClientModule,
+        NotifyClientModule,
         AppConfigModule,
         DynamicStrategyService,
         RedisModule,
