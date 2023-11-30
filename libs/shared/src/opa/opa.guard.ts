@@ -23,7 +23,7 @@ export class OpaGuard implements CanActivate {
         const handler = context.getHandler();
         const orgService = this.orgServiceProvider.getService();
 
-        let method: string, user: string, orgId: string;
+        let method: string | string[], user: string, orgId: string;
 
         if (context.getType() === 'http') {
             const request = context.switchToHttp().getRequest();
@@ -37,7 +37,7 @@ export class OpaGuard implements CanActivate {
         } else if (context.getType() === 'rpc') {
             const data = context.switchToRpc().getData();
             this.logger.debug(`canActivate: rpc, data=${JSON.stringify(data)}`);
-            method = handler.name;
+            method = this.reflector.get<string>('permission', handler);
             user = data.uid; // Assuming user data is part of the gRPC request data
             orgId = data.oid; // Assuming org ID is part of the gRPC request data
         } else {
@@ -70,7 +70,19 @@ export class OpaGuard implements CanActivate {
         this.logger.debug(`canActivate: policy=${policy}`);
 
         if (policy && typeof policy === 'string') {
-            return this.opaService.evaluatePolicy(policy, input);
+            if (Array.isArray(method)) {
+                const results = await Promise.all(
+                    method.map((m) =>
+                        this.opaService.evaluatePolicy(policy, {
+                            ...input,
+                            method: m,
+                        }),
+                    ),
+                );
+                return results.some((v) => !!v);
+            } else {
+                return this.opaService.evaluatePolicy(policy, input);
+            }
         }
 
         return true;
