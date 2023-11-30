@@ -8,6 +8,7 @@ import {
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ConnectionService } from './connection.service';
+import { OpaPolicy } from '@app/shared';
 
 @Controller()
 export class ConnectionGrpcController {
@@ -15,6 +16,7 @@ export class ConnectionGrpcController {
 
     constructor(private readonly connectionService: ConnectionService) {}
 
+    @OpaPolicy('org/allow', 'READ')
     @GrpcMethod('ConnectionService', 'GetConnection')
     async findConnectionById(
         data: GetConnectionRequest,
@@ -23,6 +25,7 @@ export class ConnectionGrpcController {
         return this.connectionService.getConnectionById(data.cid);
     }
 
+    @OpaPolicy('org/allow', 'CREATE')
     @GrpcMethod('ConnectionService', 'Create')
     async createConnection(
         data: CreateConnectionRequest,
@@ -31,6 +34,7 @@ export class ConnectionGrpcController {
         return this.connectionService.createConnection(data);
     }
 
+    @OpaPolicy('org/allow', 'DELETE')
     @GrpcMethod('ConnectionService', 'Delete')
     async deleteConnection(
         data: DeleteConnectionRequest,

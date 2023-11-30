@@ -14,6 +14,7 @@ import {
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { MemberService } from './member.service';
+import { OpaPolicy } from '@app/shared';
 
 @Controller()
 export class MemberGrpcController {
@@ -21,20 +22,11 @@ export class MemberGrpcController {
 
     constructor(private readonly memberService: MemberService) {}
 
+    @OpaPolicy('member/allow', 'READ')
     @GrpcMethod('MemberService', 'GetMember')
     async findMemberById(data: GetMemberRequest): Promise<MemberResponse> {
         this.logger.debug(`findMemberById: mid=${data.mid}, oid=${data.oid}`);
         return this.memberService.getMemberById(data.mid, data.oid);
-    }
-
-    @GrpcMethod('MemberService', 'CreateInvite')
-    async inviteMember(
-        data: CreateInviteRequest,
-    ): Promise<CreateInviteResponse> {
-        this.logger.debug(
-            `inviteMember: oid=${data.oid}, email=${data.email}, role=${data.role}`,
-        );
-        return this.memberService.createInvite(data);
     }
 
     @GrpcMethod('MemberService', 'AcceptInvite')
@@ -45,6 +37,18 @@ export class MemberGrpcController {
         return this.memberService.acceptInvite(data);
     }
 
+    @OpaPolicy('member/allow', 'CREATE')
+    @GrpcMethod('MemberService', 'CreateInvite')
+    async inviteMember(
+        data: CreateInviteRequest,
+    ): Promise<CreateInviteResponse> {
+        this.logger.debug(
+            `inviteMember: oid=${data.oid}, email=${data.email}, role=${data.role}`,
+        );
+        return this.memberService.createInvite(data);
+    }
+
+    @OpaPolicy('member/allow', 'CREATE')
     @GrpcMethod('MemberService', 'Create')
     async createMember(data: CreateMemberRequest): Promise<MemberResponse> {
         this.logger.debug(
@@ -53,6 +57,7 @@ export class MemberGrpcController {
         return this.memberService.createMember(data);
     }
 
+    @OpaPolicy('member/allow', 'DELETE')
     @GrpcMethod('MemberService', 'Delete')
     async deleteMember(
         data: DeleteMemberRequest,
@@ -61,6 +66,7 @@ export class MemberGrpcController {
         return this.memberService.deleteMember(data.mid, data.oid);
     }
 
+    @OpaPolicy('member/allow', 'DELETE')
     @GrpcMethod('MemberService', 'DeleteAll')
     async deleteAllMembers(
         data: DeleteAllMembersRequest,

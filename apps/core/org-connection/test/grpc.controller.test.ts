@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConnectionService } from '../src/connection.service';
 import { ConnectionGrpcController } from '../src/grpc.controller';
 import { mockConnection } from './fixtures/mockConnection';
+import { OpaService } from '@app/shared';
+import { OrgServiceProvider } from '@app/clients';
 
 describe('ConnectionGrpcController', () => {
     let controller: ConnectionGrpcController;
@@ -11,6 +13,22 @@ describe('ConnectionGrpcController', () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ConnectionGrpcController],
             providers: [
+                {
+                    provide: OpaService,
+                    useValue: {
+                        evaluatePolicy: jest.fn().mockResolvedValue(true),
+                    },
+                },
+                {
+                    provide: OrgServiceProvider,
+                    useValue: {
+                        getService: jest.fn().mockReturnValue({
+                            FindOneById: jest.fn().mockResolvedValue({
+                                id: '123',
+                            }),
+                        }),
+                    },
+                },
                 {
                     provide: ConnectionService,
                     useValue: {
