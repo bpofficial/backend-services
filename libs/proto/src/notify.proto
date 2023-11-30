@@ -1,0 +1,48 @@
+syntax = "proto3";
+import "errors.proto";
+package proto;
+
+service NotifyService {
+  rpc Send (SendRequest) returns (SendResponse) {}
+  rpc SendBulk (BulkSendRequest) returns (BulkSendResponse) {}
+}
+
+message TypeEmail {
+    string subject = 1;
+    string body = 2;
+    string sender = 3;
+    repeated string cc = 4;
+    repeated string bcc = 5;
+}
+
+message TypeSMS {
+    string message = 1;
+}
+
+message SendRequest {
+    string recipient = 1;
+    oneof type {
+        TypeEmail email = 2;
+        TypeSMS sms = 3;
+    }
+}
+
+message SendResponse {
+    oneof result {
+        bool success = 1;
+        Err error = 2;
+    }
+}
+
+message BulkSendRequest {
+    repeated SendRequest requests = 1;
+}
+
+message NotifyError {
+    string message = 1;
+    string recipient = 2;
+}
+
+message BulkSendResponse {
+    repeated NotifyError errors = 1;
+}
