@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 import { TokenModel } from '../models/tokens.model';
 
 @Injectable()
-export class LocalAuthorizeService {
+export class UsernamePasswordAuthorizeService {
     constructor(
         @InjectModel('token')
         private readonly tokenModel: Model<TokenModel>,
@@ -33,14 +33,30 @@ export class LocalAuthorizeService {
         }
 
         const accountService = this.accountServiceProvider.getService();
-        const { account } = await accountService.ValidatePassword({
-            username,
-            password,
-            cid: connection.id,
-        });
 
-        if (account) {
-            return this.createAccessToken(account, connection);
+        // Fetch them in parallel to save a bit of time
+        const [validationResult, accountResult] = await Promise.allSettled([
+            accountService.ValidatePassword({
+                username,
+                password,
+                cid: connection.id,
+            }),
+            accountService.GetAccountByUsername({
+                username,
+                cid: connection.id,
+            }),
+        ]);
+
+        if (
+            validationResult.status === 'fulfilled' &&
+            validationResult.value.success &&
+            accountResult.status === 'fulfilled' &&
+            accountResult.value.account
+        ) {
+            return this.createAccessToken(
+                accountResult.value.account,
+                connection,
+            );
         }
 
         throw new BadRequestException({

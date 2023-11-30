@@ -5,7 +5,7 @@ import { AuthorizeHttpController } from './controllers/authorize.controller';
 import { CallbackHttpController } from './controllers/callback.controller';
 import { OidcExchangeSchema } from './models/oidc-exchange.model';
 import { TokenSchema } from './models/tokens.model';
-import { LocalAuthorizeService } from './services/local.service';
+import { UsernamePasswordAuthorizeService } from './services/username-password.service';
 import { OidcAuthorizeService } from './services/oidc.service';
 
 @Module({
@@ -17,6 +17,6 @@ import { OidcAuthorizeService } from './services/oidc.service';
         }),
     ],
     controllers: [AuthorizeHttpController, CallbackHttpController],
-    providers: [LocalAuthorizeService, OidcAuthorizeService],
+    providers: [UsernamePasswordAuthorizeService, OidcAuthorizeService],
 })
 export class AuthModule {}

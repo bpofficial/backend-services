@@ -9,14 +9,14 @@ import {
     Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { LocalAuthorizeService } from '../services/local.service';
+import { UsernamePasswordAuthorizeService } from '../services/username-password.service';
 import { OidcAuthorizeService } from '../services/oidc.service';
 
 @Controller('auth/authorize')
 export class AuthorizeHttpController {
     constructor(
         private readonly connectionServiceProvider: ConnectionServiceProvider,
-        private readonly localAuthorizeService: LocalAuthorizeService,
+        private readonly usernamePasswordAuthorizeService: UsernamePasswordAuthorizeService,
         private readonly oidcAuthorizeService: OidcAuthorizeService,
     ) {}
 
@@ -41,7 +41,10 @@ export class AuthorizeHttpController {
 
         switch (connection.type) {
             case ConnectionType.LOCAL:
-                return this.localAuthorizeService.authorize(req, connection);
+                return this.usernamePasswordAuthorizeService.authorize(
+                    req,
+                    connection,
+                );
             case ConnectionType.OIDC:
                 return this.oidcAuthorizeService.authorize(
                     req,

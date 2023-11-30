@@ -1,11 +1,11 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from '../../src/account.service';
-import { LocalAccountService } from '../../src/local/local-account.service';
-import { mockAccount } from '../fixtures/mockAccount';
+import { AccountService } from '../../../src/account.service';
+import { mockAccount } from '../../fixtures/mockAccount';
+import { UsernamePasswordAccountService } from '../../../src/methods/Username-Password/username-password.service';
 
-describe('LocalAccountService', () => {
-    let localAccountService: LocalAccountService;
+describe('UsernamePasswordAccountService', () => {
+    let usernamePasswordAccountService: UsernamePasswordAccountService;
     let accountService: AccountService;
     let accountModelMock: any;
 
@@ -16,7 +16,7 @@ describe('LocalAccountService', () => {
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                LocalAccountService,
+                UsernamePasswordAccountService,
                 {
                     provide: AccountService,
                     useValue: {
@@ -30,8 +30,10 @@ describe('LocalAccountService', () => {
             ],
         }).compile();
 
-        localAccountService =
-            module.get<LocalAccountService>(LocalAccountService);
+        usernamePasswordAccountService =
+            module.get<UsernamePasswordAccountService>(
+                UsernamePasswordAccountService,
+            );
         accountService = module.get<AccountService>(AccountService);
     });
 
@@ -48,7 +50,7 @@ describe('LocalAccountService', () => {
             });
             accountModelMock.updateOne.mockResolvedValue({});
 
-            const result = await localAccountService.verifyEmail(
+            const result = await usernamePasswordAccountService.verifyEmail(
                 '1',
                 'user1',
                 'valid_token',
@@ -65,7 +67,7 @@ describe('LocalAccountService', () => {
                 account,
             });
 
-            const result = await localAccountService.verifyEmail(
+            const result = await usernamePasswordAccountService.verifyEmail(
                 '1',
                 'user1',
                 'token',
@@ -84,7 +86,7 @@ describe('LocalAccountService', () => {
                 account,
             });
 
-            const result = await localAccountService.verifyEmail(
+            const result = await usernamePasswordAccountService.verifyEmail(
                 '1',
                 'user1',
                 'token',
@@ -104,7 +106,7 @@ describe('LocalAccountService', () => {
                 account,
             });
 
-            const result = await localAccountService.verifyEmail(
+            const result = await usernamePasswordAccountService.verifyEmail(
                 '1',
                 'user1',
                 'invalid_token',

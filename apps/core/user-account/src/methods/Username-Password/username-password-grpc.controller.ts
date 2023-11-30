@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { LocalAccountService } from './local-account.service';
+import { LocalAccountService } from './username-password.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
     RequestVerificationRequest,
@@ -8,8 +8,8 @@ import {
 } from '@app/proto/account';
 
 @Controller()
-export class LocalAccountGrpcController {
-    constructor(private accountService: LocalAccountService) {}
+export class UsernamePasswordGrpcController {
+    constructor(private accountService: UsernamePasswordAccountService) {}
 
     @GrpcMethod('ValidatePassword')
     async validatePassword(data: ValidatePasswordRequest) {

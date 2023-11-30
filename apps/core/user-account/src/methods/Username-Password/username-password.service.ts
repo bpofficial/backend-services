@@ -7,11 +7,11 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
 import { Model } from 'mongoose';
-import { AccountModel } from '../account.model';
-import { AccountService } from '../account.service';
+import { AccountModel } from '../../account.model';
+import { AccountService } from '../../account.service';
 
 @Injectable()
-export class LocalAccountService {
+export class UsernamePasswordAccountService {
     private readonly logger = new Logger('LocalAccountService');
 
     constructor(

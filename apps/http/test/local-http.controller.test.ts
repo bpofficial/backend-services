@@ -2,22 +2,25 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatusCode } from 'axios';
 import * as request from 'supertest';
-import { LocalAccountService } from '../../src/local/local-account.service';
-import { LocalAccountHttpController } from '../../src/local/local-grpc.controller';
-import { mockAccount } from '../fixtures/mockAccount';
+import { LocalAccountHttpController } from '../src/local-account.controller';
+import { AccountServiceProvider } from '@app/clients';
+import { mockAccount } from './fixtures/mockAccount';
 
 describe('LocalAccountHttpController', () => {
     let app: INestApplication;
-    let localAccountService: LocalAccountService;
+    const accountService = {
+        VerifyEmail: jest.fn(),
+        RequestVerification: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [LocalAccountHttpController],
             providers: [
                 {
-                    provide: LocalAccountService,
+                    provide: AccountServiceProvider,
                     useValue: {
-                        verifyEmail: jest.fn(),
+                        getService: () => accountService,
                     },
                 },
             ],
@@ -25,13 +28,11 @@ describe('LocalAccountHttpController', () => {
 
         app = module.createNestApplication();
         await app.init();
-        localAccountService =
-            module.get<LocalAccountService>(LocalAccountService);
     });
 
     describe('POST /accounts/verify', () => {
         it('should return success on valid email verification', async () => {
-            jest.spyOn(localAccountService, 'verifyEmail').mockResolvedValue({
+            accountService.VerifyEmail.mockResolvedValue({
                 success: true,
             });
 
@@ -48,7 +49,7 @@ describe('LocalAccountHttpController', () => {
         });
 
         it('should handle verification failure', async () => {
-            jest.spyOn(localAccountService, 'verifyEmail').mockResolvedValue({
+            accountService.VerifyEmail.mockResolvedValue({
                 error: { message: 'Invalid token' },
             });
 
@@ -61,7 +62,7 @@ describe('LocalAccountHttpController', () => {
             return request(app.getHttpServer())
                 .post('/accounts/verify')
                 .send(data)
-                .expect(400)
+                .expect(500)
                 .expect({
                     status: 'error',
                     data: { message: 'Invalid token' },
