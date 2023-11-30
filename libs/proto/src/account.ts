@@ -39,9 +39,10 @@ export interface DisconnectAccountResponse {
   success: boolean;
 }
 
-export interface RequestVerificationResponse {
-  verification?: string | undefined;
-  error?: Err | undefined;
+export interface VerifyEmailRequest {
+  aid: string;
+  uid: string;
+  token: string;
 }
 
 export interface VerifyAccountResponse {
@@ -53,6 +54,15 @@ export interface ValidatePasswordRequest {
   username: string;
   password: string;
   cid: string;
+}
+
+export interface RequestVerificationRequest {
+  aid: string;
+}
+
+export interface RequestVerificationResponse {
+  verification?: string | undefined;
+  error?: Err | undefined;
 }
 
 export interface Account {
@@ -573,25 +583,28 @@ export const DisconnectAccountResponse = {
   },
 };
 
-function createBaseRequestVerificationResponse(): RequestVerificationResponse {
-  return { verification: undefined, error: undefined };
+function createBaseVerifyEmailRequest(): VerifyEmailRequest {
+  return { aid: "", uid: "", token: "" };
 }
 
-export const RequestVerificationResponse = {
-  encode(message: RequestVerificationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.verification !== undefined) {
-      writer.uint32(10).string(message.verification);
+export const VerifyEmailRequest = {
+  encode(message: VerifyEmailRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.aid !== "") {
+      writer.uint32(10).string(message.aid);
     }
-    if (message.error !== undefined) {
-      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
+    }
+    if (message.token !== "") {
+      writer.uint32(26).string(message.token);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): RequestVerificationResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): VerifyEmailRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRequestVerificationResponse();
+    const message = createBaseVerifyEmailRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -600,14 +613,21 @@ export const RequestVerificationResponse = {
             break;
           }
 
-          message.verification = reader.string();
+          message.aid = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.error = Err.decode(reader, reader.uint32());
+          message.uid = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.token = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -618,31 +638,36 @@ export const RequestVerificationResponse = {
     return message;
   },
 
-  fromJSON(object: any): RequestVerificationResponse {
+  fromJSON(object: any): VerifyEmailRequest {
     return {
-      verification: isSet(object.verification) ? globalThis.String(object.verification) : undefined,
-      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+      aid: isSet(object.aid) ? globalThis.String(object.aid) : "",
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+      token: isSet(object.token) ? globalThis.String(object.token) : "",
     };
   },
 
-  toJSON(message: RequestVerificationResponse): unknown {
+  toJSON(message: VerifyEmailRequest): unknown {
     const obj: any = {};
-    if (message.verification !== undefined) {
-      obj.verification = message.verification;
+    if (message.aid !== "") {
+      obj.aid = message.aid;
     }
-    if (message.error !== undefined) {
-      obj.error = Err.toJSON(message.error);
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    if (message.token !== "") {
+      obj.token = message.token;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(base?: I): RequestVerificationResponse {
-    return RequestVerificationResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(base?: I): VerifyEmailRequest {
+    return VerifyEmailRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(object: I): RequestVerificationResponse {
-    const message = createBaseRequestVerificationResponse();
-    message.verification = object.verification ?? undefined;
-    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
+  fromPartial<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(object: I): VerifyEmailRequest {
+    const message = createBaseVerifyEmailRequest();
+    message.aid = object.aid ?? "";
+    message.uid = object.uid ?? "";
+    message.token = object.token ?? "";
     return message;
   },
 };
@@ -806,6 +831,137 @@ export const ValidatePasswordRequest = {
     message.username = object.username ?? "";
     message.password = object.password ?? "";
     message.cid = object.cid ?? "";
+    return message;
+  },
+};
+
+function createBaseRequestVerificationRequest(): RequestVerificationRequest {
+  return { aid: "" };
+}
+
+export const RequestVerificationRequest = {
+  encode(message: RequestVerificationRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.aid !== "") {
+      writer.uint32(10).string(message.aid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestVerificationRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRequestVerificationRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.aid = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RequestVerificationRequest {
+    return { aid: isSet(object.aid) ? globalThis.String(object.aid) : "" };
+  },
+
+  toJSON(message: RequestVerificationRequest): unknown {
+    const obj: any = {};
+    if (message.aid !== "") {
+      obj.aid = message.aid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RequestVerificationRequest>, I>>(base?: I): RequestVerificationRequest {
+    return RequestVerificationRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RequestVerificationRequest>, I>>(object: I): RequestVerificationRequest {
+    const message = createBaseRequestVerificationRequest();
+    message.aid = object.aid ?? "";
+    return message;
+  },
+};
+
+function createBaseRequestVerificationResponse(): RequestVerificationResponse {
+  return { verification: undefined, error: undefined };
+}
+
+export const RequestVerificationResponse = {
+  encode(message: RequestVerificationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.verification !== undefined) {
+      writer.uint32(10).string(message.verification);
+    }
+    if (message.error !== undefined) {
+      Err.encode(message.error, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestVerificationResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRequestVerificationResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.verification = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.error = Err.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RequestVerificationResponse {
+    return {
+      verification: isSet(object.verification) ? globalThis.String(object.verification) : undefined,
+      error: isSet(object.error) ? Err.fromJSON(object.error) : undefined,
+    };
+  },
+
+  toJSON(message: RequestVerificationResponse): unknown {
+    const obj: any = {};
+    if (message.verification !== undefined) {
+      obj.verification = message.verification;
+    }
+    if (message.error !== undefined) {
+      obj.error = Err.toJSON(message.error);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(base?: I): RequestVerificationResponse {
+    return RequestVerificationResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<RequestVerificationResponse>, I>>(object: I): RequestVerificationResponse {
+    const message = createBaseRequestVerificationResponse();
+    message.verification = object.verification ?? undefined;
+    message.error = (object.error !== undefined && object.error !== null) ? Err.fromPartial(object.error) : undefined;
     return message;
   },
 };
@@ -1180,7 +1336,9 @@ export interface AccountService {
   Connect(request: ConnectAccountRequest): Promise<AccountResponse>;
   Disconnect(request: DisconnectAccountRequest): Promise<DisconnectAccountResponse>;
   /** username-password connections */
-  ValidatePassword(request: ValidatePasswordRequest): Promise<AccountResponse>;
+  ValidatePassword(request: ValidatePasswordRequest): Promise<VerifyAccountResponse>;
+  VerifyEmail(request: VerifyEmailRequest): Promise<VerifyAccountResponse>;
+  RequestVerification(request: RequestVerificationRequest): Promise<RequestVerificationResponse>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

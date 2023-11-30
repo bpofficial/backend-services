@@ -1,6 +1,9 @@
-import { VerifyAccountResponse } from '@app/proto/account';
+import {
+    RequestVerificationResponse,
+    VerifyAccountResponse,
+} from '@app/proto/account';
 import { Err } from '@app/proto/errors';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
 import { Model } from 'mongoose';
@@ -15,6 +18,14 @@ export class LocalAccountService {
         @InjectModel('account') private model: Model<AccountModel>,
         private accountService: AccountService,
     ) {}
+
+    async validatePassword(
+        cid: string,
+        username: string,
+        password: string,
+    ): Promise<VerifyAccountResponse> {
+        return { error: { message: 'Not implemented', code: 501 } };
+    }
 
     async verifyEmail(
         aid: string,
@@ -48,7 +59,9 @@ export class LocalAccountService {
         }
     }
 
-    async requestVerification(aid: string) {
+    async requestVerification(
+        aid: string,
+    ): Promise<RequestVerificationResponse> {
         const verificationToken = randomBytes(32).toString('hex');
         const verificationExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14; // 14 days
 
@@ -61,5 +74,9 @@ export class LocalAccountService {
         );
 
         // TODO: dispatch an email to the account to verify their account
+
+        return {
+            error: { message: 'Not implemented', code: 501 },
+        };
     }
 }

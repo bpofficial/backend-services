@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatusCode } from 'axios';
 import * as request from 'supertest';
 import { LocalAccountService } from '../../src/local/local-account.service';
-import { LocalAccountHttpController } from '../../src/local/local-http.controller';
+import { LocalAccountHttpController } from '../../src/local/local-grpc.controller';
 import { mockAccount } from '../fixtures/mockAccount';
 
 describe('LocalAccountHttpController', () => {

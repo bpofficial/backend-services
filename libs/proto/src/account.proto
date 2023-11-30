@@ -13,7 +13,9 @@ service AccountService {
   rpc Disconnect (DisconnectAccountRequest) returns (DisconnectAccountResponse);
 
   // username-password connections
-  rpc ValidatePassword (ValidatePasswordRequest) returns (AccountResponse);
+  rpc ValidatePassword (ValidatePasswordRequest) returns (VerifyAccountResponse);
+  rpc VerifyEmail (VerifyEmailRequest) returns (VerifyAccountResponse);
+  rpc RequestVerification (RequestVerificationRequest) returns (RequestVerificationResponse);
 }
 
 message ConnectAccountRequest {
@@ -49,11 +51,10 @@ message DisconnectAccountResponse {
   bool success = 1;
 }
 
-message RequestVerificationResponse {
-  oneof result {
-      string verification = 1;
-      Err error = 2;
-  }
+message VerifyEmailRequest {
+    string aid = 1; 
+    string uid = 2;
+    string token = 3;
 }
 
 message VerifyAccountResponse {
@@ -67,6 +68,17 @@ message ValidatePasswordRequest {
   string username = 1;
   string password = 2;
   string cid = 3;
+}
+
+message RequestVerificationRequest {
+    string aid = 1;
+}
+
+message RequestVerificationResponse {
+  oneof result {
+      string verification = 1;
+      Err error = 2;
+  }
 }
 
 message Account {
