@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { LocalAccountService } from './username-password.service';
+import { UsernamePasswordAccountService } from './username-password.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import {
     RequestVerificationRequest,
