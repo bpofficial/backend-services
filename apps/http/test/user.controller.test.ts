@@ -1,27 +1,29 @@
 import { HttpServer, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { UserHttpController } from '../src/http.controller';
-import { UserService } from '../../core/user/src/user.service';
-import { mockUser } from '../../core/user/test/fixtures/mockUser';
+import { UserServiceProvider } from '@app/clients';
+import { UserHttpController } from '../src/user.controller';
+import { mockUser } from './fixtures/mockUser';
 
 describe('UserHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);
 
     let app: INestApplication;
     let httpServer: HttpServer;
-    let userService: UserService;
+    const userService = {
+        GetUser: jest.fn(),
+        Create: jest.fn(),
+        Delete: jest.fn(),
+    };
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             controllers: [UserHttpController],
             providers: [
                 {
-                    provide: UserService,
+                    provide: UserServiceProvider,
                     useValue: {
-                        getUserById: jest.fn(),
-                        createUser: jest.fn(),
-                        deleteUser: jest.fn(),
+                        getService: () => userService,
                     },
                 },
             ],
@@ -37,15 +39,15 @@ describe('UserHttpController', () => {
         });
         await app.init();
         httpServer = app.getHttpServer();
-        userService = moduleFixture.get<UserService>(UserService);
     });
 
     afterAll(async () => {
         await app.close();
     });
+
     describe('getMe', () => {
         it('should return user details', async () => {
-            jest.spyOn(userService, 'getUserById').mockResolvedValue({
+            userService.GetUser.mockResolvedValue({
                 user: mockUser,
                 error: null,
             });
@@ -62,7 +64,7 @@ describe('UserHttpController', () => {
         });
 
         it('should handle errors when finding the user', async () => {
-            jest.spyOn(userService, 'getUserById').mockResolvedValue({
+            userService.GetUser.mockResolvedValue({
                 user: null,
                 error: { message: 'Some random error...' },
             });
@@ -71,7 +73,7 @@ describe('UserHttpController', () => {
         });
 
         it('should handle errors when user not found', async () => {
-            jest.spyOn(userService, 'getUserById').mockResolvedValue({
+            userService.GetUser.mockResolvedValue({
                 user: null,
                 error: null,
             });
@@ -87,7 +89,7 @@ describe('UserHttpController', () => {
 
     describe('createAccount', () => {
         it('should create a user account', async () => {
-            jest.spyOn(userService, 'createUser').mockResolvedValue({
+            userService.Create.mockResolvedValue({
                 user: mockUser,
                 error: null,
             });
@@ -105,7 +107,7 @@ describe('UserHttpController', () => {
         });
 
         it('should handle errors during account creation', async () => {
-            jest.spyOn(userService, 'createUser').mockResolvedValue({
+            userService.Create.mockResolvedValue({
                 user: null,
                 error: { message: 'Error creating user' },
             });
@@ -119,7 +121,7 @@ describe('UserHttpController', () => {
 
     describe('deleteAccount', () => {
         it('should delete a user account', async () => {
-            jest.spyOn(userService, 'deleteUser').mockResolvedValue({
+            userService.Delete.mockResolvedValue({
                 success: true,
             });
 
@@ -127,7 +129,7 @@ describe('UserHttpController', () => {
         });
 
         it('should handle errors during account deletion', async () => {
-            jest.spyOn(userService, 'deleteUser').mockResolvedValue({
+            userService.Delete.mockResolvedValue({
                 success: false,
             });
 

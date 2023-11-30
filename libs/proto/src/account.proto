@@ -9,7 +9,7 @@ service AccountService {
   rpc GetAccount (GetAccountRequest) returns (AccountResponse);
   rpc GetAccountByUsername (GetAccountByUsernameRequest) returns (AccountResponse);
   rpc Update (UpdateAccountRequest) returns (AccountResponse);
-  rpc Connect (ConnectAccountRequest) returns (Account);
+  rpc Connect (ConnectAccountRequest) returns (AccountResponse);
   rpc Disconnect (DisconnectAccountRequest) returns (DisconnectAccountResponse);
 
   // username-password connections

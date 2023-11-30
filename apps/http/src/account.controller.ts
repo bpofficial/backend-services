@@ -47,9 +47,12 @@ export class AccountHttpController {
         @Res() res: Response,
         @Body() data: ConnectAccountRequest,
     ) {
-        const account = await this.accountService.Connect(data);
+        const { account, error } = await this.accountService.Connect(data);
 
         const response = new ResponseBuilder(res);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
         return response.setData({ account }).toJSON(201);
     }
 

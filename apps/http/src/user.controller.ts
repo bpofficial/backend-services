@@ -40,7 +40,7 @@ export class UserHttpController {
         const response = new ResponseBuilder(res);
         if (error) {
             this.logger.warn(`GET /@me - Error`, { error });
-            return response.setError(error.message).toJSON(500);
+            return response.setError(error.message).toJSON(error.code || 500);
         }
 
         if (!user) {
@@ -55,9 +55,14 @@ export class UserHttpController {
     @Post()
     @HttpCode(201)
     async createUser(@Body() data: CreateUserRequest, @Res() res: Response) {
-        const user = await this.userService.Create(data);
+        const { user, error } = await this.userService.Create(data);
 
         const response = new ResponseBuilder(res);
+        if (error) {
+            this.logger.warn(`POST / - Error`, { error });
+            return response.setError(error.message).toJSON(error.code || 500);
+        }
+
         return response.setData({ user }).toJSON(201);
     }
 

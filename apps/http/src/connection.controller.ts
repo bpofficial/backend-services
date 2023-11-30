@@ -47,9 +47,12 @@ export class ConnectionHttpController {
         @Res() res: Response,
         @Body() data: CreateConnectionRequest,
     ) {
-        const connection = await this.connectionService.Create(data);
+        const { connection, error } = await this.connectionService.Create(data);
 
         const response = new ResponseBuilder(res);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
         return response.setData({ connection }).toJSON(201);
     }
 

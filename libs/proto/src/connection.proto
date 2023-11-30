@@ -7,7 +7,7 @@ package proto;
 
 service ConnectionService {
   rpc GetConnection (GetConnectionRequest) returns (ConnectionResponse);
-  rpc Create (CreateConnectionRequest) returns (Connection);
+  rpc Create (CreateConnectionRequest) returns (ConnectionResponse);
   rpc Update (UpdateConnectionRequest) returns (ConnectionResponse);
   rpc Delete (DeleteConnectionRequest) returns (DeleteConnectionResponse);
 }

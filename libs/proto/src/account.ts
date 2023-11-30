@@ -1177,7 +1177,7 @@ export interface AccountService {
   GetAccount(request: GetAccountRequest): Promise<AccountResponse>;
   GetAccountByUsername(request: GetAccountByUsernameRequest): Promise<AccountResponse>;
   Update(request: UpdateAccountRequest): Promise<AccountResponse>;
-  Connect(request: ConnectAccountRequest): Promise<Account>;
+  Connect(request: ConnectAccountRequest): Promise<AccountResponse>;
   Disconnect(request: DisconnectAccountRequest): Promise<DisconnectAccountResponse>;
   /** username-password connections */
   ValidatePassword(request: ValidatePasswordRequest): Promise<AccountResponse>;

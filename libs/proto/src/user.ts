@@ -599,7 +599,7 @@ export const UserResponse = {
 export interface UserService {
   GetUser(request: GetUserRequest): Promise<UserResponse>;
   GetUserByEmail(request: GetUserByEmailRequest): Promise<UserResponse>;
-  Create(request: CreateUserRequest): Promise<User>;
+  Create(request: CreateUserRequest): Promise<UserResponse>;
   Update(request: UpdateUserRequest): Promise<UserResponse>;
   Delete(request: DeleteUserRequest): Promise<DeleteUserResponse>;
 }

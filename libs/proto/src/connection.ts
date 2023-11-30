@@ -1316,7 +1316,7 @@ export const ConnectionResponse = {
 
 export interface ConnectionService {
   GetConnection(request: GetConnectionRequest): Promise<ConnectionResponse>;
-  Create(request: CreateConnectionRequest): Promise<Connection>;
+  Create(request: CreateConnectionRequest): Promise<ConnectionResponse>;
   Update(request: UpdateConnectionRequest): Promise<ConnectionResponse>;
   Delete(request: DeleteConnectionRequest): Promise<DeleteConnectionResponse>;
 }

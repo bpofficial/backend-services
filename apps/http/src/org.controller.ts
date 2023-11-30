@@ -50,7 +50,9 @@ export class OrgHttpController {
         });
 
         const response = new ResponseBuilder(res);
-        if (error) return response.setError(error.message).toJSON(500);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
         return response.setData({ org }).toJSON(201);
     }
 

@@ -39,7 +39,9 @@ export class MemberHttpController {
         });
 
         const response = new ResponseBuilder(res);
-        if (error) return response.setError(error.message).toJSON(500);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
         return response.setData({ member }).toJSON(200);
     }
 
@@ -56,7 +58,9 @@ export class MemberHttpController {
         });
 
         const response = new ResponseBuilder(res);
-        if (error) return response.setError(error.message).toJSON(500);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
         return response.setData({ invitation }).toJSON(200);
     }
 

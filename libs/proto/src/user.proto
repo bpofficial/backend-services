@@ -7,7 +7,7 @@ package proto;
 service UserService {
   rpc GetUser (GetUserRequest) returns (UserResponse);
   rpc GetUserByEmail (GetUserByEmailRequest) returns (UserResponse);
-  rpc Create (CreateUserRequest) returns (User);
+  rpc Create (CreateUserRequest) returns (UserResponse);
   rpc Update (UpdateUserRequest) returns (UserResponse);
   rpc Delete (DeleteUserRequest) returns (DeleteUserResponse);
 }

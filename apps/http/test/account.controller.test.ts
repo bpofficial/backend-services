@@ -2,15 +2,22 @@ import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AccountService } from '../src/account.service';
-import { AccountHttpController } from '../src/http.controller';
 import { mockAccount } from './fixtures/mockAccount';
+import { AccountHttpController } from '../src/account.controller';
+import { AccountServiceProvider } from '@app/clients';
 
 describe('AccountHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);
 
     let app: INestApplication;
-    let accountService: AccountService;
+    const accountService = {
+        GetAccount: jest.fn(),
+        GetAccountByUsername: jest.fn(),
+        Update: jest.fn(),
+        Connect: jest.fn(),
+        Disconnect: jest.fn(),
+        ValidatePassword: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -25,11 +32,9 @@ describe('AccountHttpController', () => {
                     },
                 },
                 {
-                    provide: AccountService,
+                    provide: AccountServiceProvider,
                     useValue: {
-                        getAccountById: jest.fn(),
-                        connectAccount: jest.fn(),
-                        disconnectAccount: jest.fn(),
+                        getService: () => accountService,
                     },
                 },
             ],
@@ -47,12 +52,11 @@ describe('AccountHttpController', () => {
             next();
         });
         await app.init();
-        accountService = module.get<AccountService>(AccountService);
     });
 
     describe('GET /accounts/:id', () => {
         it('should return account details', async () => {
-            jest.spyOn(accountService, 'getAccountById').mockResolvedValue({
+            accountService.GetAccount.mockResolvedValue({
                 account: mockAccount,
             });
 
@@ -63,7 +67,7 @@ describe('AccountHttpController', () => {
         });
 
         it('should return an error if account not found', async () => {
-            jest.spyOn(accountService, 'getAccountById').mockResolvedValue({
+            accountService.GetAccount.mockResolvedValue({
                 error: { message: 'Not found' },
             });
 
@@ -77,9 +81,7 @@ describe('AccountHttpController', () => {
     describe('POST /accounts', () => {
         it('should successfully connect an account', async () => {
             const mockAccountData = { uid: 'user1', ...mockAccount };
-            jest.spyOn(accountService, 'connectAccount').mockResolvedValue({
-                account: mockAccount,
-            });
+            accountService.Connect.mockResolvedValue({ account: mockAccount });
 
             return request(app.getHttpServer())
                 .post('/accounts')
@@ -89,7 +91,7 @@ describe('AccountHttpController', () => {
         });
 
         it('should return an error if account connection fails', async () => {
-            jest.spyOn(accountService, 'connectAccount').mockResolvedValue({
+            accountService.Connect.mockResolvedValue({
                 error: { message: 'Connection failed' },
             });
 

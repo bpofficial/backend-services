@@ -2,15 +2,22 @@ import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { MemberHttpController } from '../src/http.controller';
-import { MemberService } from '../../core/org-member/src/member.service';
 import { mockMember } from '../../core/org-member/test/fixtures/mockMember';
+import { MemberHttpController } from '../src/member.controller';
+import { MemberServiceProvider } from '@app/clients';
 
 describe('MemberHttpController', () => {
     const userAuthorized = jest.fn().mockReturnValue(true);
 
     let app: INestApplication;
-    let memberService: MemberService;
+    const memberService = {
+        GetMember: jest.fn(),
+        AcceptInvite: jest.fn(),
+        CreateInvite: jest.fn(),
+        Create: jest.fn(),
+        Delete: jest.fn(),
+        DeleteAll: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -25,12 +32,9 @@ describe('MemberHttpController', () => {
                     },
                 },
                 {
-                    provide: MemberService,
+                    provide: MemberServiceProvider,
                     useValue: {
-                        getMemberById: jest.fn(),
-                        createInvite: jest.fn(),
-                        acceptInvite: jest.fn(),
-                        deleteMember: jest.fn(),
+                        getService: () => memberService,
                     },
                 },
             ],
@@ -49,12 +53,11 @@ describe('MemberHttpController', () => {
         });
 
         await app.init();
-        memberService = module.get<MemberService>(MemberService);
     });
 
     describe('GET /members/:id', () => {
         it('should return member details', async () => {
-            jest.spyOn(memberService, 'getMemberById').mockResolvedValue({
+            memberService.GetMember.mockResolvedValue({
                 member: mockMember,
             });
 
@@ -65,7 +68,7 @@ describe('MemberHttpController', () => {
         });
 
         it('should return an error if member not found', async () => {
-            jest.spyOn(memberService, 'getMemberById').mockResolvedValue({
+            memberService.GetMember.mockResolvedValue({
                 error: { message: 'Not found' },
             });
 
@@ -79,9 +82,7 @@ describe('MemberHttpController', () => {
     describe('POST /members/invite', () => {
         it('should successfully create an invitation', async () => {
             const mockInvite = { invitation: 'inviteToken' };
-            jest.spyOn(memberService, 'createInvite').mockResolvedValue(
-                mockInvite,
-            );
+            memberService.CreateInvite.mockResolvedValue(mockInvite);
 
             return request(app.getHttpServer())
                 .post('/members/invite')
@@ -94,7 +95,7 @@ describe('MemberHttpController', () => {
         });
 
         it('should return an error if invitation creation fails', async () => {
-            jest.spyOn(memberService, 'createInvite').mockResolvedValue({
+            memberService.CreateInvite.mockResolvedValue({
                 error: { message: 'An unknown issue occured' },
             });
 
@@ -111,7 +112,7 @@ describe('MemberHttpController', () => {
 
     describe('POST /members/accept', () => {
         it('should successfully accept an invitation', async () => {
-            jest.spyOn(memberService, 'acceptInvite').mockResolvedValue({
+            memberService.AcceptInvite.mockResolvedValue({
                 success: true,
             });
 
@@ -122,7 +123,7 @@ describe('MemberHttpController', () => {
         });
 
         it('should return an error if invitation acceptance fails', async () => {
-            jest.spyOn(memberService, 'acceptInvite').mockResolvedValue({
+            memberService.AcceptInvite.mockResolvedValue({
                 success: false,
             });
 
@@ -139,7 +140,7 @@ describe('MemberHttpController', () => {
 
     describe('DELETE /members/:id', () => {
         it('should successfully delete a member', async () => {
-            jest.spyOn(memberService, 'deleteMember').mockResolvedValue({
+            memberService.Delete.mockResolvedValue({
                 success: true,
             });
 
@@ -149,7 +150,7 @@ describe('MemberHttpController', () => {
         });
 
         it('should return an error if member deletion fails', async () => {
-            jest.spyOn(memberService, 'deleteMember').mockResolvedValue({
+            memberService.Delete.mockResolvedValue({
                 success: false,
             });
 
