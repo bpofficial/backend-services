@@ -1,17 +1,10 @@
-import {
-    SendRequest,
-    SendResponse,
-    BulkSendRequest,
-    BulkSendResponse,
-} from '@app/proto/notify';
-import { NotifyMethod } from './base';
+import { ConfigService } from '@nestjs/config';
+import { TwilioProvider } from '../providers/twilio.provider';
+import { NotifyMethod } from '../types/notify-method';
 
-export class SMSNotifyMethod implements NotifyMethod {
-    send(data: SendRequest): Promise<SendResponse> {
-        throw new Error('Method not implemented.');
-    }
-
-    sendBulk(data: BulkSendRequest): Promise<BulkSendResponse> {
-        throw new Error('Method not implemented.');
+export class SMSNotifyMethod extends NotifyMethod {
+    constructor(configService: ConfigService) {
+        super(configService);
+        this.provider = new TwilioProvider(configService);
     }
 }

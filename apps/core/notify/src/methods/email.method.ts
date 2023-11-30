@@ -1,17 +1,10 @@
-import {
-    SendRequest,
-    SendResponse,
-    BulkSendRequest,
-    BulkSendResponse,
-} from '@app/proto/notify';
-import { NotifyMethod } from './base';
+import { ConfigService } from '@nestjs/config';
+import { NotifyMethod } from '../types/notify-method';
+import { SendGridProvider } from '../providers/sendgrid.provider';
 
-export class EmailNotifyMethod implements NotifyMethod {
-    send(data: SendRequest): Promise<SendResponse> {
-        throw new Error('Method not implemented.');
-    }
-
-    sendBulk(data: BulkSendRequest): Promise<BulkSendResponse> {
-        throw new Error('Method not implemented.');
+export class EmailNotifyMethod extends NotifyMethod {
+    constructor(configService: ConfigService) {
+        super(configService);
+        this.provider = new SendGridProvider(configService);
     }
 }

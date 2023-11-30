@@ -5,20 +5,23 @@ import {
     SendResponse,
 } from '@app/proto/notify';
 import { Injectable, Logger } from '@nestjs/common';
-import { NotifyMethod } from './methods/base';
 import { EmailNotifyMethod } from './methods/email.method';
 import { SMSNotifyMethod } from './methods/sms.method';
+import { ConfigService } from '@nestjs/config';
+import { NotifyMethod } from './types/notify-method';
 
 @Injectable()
 export class NotifyService {
     private readonly logger = new Logger('NotifyService');
 
+    constructor(private readonly configService: ConfigService) {}
+
     async send(data: SendRequest): Promise<SendResponse> {
         let method: NotifyMethod;
         if (data.email) {
-            method = new EmailNotifyMethod();
+            method = new EmailNotifyMethod(this.configService);
         } else if (data.sms) {
-            method = new SMSNotifyMethod();
+            method = new SMSNotifyMethod(this.configService);
         }
 
         return method.send(data);
