@@ -19,14 +19,13 @@ import { Request, Response } from 'express';
 @Controller('auth')
 export class AuthController {
     private readonly logger = new Logger('AuthController');
-    private readonly connectionService: ConnectionService;
 
     constructor(
         private readonly configService: ConfigService,
         private readonly connectionServiceProvider: ConnectionServiceProvider,
         private readonly strategyService: StrategyService,
     ) {
-        this.connectionService = this.connectionServiceProvider.getService();
+        //
     }
 
     @Post('login')
@@ -35,12 +34,32 @@ export class AuthController {
         @Res() res: Response,
         @Query('cid') cid: string,
     ) {
-        const { connection, error } =
-            await this.connectionService.GetConnection({ cid });
-
-        if (error) {
+        if (!cid) {
+            this.logger.debug(`login: error occured, missing cid`);
             return this.handleLogoutError(res, new Error('Invalid connection'));
         }
+
+        this.logger.debug(`login: cid=${cid}`);
+        const { connection, error } = await this.connectionServiceProvider
+            .getService()
+            .GetConnection({ cid });
+
+        if (error) {
+            this.logger.debug(`login: error occured, error=${error?.message}`);
+            return this.handleLogoutError(res, new Error('Invalid connection'));
+        }
+
+        if (!connection) {
+            this.logger.debug(
+                `login: error occured, error=Failed to fetch connection, service disconnected?`,
+            );
+            return this.handleLogoutError(
+                res,
+                new Error('Internal Server Error'),
+            );
+        }
+
+        this.logger.debug(`login: connection found, type=${connection.type}`);
 
         const strategy = this.strategyService.getStrategy(connection);
         strategy.authenticate(req, { callbackURL: '/auth/oidc/callback' });
