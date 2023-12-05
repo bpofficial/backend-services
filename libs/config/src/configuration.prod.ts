@@ -11,6 +11,10 @@ export const prodConfiguration = async () => {
         prod: true,
         app: {
             uri: await consulKv.get('config/app_uri'),
+            errorUri: await consulKv.get('config/app_error_uri'),
+            loggedInCallbackUri: await consulKv.get(
+                'config/app_logged_in_cb_uri',
+            ),
         },
         opa: {
             uri: await consulKv.get('config/opa_uri'),

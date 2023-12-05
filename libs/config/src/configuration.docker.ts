@@ -4,6 +4,8 @@ export const dockerConfiguration = () => ({
     prod: false,
     app: {
         uri: env.APP_URI,
+        errorUri: env.APP_URI + '/error',
+        loggedInCallbackUri: env.APP_URI,
     },
     opa: {
         uri: env.OPA_URI,

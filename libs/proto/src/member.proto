@@ -6,6 +6,7 @@ package proto;
 
 service MemberService {
   rpc GetMember (GetMemberRequest) returns (MemberResponse);
+  rpc GetMemberByUserID (GetMemberByUserIDRequest) returns (MemberResponse);
   rpc AcceptInvite (AcceptInviteRequest) returns (AcceptInviteResponse);
   rpc CreateInvite (CreateInviteRequest) returns (CreateInviteResponse);
   rpc Create (CreateMemberRequest) returns (Member);
@@ -50,6 +51,11 @@ message CreateInviteResponse {
 message GetMemberRequest {
   string oid = 1;
   string mid = 2;
+}
+
+message GetMemberByUserIDRequest {
+  string oid = 1;
+  string uid = 2;
 }
 
 message DeleteMemberRequest {

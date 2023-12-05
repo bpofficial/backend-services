@@ -41,6 +41,11 @@ export interface GetMemberRequest {
   mid: string;
 }
 
+export interface GetMemberByUserIDRequest {
+  oid: string;
+  uid: string;
+}
+
 export interface DeleteMemberRequest {
   oid: string;
   mid: string;
@@ -617,6 +622,80 @@ export const GetMemberRequest = {
   },
 };
 
+function createBaseGetMemberByUserIDRequest(): GetMemberByUserIDRequest {
+  return { oid: "", uid: "" };
+}
+
+export const GetMemberByUserIDRequest = {
+  encode(message: GetMemberByUserIDRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.oid !== "") {
+      writer.uint32(10).string(message.oid);
+    }
+    if (message.uid !== "") {
+      writer.uint32(18).string(message.uid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetMemberByUserIDRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetMemberByUserIDRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.oid = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetMemberByUserIDRequest {
+    return {
+      oid: isSet(object.oid) ? globalThis.String(object.oid) : "",
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
+    };
+  },
+
+  toJSON(message: GetMemberByUserIDRequest): unknown {
+    const obj: any = {};
+    if (message.oid !== "") {
+      obj.oid = message.oid;
+    }
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetMemberByUserIDRequest>, I>>(base?: I): GetMemberByUserIDRequest {
+    return GetMemberByUserIDRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetMemberByUserIDRequest>, I>>(object: I): GetMemberByUserIDRequest {
+    const message = createBaseGetMemberByUserIDRequest();
+    message.oid = object.oid ?? "";
+    message.uid = object.uid ?? "";
+    return message;
+  },
+};
+
 function createBaseDeleteMemberRequest(): DeleteMemberRequest {
   return { oid: "", mid: "" };
 }
@@ -1089,6 +1168,7 @@ export const MemberResponse = {
 
 export interface MemberService {
   GetMember(request: GetMemberRequest): Promise<MemberResponse>;
+  GetMemberByUserID(request: GetMemberByUserIDRequest): Promise<MemberResponse>;
   AcceptInvite(request: AcceptInviteRequest): Promise<AcceptInviteResponse>;
   CreateInvite(request: CreateInviteRequest): Promise<CreateInviteResponse>;
   Create(request: CreateMemberRequest): Promise<Member>;

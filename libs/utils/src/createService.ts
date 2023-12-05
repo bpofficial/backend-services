@@ -6,6 +6,7 @@ import ConnectRedis from 'connect-redis';
 import * as session from 'express-session';
 import { createMicroservice } from './createMicroservice';
 import { hasGrpcMethods } from './hasGrpcMethods';
+import passport from 'passport';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieParser = require('cookie-parser');
@@ -59,8 +60,19 @@ export async function createService(
             }),
         });
 
+        // Serialize and deserialize user
+        passport.serializeUser<string>((user, done) => {
+            done(null, JSON.stringify(user));
+        });
+
+        passport.deserializeUser<string>((userStr, done) => {
+            done(null, JSON.parse(userStr));
+        });
+
         app.use(cookieParser());
         app.use(sessionMiddleware);
+        app.use(passport.initialize());
+        app.use(passport.session());
 
         const httpPort = configService.get(`${service}.httpPort`) || '80';
         await app.listen(parseInt(httpPort));

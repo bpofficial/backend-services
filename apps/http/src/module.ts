@@ -4,18 +4,16 @@ import { ConnectionHttpController } from './connection.controller';
 import { MemberHttpController } from './member.controller';
 import { OrgHttpController } from './org.controller';
 import { UserHttpController } from './user.controller';
-import { SharedModule } from '@app/shared';
-import { LocalAccountHttpController } from './local-account.controller';
+import { SharedModule, StrategyModule } from '@app/shared';
 
 @Module({
-    imports: [SharedModule],
+    imports: [SharedModule, StrategyModule],
     controllers: [
         AccountHttpController,
         ConnectionHttpController,
         MemberHttpController,
         OrgHttpController,
         UserHttpController,
-        LocalAccountHttpController,
     ],
 })
 export class HttpApiModule {}

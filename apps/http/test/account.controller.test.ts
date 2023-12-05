@@ -17,6 +17,7 @@ describe('AccountHttpController', () => {
         Connect: jest.fn(),
         Disconnect: jest.fn(),
         ValidatePassword: jest.fn(),
+        VerifyEmail: jest.fn(),
     };
 
     beforeEach(async () => {
@@ -104,5 +105,47 @@ describe('AccountHttpController', () => {
                     data: { message: 'Connection failed' },
                 });
         });
+    });
+
+    describe('POST /accounts/verify', () => {
+        it('should return success on valid email verification', async () => {
+            accountService.VerifyEmail.mockResolvedValue({
+                success: true,
+            });
+
+            const data = {
+                aid: mockAccount.id,
+                uid: 'user1',
+                token: 'valid_token',
+            };
+            return request(app.getHttpServer())
+                .post('/accounts/verify')
+                .send(data)
+                .expect(200)
+                .expect({ status: 'success', data: null });
+        });
+
+        it('should handle verification failure', async () => {
+            accountService.VerifyEmail.mockResolvedValue({
+                error: { message: 'Invalid token' },
+            });
+
+            const data = {
+                aid: mockAccount.id,
+                uid: 'user1',
+                token: 'invalid_token',
+            };
+
+            return request(app.getHttpServer())
+                .post('/accounts/verify')
+                .send(data)
+                .expect(500)
+                .expect({
+                    status: 'error',
+                    data: { message: 'Invalid token' },
+                });
+        });
+
+        // Additional test cases for other scenarios like expired token, already verified account, etc.
     });
 });

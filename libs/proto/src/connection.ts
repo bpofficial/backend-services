@@ -7,21 +7,25 @@ import Long = require("long");
 export const protobufPackage = "proto";
 
 export enum ConnectionType {
-  OIDC = 0,
-  LOCAL = 1,
-  LDAP = 2,
+  UNKNOWN = 0,
+  OIDC = 1,
+  LOCAL = 2,
+  LDAP = 3,
   UNRECOGNIZED = -1,
 }
 
 export function connectionTypeFromJSON(object: any): ConnectionType {
   switch (object) {
     case 0:
+    case "UNKNOWN":
+      return ConnectionType.UNKNOWN;
+    case 1:
     case "OIDC":
       return ConnectionType.OIDC;
-    case 1:
+    case 2:
     case "LOCAL":
       return ConnectionType.LOCAL;
-    case 2:
+    case 3:
     case "LDAP":
       return ConnectionType.LDAP;
     case -1:
@@ -33,6 +37,8 @@ export function connectionTypeFromJSON(object: any): ConnectionType {
 
 export function connectionTypeToJSON(object: ConnectionType): string {
   switch (object) {
+    case ConnectionType.UNKNOWN:
+      return "UNKNOWN";
     case ConnectionType.OIDC:
       return "OIDC";
     case ConnectionType.LOCAL:

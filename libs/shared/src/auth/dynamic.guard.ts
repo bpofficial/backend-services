@@ -22,6 +22,8 @@ export class OrgDefinedAuthGuard implements CanActivate {
             const strategy =
                 await this.dynamicStrategyService.createStrategy(oid);
 
+            if (!strategy) return false;
+
             await strategy.authenticate(request);
 
             return true;

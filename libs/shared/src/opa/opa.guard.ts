@@ -8,6 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { RpcException } from '@nestjs/microservices';
 import { OpaService } from './opa.service';
+import { Request } from 'express';
 
 @Injectable()
 export class OpaGuard implements CanActivate {
@@ -23,36 +24,34 @@ export class OpaGuard implements CanActivate {
         const handler = context.getHandler();
         const orgService = this.orgServiceProvider.getService();
 
-        let method: string | string[], user: string, orgId: string;
+        let method: string | string[], uid: string, oid: string;
 
         if (context.getType() === 'http') {
-            const request = context.switchToHttp().getRequest();
+            const request = context.switchToHttp().getRequest() as Request;
             this.logger.debug(
                 `canActivate: http, request=${JSON.stringify(request)}`,
             );
 
             method = request.method;
-            user = request.user;
-            orgId = request.params.oid;
+            uid = request.user.id;
+            oid = request.user.oid;
         } else if (context.getType() === 'rpc') {
             const data = context.switchToRpc().getData();
             this.logger.debug(`canActivate: rpc, data=${JSON.stringify(data)}`);
             method = this.reflector.get<string>('permission', handler);
-            user = data.uid; // Assuming user data is part of the gRPC request data
-            orgId = data.oid; // Assuming org ID is part of the gRPC request data
+            uid = data.uid; // Assuming user data is part of the gRPC request data
+            oid = data.oid; // Assuming org ID is part of the gRPC request data
         } else {
             this.logger.warn(`canActivate: unsupported execution context`);
             throw new RpcException('Unsupported execution context');
         }
 
         this.logger.debug(
-            `canActivate: uid=${user}, oid=${orgId}, method=${method}`,
+            `canActivate: uid=${uid}, oid=${oid}, method=${method}`,
         );
 
         // Assuming the OrgService has a method getOrgById for fetching an organization
-        const org = await orgService.FindOneById({
-            oid: orgId,
-        });
+        const org = await orgService.FindOneById({ oid });
 
         if (org && Object.keys(org).length) {
             this.logger.debug(`canActivate: org=${JSON.stringify(org)}`);
@@ -62,8 +61,8 @@ export class OpaGuard implements CanActivate {
 
         const input = {
             method,
-            user,
-            resource: org,
+            user: uid,
+            resource: oid,
         };
 
         const policy = this.reflector.get<string>('policy', handler);

@@ -58,9 +58,10 @@ message TokenOptions {
 }
 
 enum ConnectionType {
-  OIDC = 0;
-  LOCAL = 1;
-  LDAP = 2;
+  UNKNOWN = 0;
+  OIDC = 1;
+  LOCAL = 2;
+  LDAP = 3;
 }
 
 message OIDCConfig {

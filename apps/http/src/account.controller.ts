@@ -1,5 +1,9 @@
 import { AccountServiceProvider } from '@app/clients';
-import { AccountService, ConnectAccountRequest } from '@app/proto/account';
+import {
+    AccountService,
+    ConnectAccountRequest,
+    VerifyEmailRequest,
+} from '@app/proto/account';
 import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
@@ -9,6 +13,7 @@ import {
     HttpCode,
     Param,
     Post,
+    Query,
     Req,
     Res,
 } from '@nestjs/common';
@@ -71,5 +76,31 @@ export class AccountHttpController {
         const response = new ResponseBuilder(res);
         if (success) return response.setData(null).toJSON(204);
         return response.setError('Failed to disconnect account').toJSON(500);
+    }
+
+    @Post(`/verify`)
+    @HttpCode(HttpStatusCode.Ok)
+    async verifyEmail(@Res() res: Response, @Body() data: VerifyEmailRequest) {
+        const { error } = await this.accountService.VerifyEmail(data);
+
+        const response = new ResponseBuilder(res);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
+        return response.setData(null).toJSON(200);
+    }
+
+    @Post(`/request-verification`)
+    @HttpCode(HttpStatusCode.Ok)
+    async requestVerifyEmail(@Res() res: Response, @Query('aid') aid: string) {
+        const { error } = await this.accountService.RequestVerification({
+            aid,
+        });
+
+        const response = new ResponseBuilder(res);
+        if (error)
+            return response.setError(error.message).toJSON(error.code || 500);
+
+        return response.setData(null).toJSON(200);
     }
 }

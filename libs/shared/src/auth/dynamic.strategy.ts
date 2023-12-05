@@ -1,62 +1,29 @@
-import { UserServiceProvider } from '@app/clients';
+import { ConnectionServiceProvider } from '@app/clients';
+import { ConnectionService } from '@app/proto/connection';
 import { Injectable } from '@nestjs/common';
+import { StrategyService } from './strategies';
 
 @Injectable()
 export class DynamicStrategyService {
-    constructor(private readonly userServiceProvider: UserServiceProvider) {}
+    private readonly connectionService: ConnectionService;
 
-    async createStrategy(oid: string) {
-        return null;
-        // const settingsService = this.settingsServiceProvider.getService();
-        // const { config, error } = await settingsService.GetAuthConfig({ oid });
+    constructor(
+        private readonly connectionServiceProvider: ConnectionServiceProvider,
+        private readonly strategySerivce: StrategyService,
+    ) {
+        this.connectionService = this.connectionServiceProvider.getService();
+    }
 
-        // if (error) {
-        //     return null;
-        // }
+    async createStrategy(cid: string) {
+        const { connection, error } =
+            await this.connectionService.GetConnection({
+                cid,
+            });
 
-        // if (config.oidc) {
-        //     return new OidcStrategy(
-        //         {
-        //             clientID: config.oidc.clientId,
-        //             clientSecret: config.oidc.clientSecret,
-        //             issuer: config.oidc.issuer,
-        //             authorizationURL: config.oidc.authorizationURL,
-        //             tokenURL: config.oidc.tokenURL,
-        //             callbackURL: config.oidc.callbackURL,
-        //             userInfoURL: config.oidc.userInfoURL,
-        //         },
-        //         (
-        //             _issuer: string,
-        //             _profile: Profile,
-        //             _context: object,
-        //             _idToken: string | object,
-        //             accessToken: object,
-        //             _refreshToken: string,
-        //             done: VerifyCallback,
-        //         ) => {
-        //             done(null, {
-        //                 oid: accessToken['oid'],
-        //                 uid: accessToken['uid'],
-        //                 mid: accessToken['mid'],
-        //             });
-        //         },
-        //     );
-        // } else if (config.credentials) {
-        //     const userService = this.userServiceProvider.getService();
-        //     return new LocalStrategy(async (email, password, done) => {
-        //         const { user, error } = await userService.GetUserByEmail({
-        //             email,
-        //         });
+        if (error) {
+            return false;
+        }
 
-        //         if (!user) {
-        //             return done(null, false);
-        //         }
-
-        //         // if (!user.verifyPassword(password)) {
-        //         //     return done(null, false);
-        //         // }
-        //         return done(null, user);
-        //     });
-        // }
+        return this.strategySerivce.getStrategy(connection);
     }
 }
