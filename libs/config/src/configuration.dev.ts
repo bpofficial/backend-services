@@ -30,6 +30,9 @@ export const devConfiguration = () => ({
     // define the variable locally and target it for the service or generally
     // (within a container) when there's no conflicting values.
     service: {
+        http: {
+            httpPort: '5000',
+        },
         org: {
             proto: '../../../libs/proto/src/org.proto',
             grpcPort: '5001',
@@ -57,6 +60,11 @@ export const devConfiguration = () => ({
         },
         auth: {
             httpPort: '5066',
+        },
+        notify: {
+            proto: '../../../libs/proto/src/notify.proto',
+            grpcPort: '5007',
+            httpPort: '5077',
         },
     },
 });

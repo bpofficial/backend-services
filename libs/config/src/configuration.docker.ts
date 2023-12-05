@@ -27,27 +27,9 @@ export const dockerConfiguration = () => ({
         },
     },
     service: {
-        account: {
-            proto: 'proto/account.proto',
-            host: 'account',
-            grpcPort: '5003',
-            httpPort: '5033',
-        },
-        auth: {
-            host: 'auth',
-            httpPort: '5066',
-        },
-        connection: {
-            proto: 'proto/connection.proto',
-            host: 'connection',
-            grpcPort: '5005',
-            httpPort: '5055',
-        },
-        member: {
-            proto: 'proto/member.proto',
-            host: 'member',
-            grpcPort: '5004',
-            httpPort: '5044',
+        http: {
+            host: 'http',
+            httpPort: '5000',
         },
         org: {
             proto: 'proto/org.proto',
@@ -60,6 +42,33 @@ export const dockerConfiguration = () => ({
             host: 'user',
             grpcPort: '5002',
             httpPort: '5022',
+        },
+        account: {
+            proto: 'proto/account.proto',
+            host: 'account',
+            grpcPort: '5003',
+            httpPort: '5033',
+        },
+        member: {
+            proto: 'proto/member.proto',
+            host: 'member',
+            grpcPort: '5004',
+            httpPort: '5044',
+        },
+        connection: {
+            proto: 'proto/connection.proto',
+            host: 'connection',
+            grpcPort: '5005',
+            httpPort: '5055',
+        },
+        auth: {
+            host: 'auth',
+            httpPort: '5066',
+        },
+        notify: {
+            proto: '../../../libs/proto/src/notify.proto',
+            grpcPort: '5007',
+            httpPort: '5077',
         },
     },
 });

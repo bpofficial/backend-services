@@ -2,7 +2,9 @@ import { Connection, ConnectionType } from '@app/proto/connection';
 import { OidcStrategy } from './strategies/oidc.strategy';
 import { UsernamePasswordStrategy } from './strategies/username-password.strategy';
 import { AccountServiceProvider, MemberServiceProvider } from '@app/clients';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class StrategyService {
     constructor(
         // Providers for the strategies

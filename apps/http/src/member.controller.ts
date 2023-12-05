@@ -1,6 +1,5 @@
 import { MemberServiceProvider } from '@app/clients';
 import { CreateInviteRequest, MemberService } from '@app/proto/member';
-import { OrgDefinedAuthGuard } from '@app/shared';
 import { ResponseBuilder } from '@app/shared/responses';
 import {
     Body,
@@ -15,10 +14,11 @@ import {
     Res,
     UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 
 @Controller('members')
-@UseGuards(OrgDefinedAuthGuard)
+@UseGuards(AuthGuard('session'))
 export class MemberHttpController {
     private readonly logger = new Logger('MemberHttpController');
     private readonly memberService: MemberService;

@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
+import { existsSync } from 'fs';
 import { join } from 'path';
 
 export function getGrpcConfig(
@@ -13,6 +14,10 @@ export function getGrpcConfig(
         __dirname,
         configService.get(`${service}.proto`) || '.proto',
     );
+
+    if (!existsSync(protoPath)) {
+        return null;
+    }
 
     return {
         transport: Transport.GRPC as Transport.GRPC,

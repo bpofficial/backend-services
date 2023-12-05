@@ -15,6 +15,14 @@ export function createServiceClient(
         inject: [ConfigService],
         useFactory: async (configService: ConfigService) => {
             const config = getGrpcConfig(service, configService);
+
+            if (!config) {
+                logger.error(
+                    `Failed to create client for service '${service}'.`,
+                );
+                return {};
+            }
+
             logger.log(
                 `Creating client for service '${service}' at '${config.options.url}'`,
             );

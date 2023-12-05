@@ -1,9 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "declaration": false,
-    "outDir": "../../dist/apps/core/org-connection"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*test.ts"]
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "declaration": false,
+        "outDir": "../../dist/apps/core/org-connection"
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "test", "**/*test.ts"]
 }

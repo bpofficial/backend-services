@@ -4,12 +4,11 @@ import {
     MemberClientModule,
     NotifyClientModule,
     UserClientModule,
+    OrgClientModule,
 } from '@app/clients';
-import { OrgClientModule } from '@app/clients/org';
 import { AppConfigModule } from '@app/config';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { DynamicStrategyService } from './auth/dynamic.strategy';
 import { HealthModule } from './health';
 import { OpaService } from './opa/opa.service';
 import { RedisModule } from './redis';
@@ -27,7 +26,7 @@ import { RedisModule } from './redis';
         RedisModule,
         HealthModule,
     ],
-    providers: [OpaService, DynamicStrategyService],
+    providers: [OpaService],
     exports: [
         OpaService,
         HttpModule,
@@ -38,7 +37,6 @@ import { RedisModule } from './redis';
         AccountClientModule,
         NotifyClientModule,
         AppConfigModule,
-        DynamicStrategyService,
         RedisModule,
     ],
 })

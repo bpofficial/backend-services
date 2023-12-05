@@ -1,6 +1,5 @@
 import { OrgServiceProvider } from '@app/clients';
 import { OrgService } from '@app/proto/org';
-import { OrgDefinedAuthGuard } from '@app/shared';
 import { ResponseBuilder, Unauthorized } from '@app/shared/responses';
 import {
     Body,
@@ -13,6 +12,7 @@ import {
     Res,
     UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 
 @Controller('org')
@@ -25,7 +25,7 @@ export class OrgHttpController {
     }
 
     @Get()
-    @UseGuards(OrgDefinedAuthGuard)
+    @UseGuards(AuthGuard('session'))
     async getOrg(@Req() req: Request, @Res() res: Response) {
         const { org, error } = await this.orgService.FindOneById({
             oid: req.user.oid,
@@ -57,7 +57,7 @@ export class OrgHttpController {
     }
 
     @Delete()
-    @UseGuards(OrgDefinedAuthGuard)
+    @UseGuards(AuthGuard('session'))
     async deleteOrg(@Req() req: Request, @Res() res: Response) {
         const { success } = await this.orgService.Delete({
             oid: req.user.oid,

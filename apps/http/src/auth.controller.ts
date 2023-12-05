@@ -1,9 +1,19 @@
 import { ConnectionServiceProvider } from '@app/clients';
 import { ConnectionService } from '@app/proto/connection';
-import { StrategyService } from '@app/shared';
+import { DynamicOidcAuthGuard, StrategyService } from '@app/shared';
 import { isUrl } from '@app/utils';
-import { Controller, Get, Logger, Post, Query, Req, Res } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Logger,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 
 @Controller('auth')
@@ -53,6 +63,7 @@ export class AuthController {
         });
     }
 
+    @UseGuards(DynamicOidcAuthGuard)
     @Get('oidc/callback')
     oidcCallback(
         @Req() req: Request,

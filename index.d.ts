@@ -1,10 +1,16 @@
 import { User as UserDef } from '@app/proto/user';
+import { Strategy } from 'passport';
 
 declare global {
     namespace Express {
-        export type User = UserDef & { oid: string };
+        // Extend the existing User type
+        export interface User extends UserDef {
+            oid?: string; // Assuming 'oid' is not already part of UserDef
+        }
+
         export interface Request {
-            user: UserDef & { oid: string };
+            user?: User; // Override with the extended User type
+            strategy?: Strategy;
         }
     }
 }

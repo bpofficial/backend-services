@@ -1,4 +1,3 @@
-import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -24,14 +23,6 @@ describe('AccountHttpController', () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AccountHttpController],
             providers: [
-                {
-                    provide: DynamicStrategyService,
-                    useValue: {
-                        createStrategy: jest.fn().mockReturnValue({
-                            authenticate: jest.fn().mockReturnValue(true),
-                        }),
-                    },
-                },
                 {
                     provide: AccountServiceProvider,
                     useValue: {

@@ -5,6 +5,7 @@ import { MemberHttpController } from './member.controller';
 import { OrgHttpController } from './org.controller';
 import { UserHttpController } from './user.controller';
 import { SharedModule, StrategyModule } from '@app/shared';
+import { AuthController } from './auth.controller';
 
 @Module({
     imports: [SharedModule, StrategyModule],
@@ -14,6 +15,7 @@ import { SharedModule, StrategyModule } from '@app/shared';
         MemberHttpController,
         OrgHttpController,
         UserHttpController,
+        AuthController,
     ],
 })
 export class HttpApiModule {}

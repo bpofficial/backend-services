@@ -38,20 +38,20 @@ export const prodConfiguration = async () => {
             },
         },
         service: {
+            http: {
+                host: await getServiceHost('http-service'),
+            },
             org: {
                 proto: 'proto/org.proto',
                 host: await getServiceHost('org-service'),
             },
-            auth: {
-                host: await getServiceHost('auth-service'),
+            user: {
+                proto: 'proto/user.proto',
+                host: await getServiceHost('user-service'),
             },
             account: {
                 proto: 'proto/account.proto',
                 host: await getServiceHost('account-service'),
-            },
-            user: {
-                proto: 'proto/user.proto',
-                host: await getServiceHost('user-service'),
             },
             member: {
                 proto: 'proto/member.proto',
@@ -60,6 +60,13 @@ export const prodConfiguration = async () => {
             connection: {
                 proto: 'proto/connection.proto',
                 host: await getServiceHost('connection-service'),
+            },
+            auth: {
+                host: await getServiceHost('auth-service'),
+            },
+            notify: {
+                proto: 'proto/notify.proto',
+                host: await getServiceHost('notify-service'),
             },
         },
     };

@@ -6,7 +6,7 @@ import { ClientGrpc } from '@nestjs/microservices';
 export class NotifyServiceProvider implements OnModuleInit {
     private notifyService: NotifyService;
 
-    constructor(@Inject('org') private client: ClientGrpc) {}
+    constructor(@Inject('notify') private client: ClientGrpc) {}
 
     onModuleInit() {
         this.notifyService =
