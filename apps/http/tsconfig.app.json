@@ -4,6 +4,7 @@
     "declaration": false,
     "outDir": "../../dist/apps/http"
   },
+  "files": ["../../index.d.ts"],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*test.ts"]
 }

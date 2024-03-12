@@ -2,7 +2,6 @@ import { MongoDbModule } from '@app/db';
 import { SharedModule } from '@app/shared';
 import { Module } from '@nestjs/common';
 import { OrgGrpcController } from './grpc.controller';
-import { OrgHttpController } from './http.controller';
 import { OrganisationSchema } from './org.model';
 import { OrgService } from './org.service';
 
@@ -13,7 +12,7 @@ import { OrgService } from './org.service';
             organisation: OrganisationSchema,
         }),
     ],
-    controllers: [OrgGrpcController, OrgHttpController],
+    controllers: [OrgGrpcController],
     providers: [OrgService],
 })
 export class OrgModule {}

@@ -2,8 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "outDir": "../../dist/libs/shared"
+    "outDir": "../../dist/libs/shared",
   },
+  "files": ["../../index.d.ts"],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*test.ts"]
 }

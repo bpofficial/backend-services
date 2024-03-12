@@ -38,7 +38,7 @@ cp "libs/proto/src/"*.proto "$TEMP_DIR/app/proto/"
 cp -r "policies" "$TEMP_DIR/app/policies/"
 
 # Copy the application files to the packaging directory
-cp -r "dist/apps/$APP_NAME/." "$TEMP_DIR/app/"
+cp -r "dist/$APP_PATH/." "$TEMP_DIR/app/"
 
 # Copy the templates to the packaging directory
 cp -r "templates/k8s/." "$TEMP_DIR/"
@@ -81,10 +81,10 @@ if [ "$DOCKER_FLAG" = true ]; then
   yq eval --inplace ".image = \"$IMAGE\"" "$VALUES_YAML"
 else
   # Create the zip file with the contents of the temporary directory
-  zip -r "$APP_NAME.zip" . &> /dev/null
-
+  zip -r "${APP_NAME}.zip" . &> /dev/null
+  
   # Move the zip file to the desired location
-  mv "$APP_NAME.zip" "$CURRENT_DIR/artifacts/"
+  mv "${APP_NAME}.zip" "$CURRENT_DIR/artifacts/"
 fi
 
 # Print success message
