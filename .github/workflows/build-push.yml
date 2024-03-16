@@ -84,21 +84,17 @@ jobs:
         echo "Building image for $PROJECT"
         VERSION=$(date +%s)
         DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
-        docker build -t $DOCKER_IMAGE --build-arg BUILD_PATH=dist/apps/$PROJECT .
+        LATEST_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:latest"
+
+        docker build -t $DOCKER_IMAGE -t $LATEST_IMAGE --build-arg BUILD_PATH=dist/apps/$PROJECT .
         echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+        echo "LATEST_IMAGE=$LATEST_IMAGE" >> $GITHUB_ENV
 
     - name: Push Image to Registry
       run: |
-        PROJECT=${{ matrix.project }}
-        VERSION=$(date +%s)
-        DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
-        LATEST_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:latest"
-
-        echo "Pushing image $DOCKER_IMAGE"
-        docker push $LATEST_IMAGE
-
-        docker tag $DOCKER_IMAGE $LATEST_IMAGE
+        echo "Pushing images for ${{ matrix.project }}"
         docker push $DOCKER_IMAGE
+        docker push $LATEST_IMAGE
 
     - name: Upload build info
       uses: actions/upload-artifact@v3
