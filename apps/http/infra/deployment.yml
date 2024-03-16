@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: service-http
+      annotations:
+        consul.hashicorp.com/connect-inject: true
+        consul.hashicorp.com/connect-service-port: 80
+        consul.hashicorp.com/transparent-proxy: 80
     spec:
       imagePullSecrets:
       - name: bpk8
@@ -21,7 +25,6 @@ spec:
         image: registry.digitalocean.com/bpk8/service-http:latest
         ports:
         - containerPort: 80
-        - containerPort: 50051
         livenessProbe:
           httpGet:
             path: /health
