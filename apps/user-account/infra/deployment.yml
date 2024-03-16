@@ -18,7 +18,7 @@ spec:
       - name: bpk8
       containers:
       - name: service-user-account
-        image: oci://registry.digitalocean.com/bpk8/service-user-account:latest
+        image: registry.digitalocean.com/bpk8/service-user-account:latest
         ports:
         - containerPort: 80
         - containerPort: 50051
