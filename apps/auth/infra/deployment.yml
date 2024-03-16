@@ -17,7 +17,8 @@ spec:
       annotations:
         consul.hashicorp.com/connect-inject: "true"
         consul.hashicorp.com/connect-service-port: "80"
-        consul.hashicorp.com/transparent-proxy: "true"
+        consul.hashicorp.com/transparent-proxy: "false"
+        consul.hashicorp.com/connect-service-upstreams: "mongodb-headless:27017"
     spec:
       imagePullSecrets:
       - name: bpk8
