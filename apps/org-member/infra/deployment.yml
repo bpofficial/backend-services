@@ -15,7 +15,7 @@ spec:
         app: service-org-member
       annotations:
         consul.hashicorp.com/connect-inject: "true"
-        consul.hashicorp.com/connect-service-port: 50010
+        consul.hashicorp.com/connect-service-port: "50010"
         consul.hashicorp.com/transparent-proxy: "false"
     spec:
       imagePullSecrets:
