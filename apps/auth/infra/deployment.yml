@@ -15,9 +15,9 @@ spec:
       labels:
         app: service-auth
       annotations:
-        consul.hashicorp.com/connect-inject: true
+        consul.hashicorp.com/connect-inject: "true"
         consul.hashicorp.com/connect-service-port: 80
-        consul.hashicorp.com/transparent-proxy: true
+        consul.hashicorp.com/transparent-proxy: "true"
     spec:
       imagePullSecrets:
       - name: bpk8
