@@ -18,11 +18,11 @@ WORKDIR /app
 # Copy node_modules & package files
 COPY --from=builder /app/node_modules  /app/node_modules
 
-ARG PATH 
+ARG BUILD_PATH
 # Copy only the necessary files from the builder stage
-COPY "${PATH}/policies" /app/policies
-COPY "${PATH}/proto"    /app/proto
-COPY "${PATH}/main.js"  /app/main.js
+COPY "${BUILD_PATH}/policies" /app/policies
+COPY "${BUILD_PATH}/proto"    /app/proto
+COPY "${BUILD_PATH}/main.js"  /app/main.js
 
 # Need to keep port 80 open on all images for the health check
 EXPOSE 80

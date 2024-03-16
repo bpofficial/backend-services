@@ -70,15 +70,23 @@ jobs:
     - name: Install Dependencies
       run: yarn install
 
-    - name: Build and Push Image
+    - name: Build Service
+      run: nest build ${{ matrix.project }}
+
+    - name: Create Image
       run: |
         PROJECT=${{ matrix.project }}
         echo "Building image for $PROJECT"
         VERSION=$(date +%s)
         DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
-        docker build -t $DOCKER_IMAGE -f ./Dockerfile ./apps/$PROJECT
-        docker push $DOCKER_IMAGE
+        docker build -t $DOCKER_IMAGE --build-args BUILD_PATH=dist/apps/$PROJECT .
+        echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
+
+    - name: Push Image to Registry
+      run: |
+        echo "Pushing image for ${{ matrix.project }}"
         echo "${{ matrix.project }}=${DOCKER_IMAGE}" >> build-info.txt
+        docker push $DOCKER_IMAGE
 
     - name: Upload build info
       uses: actions/upload-artifact@v2
