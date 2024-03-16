@@ -75,3 +75,5 @@ jobs:
         DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
         docker build -t $DOCKER_IMAGE -f ./Dockerfile ./apps/$PROJECT
         docker push $DOCKER_IMAGE
+
+#
