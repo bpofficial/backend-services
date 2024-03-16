@@ -1,19 +1,12 @@
-{
+{    
     "$schema": "https://json.schemastore.org/nest-cli",
     "collection": "@nestjs/schematics",
-    "root": "apps/core/org/src",
-    "sourceRoot": "apps/core/org/src",
+    "root": "apps/org/src",
+    "sourceRoot": "apps/org/src",
     "compilerOptions": {
         "deleteOutDir": true,
         "webpack": true,
-        "tsConfigPath": "apps/core/org/tsconfig.app.json",
-        "assets": [
-            {
-                "include": "./**/**/*.proto",
-                "outDir": "./dist/libs/proto/src/"
-            }
-        ],
-        "watchAssets": true
+        "tsConfigPath": "apps/org/tsconfig.app.json"
     },
     "monorepo": true,
     "projects": {
@@ -73,47 +66,122 @@
         },
         "org": {
             "type": "application",
-            "root": "apps/core/org",
+            "root": "apps/org",
             "entryFile": "main",
-            "sourceRoot": "apps/core/org/src",
+            "sourceRoot": "apps/org/src",
+            "protocol": "grpc",
             "compilerOptions": {
-                "tsConfigPath": "apps/core/org/tsconfig.app.json"
+                "tsConfigPath": "apps/org/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/org/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/org/policies/"
+                    }
+                ]
             }
         },
         "org-connection": {
             "type": "application",
-            "root": "apps/core/org-connection",
+            "root": "apps/org-connection",
             "entryFile": "main",
-            "sourceRoot": "apps/core/org-connection/src",
+            "sourceRoot": "apps/org-connection/src",
+            "protocol": "grpc",
             "compilerOptions": {
-                "tsConfigPath": "apps/core/org-connection/tsconfig.app.json"
+                "tsConfigPath": "apps/org-connection/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/org-connection/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/org-connection/policies/"
+                    }
+                ]
             }
         },
         "org-member": {
             "type": "application",
-            "root": "apps/core/org-member",
+            "root": "apps/org-member",
             "entryFile": "main",
-            "sourceRoot": "apps/core/org-member/src",
+            "sourceRoot": "apps/org-member/src",
+            "protocol": "grpc",
             "compilerOptions": {
-                "tsConfigPath": "apps/core/org-member/tsconfig.app.json"
+                "tsConfigPath": "apps/org-member/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/org-member/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/org-member/policies/"
+                    }
+                ]
             }
         },
         "user": {
             "type": "application",
-            "root": "apps/core/user",
+            "root": "apps/user",
             "entryFile": "main",
-            "sourceRoot": "apps/core/user/src",
+            "sourceRoot": "apps/user/src",
+            "protocol": "grpc",
             "compilerOptions": {
-                "tsConfigPath": "apps/core/user/tsconfig.app.json"
+                "tsConfigPath": "apps/user/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/user/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/user/policies/"
+                    }
+                ]
             }
         },
         "user-account": {
             "type": "application",
-            "root": "apps/core/user-account",
+            "root": "apps/user-account",
             "entryFile": "main",
-            "sourceRoot": "apps/core/user-account/src",
+            "sourceRoot": "apps/user-account/src",
+            "protocol": "grpc",
             "compilerOptions": {
-                "tsConfigPath": "apps/core/user-account/tsconfig.app.json"
+                "tsConfigPath": "apps/user-account/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/user-account/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/user-account/policies/"
+                    }
+                ]
+            }
+        },
+        "notify": {
+            "type": "application",
+            "root": "apps/notify",
+            "entryFile": "main",
+            "sourceRoot": "apps/notify/src",
+            "protocol": "grpc",
+            "compilerOptions": {
+                "tsConfigPath": "apps/notify/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/notify/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/notify/policies/"
+                    }
+                ]
             }
         },
         "auth": {
@@ -121,8 +189,19 @@
             "root": "apps/auth",
             "entryFile": "main",
             "sourceRoot": "apps/auth/src",
+            "protocol": "http",
             "compilerOptions": {
-                "tsConfigPath": "apps/auth/tsconfig.app.json"
+                "tsConfigPath": "apps/auth/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/auth/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/auth/policies/"
+                    }
+                ]
             }
         },
         "http": {
@@ -130,8 +209,19 @@
             "root": "apps/http",
             "entryFile": "main",
             "sourceRoot": "apps/http/src",
+            "protocol": "http",
             "compilerOptions": {
-                "tsConfigPath": "apps/http/tsconfig.app.json"
+                "tsConfigPath": "apps/http/tsconfig.app.json",
+                "assets": [
+                    {
+                        "include": "../../../libs/proto/src/*.proto",
+                        "outDir": "dist/apps/http/proto/"
+                    },
+                    {
+                        "include": "../../../libs/policies/src/*.rego",
+                        "outDir": "dist/apps/http/policies/"
+                    }
+                ]
             }
         }
     }

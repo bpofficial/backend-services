@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: org
+  labels:
+    app: org
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: org
+  template:
+    metadata:
+      labels:
+        app: org
+    spec:
+      containers:
+      - name: org
+        image: registry.digitalocean.com/bpk8/service-org:latest
+        ports:
+        - containerPort: 80
+        - containerPort: 50051
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: SERVICE_NAME
+          value: org
+        envFrom:
+        - secretRef:
+            name: application-secrets
+        

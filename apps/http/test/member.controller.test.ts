@@ -2,7 +2,7 @@ import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { mockMember } from '../../core/org-member/test/fixtures/mockMember';
+import { mockMember } from '../../org-member/test/fixtures/mockMember';
 import { MemberHttpController } from '../src/member.controller';
 import { MemberServiceProvider } from '@app/clients';
 

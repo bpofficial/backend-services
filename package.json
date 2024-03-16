@@ -5,7 +5,7 @@
     "author": "Brayden Phillips",
     "private": true,
     "scripts": {
-        "build": "/bin/bash ./scripts/build.sh",
+        "build": "nest build",
         "build:app": "/bin/bash ./scripts/build.sh --app",
         "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
         "start": "nest start",

@@ -3,7 +3,6 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { PassportStatic } from 'passport';
 import { DynamicOidcStrategyFactory } from './dynamic-oidc-strategy.factory';
 import { AuthGuard } from '@nestjs/passport';
 import { OtoPromise } from '@app/utils';

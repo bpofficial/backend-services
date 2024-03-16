@@ -1,5 +1,4 @@
 import { ConnectionServiceProvider } from '@app/clients';
-import { ConnectionService } from '@app/proto/connection';
 import { DynamicOidcAuthGuard, StrategyService } from '@app/shared';
 import { isUrl } from '@app/utils';
 import {
@@ -13,7 +12,6 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 
 @Controller('auth')

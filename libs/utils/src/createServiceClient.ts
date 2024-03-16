@@ -28,6 +28,6 @@ export function createServiceClient(
             );
 
             return config;
-        },
+        }
     };
 }

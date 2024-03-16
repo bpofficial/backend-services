@@ -1,0 +1,47 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check Out Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      run: yarn install
+
+    - name: Determine Changed Projects
+      id: changed-projects
+      run: |
+        CHANGED_APPS=$(git diff --name-only HEAD~1 HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
+        echo "Changed projects: $CHANGED_APPS"
+        echo "::set-output name=projects::$CHANGED_APPS"
+
+    - name: Log in to Container Registry
+      run: echo ${{ secrets.REGISTRY_SECRET }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin ${{ secrets.REGISTRY_URL }}
+
+    - name: Build and Push Images
+      if: steps.changed-projects.outputs.projects != ''
+      run: |
+        for project in ${{ steps.changed-projects.outputs.projects }}
+        do
+          echo "Building image for $project"
+          VERSION=$(date +%s)
+          DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$project:$VERSION"
+          docker build -t $DOCKER_IMAGE ./apps/$project
+          docker push $DOCKER_IMAGE
+        done

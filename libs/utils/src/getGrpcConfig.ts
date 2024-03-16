@@ -8,7 +8,7 @@ export function getGrpcConfig(
     configService: ConfigService,
 ) {
     const host = configService.get(`${service}.host`) || '0.0.0.0';
-    const grpcPort = configService.get(`${service}.grpcPort`) || '9090';
+    const grpcPort = configService.get(`${service}.grpcPort`) || '50051';
 
     const protoPath = join(
         __dirname,

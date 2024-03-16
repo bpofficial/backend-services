@@ -13,7 +13,7 @@ export async function createMicroservice(
     configService: ConfigService,
 ) {
     const grpcConfig = getGrpcConfig(service, configService);
-    const hasGrpc = existsSync(grpcConfig.options.protoPath);
+    const hasGrpc = grpcConfig?.options?.protoPath && existsSync(grpcConfig?.options?.protoPath);
 
     if (hasGrpc) {
         app.connectMicroservice({
@@ -24,7 +24,7 @@ export async function createMicroservice(
         await app.startAllMicroservices();
 
         // Register with consul service discovery (when needed)
-        await registerService(service, configService);
+        // await registerService(service, configService);
 
         logger.log(
             `${name} GRPC microservice listening at ${grpcConfig.options.url}`,

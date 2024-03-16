@@ -6,7 +6,7 @@ import ConnectRedis from 'connect-redis';
 import * as session from 'express-session';
 import { createMicroservice } from './createMicroservice';
 import { hasGrpcMethods } from './hasGrpcMethods';
-import passport from 'passport';
+import * as passport from 'passport';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cookieParser = require('cookie-parser');

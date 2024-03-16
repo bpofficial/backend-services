@@ -3,7 +3,7 @@ import { DynamicStrategyService } from '@app/shared/auth/dynamic.strategy';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { mockOrg } from '../../core/org/test/fixtures/mockOrg';
+import { mockOrg } from '../../org/test/fixtures/mockOrg';
 import { OrgHttpController } from '../src/org.controller';
 import { OrgServiceProvider } from '@app/clients';
 

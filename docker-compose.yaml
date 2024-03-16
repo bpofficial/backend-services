@@ -1,23 +1,11 @@
 version: '3.8'
 services:
-  account:
-    build:
-      context: ./artifacts/account/app
-    depends_on:
-      - redis
-      - mongodb
-      - opa
-    environment:
-      - REDIS_URI=redis://redis:6379
-      - MONGO_URI=mongodb://mongodb:27017/
-      - OPA_URI=http://opa:8181
-    ports:
-      - 5003:5003
-      - 5033:5033
-
   auth:
     build:
-      context: ./artifacts/auth/app
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/auth
     depends_on:
       - redis
       - mongodb
@@ -26,12 +14,14 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
-    ports:
-      - 5066:5066
+      - SERVICE_NAME=auth
 
   connection:
     build:
-      context: ./artifacts/connection/app
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/org-connection
     depends_on:
       - redis
       - mongodb
@@ -40,13 +30,14 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
-    ports:
-      - 5005:5005
-      - 5055:5055
+      - SERVICE_NAME=org-connection
 
   member:
     build:
-      context: ./artifacts/member/app
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/org-member
     depends_on:
       - redis
       - mongodb
@@ -55,13 +46,14 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
-    ports:
-      - 5004:5004
-      - 5044:5044
+      - SERVICE_NAME=org-member
 
   org:
     build:
-      context: ./artifacts/org/app
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/org
     depends_on:
       - redis
       - mongodb
@@ -70,13 +62,14 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
-    ports:
-      - 5001:5001
-      - 5011:5011
+      - SERVICE_NAME=org
 
   user:
     build:
-      context: ./artifacts/user/app
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/user
     depends_on:
       - redis
       - mongodb
@@ -85,9 +78,23 @@ services:
       - REDIS_URI=redis://redis:6379
       - MONGO_URI=mongodb://mongodb:27017/
       - OPA_URI=http://opa:8181
-    ports:
-      - 5002:5002
-      - 5022:5022
+      - SERVICE_NAME=user
+
+  account:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PATH: dist/apps/user-account
+    depends_on:
+      - redis
+      - mongodb
+      - opa
+    environment:
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://mongodb:27017/
+      - OPA_URI=http://opa:8181
+      - SERVICE_NAME=user-account
 
   redis:
     image: redis:latest
