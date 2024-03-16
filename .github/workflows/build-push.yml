@@ -70,6 +70,9 @@ jobs:
     - name: Install Dependencies
       run: yarn install
 
+    - name: Install Nest CLI
+      run: yarn global add @nestjs/cli
+
     - name: Build Service
       run: nest build ${{ matrix.project }}
 
