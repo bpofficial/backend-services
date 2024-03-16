@@ -10,6 +10,7 @@ on:
 
 jobs:
   setup:
+    name: Determine Changed Projects
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.determine-changed-projects.outputs.changed }}
@@ -37,6 +38,7 @@ jobs:
         echo "changed=$CHANGED_APPS_JSON" >> $GITHUB_OUTPUT
 
   build:
+    name: Build and Push Images
     needs: setup
     runs-on: ubuntu-latest
     strategy:
