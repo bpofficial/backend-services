@@ -55,6 +55,6 @@ jobs:
           echo "Building image for $project"
           VERSION=$(date +%s)
           DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$project:$VERSION"
-          docker build -t $DOCKER_IMAGE ./apps/$project
+          docker build -t $DOCKER_IMAGE -f ./Dockerfile ./apps/$project
           docker push $DOCKER_IMAGE
         done
