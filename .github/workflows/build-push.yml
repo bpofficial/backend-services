@@ -95,11 +95,10 @@ jobs:
         LATEST_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:latest"
 
         echo "Pushing image $DOCKER_IMAGE"
+        docker push $LATEST_IMAGE
+
         docker tag $DOCKER_IMAGE $LATEST_IMAGE
         docker push $DOCKER_IMAGE
-
-        echo "Pushing image $LATEST_IMAGE"
-        docker push $LATEST_IMAGE
 
     - name: Upload build info
       uses: actions/upload-artifact@v3
