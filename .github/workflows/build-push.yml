@@ -122,14 +122,20 @@ jobs:
       - name: Update ArgoCD Manifests
         run: |
           while IFS='=' read -r project image_tag; do
-            manifest_file=".argocd/${project}.argo.yml"
-            sed -i "s|image: .*$|image: ${image_tag}|" "$manifest_file"
+            deployment_file="apps/${project}/deployment.yml"
+            if [ -f "$deployment_file" ]; then
+              sed -i "s|image: .*|image: ${image_tag}|" "$deployment_file"
+            else
+              echo "Deployment file for ${project} not found"
+            fi
           done < combined-build-info.txt
 
       - name: Commit and Push Changes
         run: |
           git config --local user.name "GitHub Action"
           git config --local user.email "action@github.com"
-          git add .argocd/
-          git commit -m "Update ArgoCD manifests with new image tags [skip ci]"
-          git push
+          git add apps/
+          git diff --staged --quiet || {
+            git commit -m "Update image tags for applications [skip ci]"
+            git push
+          }
