@@ -26,9 +26,9 @@ export class MongoDbModule {
                     `Connecting to MongoDB for ${service} at ${uri + db}`,
                 );
 
-                const auth = (uri.includes('@') ? uri.split('@')?.[0] ?? ':' : ':').split(':');
-                let host = uri.includes('@') ? uri.split('@')?.[1] ?? '' : uri;
-                host = host.toLowerCase().startsWith('mongodb://') ? host : `mongodb://${host}`;
+                let host = String(uri).replace('mongodb://', '');
+                const auth = (host.includes('@') ? host.split('@')?.[0] ?? ':' : ':').split(':');
+                host = host.includes('@') ? host.split('@')?.[1] ?? host : host;
                 host = host.endsWith('/') ? host : `${host}/`;
 
                 console.log({
@@ -40,7 +40,7 @@ export class MongoDbModule {
                     } : undefined,
                 })
 
-                const connection = mongoose.createConnection(host + db, { autoCreate: true, auth: auth ? {
+                const connection = mongoose.createConnection(`mongodb://${host}${db}`, { autoCreate: true, auth: auth ? {
                     username: String(auth[0]),
                     password: String(auth[1]),
                 } : undefined });
