@@ -100,6 +100,7 @@ jobs:
   finalise:
     runs-on: ubuntu-latest
     needs: build
+    if: always() # This ensures the job runs even a build fails
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v2
