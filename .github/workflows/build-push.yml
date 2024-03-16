@@ -27,8 +27,11 @@ jobs:
     - name: Determine Changed Projects
       id: changed-projects
       run: |
-        CHANGED_APPS=$(git diff --name-only HEAD~1 HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
-        echo "Changed projects: $CHANGED_APPS"
+        if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            CHANGED_APPS=$(git diff --name-only HEAD~1 HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
+        else
+            CHANGED_APPS=$(git ls-tree -r --name-only HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
+        fi
         echo "::set-output name=projects::$CHANGED_APPS"
 
     - name: Log in to Container Registry
