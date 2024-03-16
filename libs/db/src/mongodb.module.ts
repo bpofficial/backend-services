@@ -26,24 +26,7 @@ export class MongoDbModule {
                     `Connecting to MongoDB for ${service} at ${uri + db}`,
                 );
 
-                let host = String(uri).replace('mongodb://', '');
-                const auth = (host.includes('@') ? host.split('@')?.[0] ?? ':' : ':').split(':');
-                host = host.includes('@') ? host.split('@')?.[1] ?? host : host;
-                host = host.endsWith('/') ? host : `${host}/`;
-
-                console.log({
-                    uri: host + db,
-                    autoCreate: true,
-                    auth: auth ? {
-                        username: String(auth[0]),
-                        password: String(auth[1]),
-                    } : undefined,
-                })
-
-                const connection = mongoose.createConnection(`mongodb://${host}${db}`, { autoCreate: true, auth: auth ? {
-                    username: String(auth[0]),
-                    password: String(auth[1]),
-                } : undefined });
+                const connection = mongoose.createConnection(uri, { autoCreate: true, dbName: db });
 
                 connection.on('connected', () => {
                     logger.log(`Connected to ${service} database`);
