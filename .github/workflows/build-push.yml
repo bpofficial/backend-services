@@ -84,7 +84,7 @@ jobs:
         echo "Building image for $PROJECT"
         VERSION=$(date +%s)
         DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
-        docker build -t $DOCKER_IMAGE --build-arg BUILD_PATH=dist/apps/$PROJECT .
+        docker build -t $DOCKER_IMAGE -t latest --build-arg BUILD_PATH=dist/apps/$PROJECT .
         echo "DOCKER_IMAGE=$DOCKER_IMAGE" >> $GITHUB_ENV
 
     - name: Push Image to Registry
