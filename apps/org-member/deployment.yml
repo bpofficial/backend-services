@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-org
+  name: service-org-member
   labels:
-    app: service-org
+    app: service-org-member
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: service-org
+      app: service-org-member
   template:
     metadata:
       labels:
-        app: service-org
+        app: service-org-member
     spec:
       containers:
-      - name: service-org
-        image: registry.digitalocean.com/bpk8/service-org:latest
+      - name: service-org-member
+        image: registry.digitalocean.com/bpk8/service-org-member:latest
         ports:
         - containerPort: 80
         - containerPort: 50051
@@ -32,7 +32,7 @@ spec:
         - name: NODE_ENV
           value: production
         - name: SERVICE_NAME
-          value: org
+          value: org-member
         envFrom:
         - secretRef:
             name: application-secrets

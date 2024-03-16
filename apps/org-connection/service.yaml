@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-org
+  name: service-org-connection
 spec:
   selector:
-    app: service-org
+    app: service-org-connection
   ports:
   - name: health
     protocol: TCP

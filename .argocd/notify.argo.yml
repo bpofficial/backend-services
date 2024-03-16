@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: service-org
+  name: service-notify
   namespace: application
 spec:
   project: default
   source:
     repoURL: 'https://your-git-repository-url.git'
-    path: apps/org
+    path: apps/notify
     targetRevision: HEAD
   destination:
     server: 'https://kubernetes.default.svc'
