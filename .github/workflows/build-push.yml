@@ -32,7 +32,7 @@ jobs:
         else
             CHANGED_APPS=$(git ls-tree -r --name-only HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
         fi
-        echo "::set-output name=projects::$CHANGED_APPS"
+        echo "CHANGED_APPS=$CHANGED_APPS" >> $GITHUB_ENV
 
     - name: Log in to Container Registry
       run: echo ${{ secrets.REGISTRY_SECRET }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin ${{ secrets.REGISTRY_URL }}
@@ -40,7 +40,7 @@ jobs:
     - name: Build and Push Images
       if: steps.changed-projects.outputs.projects != ''
       run: |
-        for project in ${{ steps.changed-projects.outputs.projects }}
+        for project in $CHANGED_APPS
         do
           echo "Building image for $project"
           VERSION=$(date +%s)
