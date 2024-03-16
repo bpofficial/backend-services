@@ -40,6 +40,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         project: ${{fromJson(needs.setup.outputs.changed)}}
     steps:
@@ -77,5 +78,22 @@ jobs:
         DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$PROJECT:$VERSION"
         docker build -t $DOCKER_IMAGE -f ./Dockerfile ./apps/$PROJECT
         docker push $DOCKER_IMAGE
+        echo "${{ matrix.project }}=${DOCKER_IMAGE}" >> build-info.txt
 
-#
+    - name: Upload build info
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-info-${{ matrix.project }}
+        path: build-info.txt
+
+  finalize:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Combine build info
+      run: |
+        cat build-info-* > combined-build-info.txt
+        cat combined-build-info.txt
