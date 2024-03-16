@@ -113,8 +113,11 @@ jobs:
 
       - name: Combine and Process Build Info
         run: |
-          cat build-info-* > combined-build-info.txt
-          # Process the combined file to update ArgoCD manifests
+          for dir in build-info-*; do
+            if [ -d "$dir" ]; then
+              cat "$dir/build-info.txt" >> combined-build-info.txt
+            fi
+          done
 
       - name: Update ArgoCD Manifests
         run: |
