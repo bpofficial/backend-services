@@ -49,8 +49,8 @@ jobs:
 
     - name: Build and Push Images
       run: |
-        for project in $CHANGED_APPS
-        do
+        IFS=',' read -r -a apps_array <<< "$CHANGED_APPS"
+        for project in "${apps_array[@]}"; do
           echo "Building image for $project"
           VERSION=$(date +%s)
           DOCKER_IMAGE="${{ secrets.REGISTRY_URL }}/service-$project:$VERSION"
