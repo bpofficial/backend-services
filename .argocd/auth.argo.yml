@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: service-auth
   namespace: application
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: "image=registry.digitalocean.com/bpk8/service-auth"
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/image.update-strategy: latest
 spec:
   project: default
   source:
