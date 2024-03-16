@@ -32,6 +32,8 @@ jobs:
             CHANGED_APPS=$(git ls-tree -r --name-only HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
         fi
         CHANGED_APPS_JSON=$(echo $CHANGED_APPS | jq -R -s -c 'split("\n")[:-1]')
+        echo "$CHANGED_APPS_JSON"
+        echo "changed=$CHANGED_APPS_JSON" >> $GITHUB_ENV
         echo "changed=$CHANGED_APPS_JSON" >> $GITHUB_OUTPUT
 
   build:
