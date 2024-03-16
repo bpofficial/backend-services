@@ -50,7 +50,7 @@ jobs:
     - name: Build and Push Images
       run: |
         IFS=',' read -r -a apps_array <<< "$CHANGED_APPS"
-        echo "Building images for $CHANGED_APPS"
+        echo "Building images for $apps_array"
         for project in "${apps_array[@]}"; do
           echo "Building image for $project"
           VERSION=$(date +%s)
