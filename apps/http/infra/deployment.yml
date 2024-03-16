@@ -14,6 +14,8 @@ spec:
       labels:
         app: service-http
     spec:
+      imagePullSecrets:
+      - name: bpk8
       containers:
       - name: service-http
         image: registry.digitalocean.com/bpk8/service-http:latest

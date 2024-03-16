@@ -8,10 +8,10 @@ metadata:
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/image.update-strategy: latest
 spec:
-  project: default
+  project: backend-services
   source:
-    repoURL: 'https://your-git-repository-url.git'
-    path: apps/auth
+    repoURL: 'git@github.com:bpofficial/backend-services.git'
+    path: apps/auth/infra
     targetRevision: HEAD
   destination:
     server: 'https://kubernetes.default.svc'

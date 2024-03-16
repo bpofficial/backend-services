@@ -14,6 +14,8 @@ spec:
       labels:
         app: service-org-connection
     spec:
+      imagePullSecrets:
+      - name: bpk8
       containers:
       - name: service-org-connection
         image: registry.digitalocean.com/bpk8/service-org-connection:latest

@@ -14,6 +14,8 @@ spec:
       labels:
         app: service-notify
     spec:
+      imagePullSecrets:
+      - name: bpk8
       containers:
       - name: service-notify
         image: registry.digitalocean.com/bpk8/service-notify:latest

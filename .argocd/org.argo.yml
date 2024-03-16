@@ -2,17 +2,21 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: service-org
-  namespace: application
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: image=registry.digitalocean.com/bpk8/service-org
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/image.update-strategy: latest
 spec:
-  project: default
-  source:
-    repoURL: 'https://your-git-repository-url.git'
-    path: apps/org
-    targetRevision: HEAD
   destination:
-    server: 'https://kubernetes.default.svc'
+    name: ''
     namespace: application
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: apps/org/infra
+    repoURL: 'git@github.com:bpofficial/backend-services.git'
+    targetRevision: HEAD
+  project: backend-services
   syncPolicy:
     automated:
-      prune: false
-      selfHeal: false
+      prune: true
+      selfHeal: true

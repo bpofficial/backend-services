@@ -14,6 +14,8 @@ spec:
       labels:
         app: service-user-account
     spec:
+      imagePullSecrets:
+      - name: bpk8
       containers:
       - name: service-user-account
         image: registry.digitalocean.com/bpk8/service-user-account:latest
