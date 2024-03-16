@@ -48,7 +48,6 @@ jobs:
       run: echo ${{ secrets.REGISTRY_SECRET }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin ${{ secrets.REGISTRY_URL }}
 
     - name: Build and Push Images
-      if: steps.changed-projects.outputs.projects != ''
       run: |
         for project in $CHANGED_APPS
         do
