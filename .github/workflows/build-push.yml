@@ -98,14 +98,33 @@ jobs:
         path: build-info.txt
 
   finalise:
+    name: Update ArgoCD
     runs-on: ubuntu-latest
     needs: build
     if: always() # This ensures the job runs even a build fails
     steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v2
+      - name: Check Out Repository
+        uses: actions/checkout@v3
 
-    - name: Combine build info
-      run: |
-        cat build-info-* > combined-build-info.txt
-        cat combined-build-info.txt
+      - name: Download all artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Combine and Process Build Info
+        run: |
+          cat build-info-* > combined-build-info.txt
+          # Process the combined file to update ArgoCD manifests
+
+      - name: Update ArgoCD Manifests
+        run: |
+          while IFS='=' read -r project image_tag; do
+            manifest_file=".argocd/${project}.argo.yml"
+            sed -i "s|image: .*$|image: ${image_tag}|" "$manifest_file"
+          done < combined-build-info.txt
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
+          git add .argocd/
+          git commit -m "Update ArgoCD manifests with new image tags [skip ci]"
+          git push
