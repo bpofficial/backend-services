@@ -21,11 +21,21 @@ jobs:
       with:
         node-version: '18'
 
+    - name: Get yarn cache directory path
+      run: echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+    - name: Cache yarn dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.YARN_CACHE_DIR }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
     - name: Install Dependencies
       run: yarn install
 
     - name: Determine Changed Projects
-      id: changed-projects
       run: |
         if git rev-parse HEAD~1 >/dev/null 2>&1; then
             CHANGED_APPS=$(git diff --name-only HEAD~1 HEAD | grep '^apps/' | awk -F/ '{print $2}' | uniq)
