@@ -86,7 +86,7 @@ jobs:
         name: build-info-${{ matrix.project }}
         path: build-info.txt
 
-  finalize:
+  finalise:
     runs-on: ubuntu-latest
     needs: build
     steps:

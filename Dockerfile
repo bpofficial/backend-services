@@ -4,7 +4,7 @@ FROM node:18 as builder
 WORKDIR /app
 
 # Copy package.json and yarn.lock and install dependencies
-COPY package.json yarn.lock ./
+COPY ./package.json ./yarn.lock ./
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
