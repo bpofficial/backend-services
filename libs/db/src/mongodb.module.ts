@@ -26,27 +26,7 @@ export class MongoDbModule {
                     `Connecting to MongoDB for ${service} at ${uri + db}`,
                 );
 
-                const connection = mongoose.createConnection(uri, { autoCreate: true, dbName: db });
-
-                connection.on('connected', () => {
-                    logger.log(`Connected to ${service} database`);
-                });
-
-                connection.on('error', (err) => {
-                    logger.error(`Connection error: ${err}`);
-                })
-
-                connection.on('disconnected', () => {
-                    logger.warn(`Disconnected from ${service} database`);
-                });
-
-                process.on('SIGINT', () => {
-                    connection.close();
-                    logger.warn(`Disconnected from ${service} database through app termination`);
-                    process.exit(0);
-                });
-
-                return connection.asPromise();
+                return mongoose.connect(uri, { autoCreate: true, dbName: db });
             },
             inject: [ConfigService],
         };
@@ -69,7 +49,8 @@ export class MongoDbModule {
                         const db = (
                             configService.get('mongodb.database') || service
                         ).replace(/\./gi, '-');
-                        return { uri: uri + db };
+
+                        return { uri, autoCreate: true, dbName: db };
                     },
                     inject: [ConfigService],
                 }),
