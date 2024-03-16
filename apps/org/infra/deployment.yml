@@ -14,10 +14,9 @@ spec:
       labels:
         app: service-org
       annotations:
-        # consul.hashicorp.com/connect-inject: "false"
-        # consul.hashicorp.com/connect-service-port: "50010"
-        # consul.hashicorp.com/transparent-proxy: "false"
-        # consul.hashicorp.com/connect-service-upstreams: "mongodb-headless:27017"
+        consul.hashicorp.com/connect-inject: "false"
+        consul.hashicorp.com/connect-service-port: "50010"
+        consul.hashicorp.com/transparent-proxy: "false"
     spec:
       imagePullSecrets:
       - name: bpk8
