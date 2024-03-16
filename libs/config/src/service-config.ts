@@ -15,14 +15,14 @@ export const serviceConfiguration = (prod = false) => {
 
     return {
         service: {
-            http: createHttpConfig('http', '4000'),
-            auth: createHttpConfig('auth', '6000'),
-            org: createGrpcConfig('org', '5001', `${pathPrefix}/org.proto`),
-            user: createGrpcConfig('user', '5002', `${pathPrefix}/user.proto`),
-            account: createGrpcConfig('account', '5003', `${pathPrefix}/account.proto`),
-            member: createGrpcConfig('member', '5004', `${pathPrefix}/member.proto`),
-            connection: createGrpcConfig('connection', '5005', `${pathPrefix}/connection.proto`),
-            notify: createGrpcConfig('notify', '5007', `${pathPrefix}/notify.proto`),
+            http: createHttpConfig(getServiceHost('http', prod), '4000'),
+            auth: createHttpConfig(getServiceHost('auth', prod), '6000'),
+            org: createGrpcConfig(getServiceHost('org', prod), '5001', `${pathPrefix}/org.proto`),
+            user: createGrpcConfig(getServiceHost('user', prod), '5002', `${pathPrefix}/user.proto`),
+            account: createGrpcConfig(getServiceHost('user-account', prod), '5003', `${pathPrefix}/account.proto`),
+            member: createGrpcConfig(getServiceHost('org-member', prod), '5004', `${pathPrefix}/member.proto`),
+            connection: createGrpcConfig(getServiceHost('org-connection', prod), '5005', `${pathPrefix}/connection.proto`),
+            notify: createGrpcConfig(getServiceHost('notify', prod), '5007', `${pathPrefix}/notify.proto`),
         },
     }
 }
@@ -33,6 +33,11 @@ function getHttpPort(fallback: string) {
 
 function getGrpcPort(fallback: string) {
     return process.env.GRPC_PORT || fallback;
+}
+
+function getServiceHost(service: string, prod = false) {
+    if (!prod) return service;
+    return `service-${service}.svc`
 }
 
 function createHttpConfig(host: string, httpPort = DEFAULT_HTTP) {
