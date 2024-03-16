@@ -8,8 +8,20 @@ export function createMongoDbModule(service: `service.${string}`) {
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (serviceConfig) => {
+                const uri = serviceConfig.uri;
                 const dbName = serviceConfig.dbName || service;
-                return { uri: serviceConfig.uri + dbName };
+
+                const auth = (uri.includes('@') ? uri.split('@')?.[0] ?? ':' : ':').split(':');
+                let host = uri.includes('@') ? uri.split('@')?.[1] ?? '' : uri;
+                host = host.toLowerCase().startsWith('mongodb://') ? host : `mongodb://${host}`;
+                host = host.endsWith('/') ? host : `${host}/`;
+
+                return { uri: host + dbName,
+                    auth: auth ? {
+                        username: String(auth[0]),
+                        password: String(auth[1])
+                    } : undefined,
+                };
             },
             inject: [`Config/${service}`],
         }),

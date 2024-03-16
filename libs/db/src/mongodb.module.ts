@@ -26,7 +26,44 @@ export class MongoDbModule {
                     `Connecting to MongoDB for ${service} at ${uri + db}`,
                 );
 
-                return mongoose.connect(uri + db);
+                const auth = (uri.includes('@') ? uri.split('@')?.[0] ?? ':' : ':').split(':');
+                let host = uri.includes('@') ? uri.split('@')?.[1] ?? '' : uri;
+                host = host.toLowerCase().startsWith('mongodb://') ? host : `mongodb://${host}`;
+                host = host.endsWith('/') ? host : `${host}/`;
+
+                console.log({
+                    uri: host + db,
+                    autoCreate: true,
+                    auth: auth ? {
+                        username: String(auth[0]),
+                        password: String(auth[1]),
+                    } : undefined,
+                })
+
+                const connection = mongoose.createConnection(host + db, { autoCreate: true, auth: auth ? {
+                    username: String(auth[0]),
+                    password: String(auth[1]),
+                } : undefined });
+
+                connection.on('connected', () => {
+                    logger.log(`Connected to ${service} database`);
+                });
+
+                connection.on('error', (err) => {
+                    logger.error(`Connection error: ${err}`);
+                })
+
+                connection.on('disconnected', () => {
+                    logger.warn(`Disconnected from ${service} database`);
+                });
+
+                process.on('SIGINT', () => {
+                    connection.close();
+                    logger.warn(`Disconnected from ${service} database through app termination`);
+                    process.exit(0);
+                });
+
+                return connection.asPromise();
             },
             inject: [ConfigService],
         };

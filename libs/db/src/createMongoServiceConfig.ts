@@ -6,11 +6,19 @@ export function createServiceConfigProvider(service: string): Provider {
         provide: `Config/${service}`,
         useFactory: (configService: ConfigService) => {
             const uri = configService.get(`mongodb.uri`);
-            const db = (
-                configService.get('mongodb.database') || service
-            ).replace(/\./gi, '-');
+            const dbName = configService.get(`mongodb.database`) || service;
 
-            return { uri: uri + db };
+            const auth = (uri.includes('@') ? uri.split('@')?.[0] ?? ':' : ':').split(':');
+            let host = uri.includes('@') ? uri.split('@')?.[1] ?? '' : uri;
+            host = host.toLowerCase().startsWith('mongodb://') ? host : `mongodb://${host}`;
+            host = host.endsWith('/') ? host : `${host}/`;
+
+            return { uri: host + dbName,
+                auth: auth ? {
+                    username: String(auth[0]),
+                    password: String(auth[1])
+                } : undefined,
+            };
         },
         inject: [ConfigService],
     };
